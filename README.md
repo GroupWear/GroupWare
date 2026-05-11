@@ -43,9 +43,3 @@
 5. `http://localhost:8080/OfficeReserveERP/index.jsp` 로 접속하여 시스템을 시작합니다.
 
 ---
-
-11 브런치업데이트
-
-DDDD
-DDDDD
-DDDD
