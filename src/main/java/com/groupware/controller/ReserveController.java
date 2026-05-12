@@ -26,11 +26,11 @@ public class ReserveController extends HttpServlet {
 		response.setContentType("text/html; charset=UTF-8");
 
 		// 1. 보안을 위해 현재 로그인 상태인지 세션을 먼저 체크합니다.
-//		HttpSession session = request.getSession();
-//		if (session.getAttribute("loginEmp") == null) {
-//			response.sendRedirect("index.jsp");
-//			return;
-//		}
+		HttpSession session = request.getSession();
+		if (session.getAttribute("loginEmp") == null) {
+			response.sendRedirect("index.jsp");
+			return;
+		}
 
 		// 2. 메인 페이지(main.jsp)에서 전달해준 회의실 번호(roomId)를 수집합니다.
 		String roomId = request.getParameter("roomId");

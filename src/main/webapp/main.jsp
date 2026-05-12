@@ -11,7 +11,7 @@
 <%@ page import="java.time.LocalDateTime"%>
 <%@ page import="java.time.LocalDate"%>
 <%@ page import="java.time.LocalTime"%>
-<%-- <%
+<%
     EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
     if (loginEmp == null) {
         response.sendRedirect("index.jsp");
@@ -35,41 +35,14 @@
 
     LeaveDAO leaveDao = new LeaveDAO();
     List<LeaveHistoryDTO> myLeaveList = leaveDao.getMyLeaveList(loginEmp.getEmpNo());
-%> --%>
+%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>사내 시스템 - 메인 대시보드</title>
-<style>
-    body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background-color: #f4f6f9; margin: 0; padding: 30px; }
-    .header { display: flex; justify-content: space-between; align-items: center; background-color: #212529; color: #ffffff; padding: 15px 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
-    .header h2 { margin: 0; font-size: 20px; letter-spacing: 1px; cursor: pointer; }
-    .nav-buttons { display: flex; align-items: center; gap: 10px; }
-    .nav-btn { padding: 8px 16px; background-color: #343a40; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 13px; border: 1px solid #495057; transition: all 0.2s; }
-    .nav-btn:hover { background-color: #495057; border-color: #6c757d; }
-    .nav-btn.admin { border-color: #dc3545; color: #ffc107; }
-    .nav-btn.admin:hover { background-color: #dc3545; color: #ffffff; }
-    .nav-btn.logout { background-color: transparent; border: none; color: #adb5bd; text-decoration: underline; }
-    .nav-btn.logout:hover { color: #ffffff; }
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
 
-    .dashboard-container { max-width: 1000px; margin: 0 auto; }
-    .section-title { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #343a40; display: flex; align-items: center; }
-    .section-title::before { content: ''; display: inline-block; width: 4px; height: 18px; background-color: #6c757d; margin-right: 10px; }
-    .table-wrapper { background-color: #ffffff; border-radius: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); margin-bottom: 40px; overflow: hidden; border: 1px solid #e9ecef; }
-    table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; }
-    th, td { padding: 14px 12px; border-bottom: 1px solid #e9ecef; }
-    th { background-color: #f8f9fa; color: #495057; font-weight: 600; border-bottom: 2px solid #dee2e6; }
-    .status-badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; }
-    .bg-warning { background-color: #fff8e1; color: #f57c00; border: 1px solid #ffe0b2; }
-    .bg-success { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-    .bg-danger { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
-    .bg-primary { background-color: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
-    .bg-secondary { background-color: #f1f3f5; color: #495057; border: 1px solid #dee2e6; }
-    .btn-action { padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; transition: all 0.2s; }
-    .btn-return { background-color: #343a40; color: #ffffff; border: 1px solid #343a40; }
-    .btn-cancel { background-color: #ffffff; color: #dc3545; border: 1px solid #dc3545; }
-</style>
 <script>
     function processReturn(rentalNo) { if (confirm("반납 처리하시겠습니까?")) location.href = 'returnProcess.do?rentalNo=' + rentalNo + '&from=main'; }
     function cancelReserve(resNo) { if (confirm("예약을 취소하시겠습니까?")) location.href = "cancelReserve.do?resNo=" + resNo + '&from=main'; }
@@ -82,7 +55,7 @@
         <a href="main.jsp" style="text-decoration: none; color: inherit;"><h2>Groupware</h2></a>
         <div class="nav-buttons">
             <%-- ★ [관리자]와 성함이 나란히 보이도록 묶음 --%>
-            <%-- <span style="margin-right: 20px; font-size: 14px; color: #e9ecef;">
+            <span style="margin-right: 20px; font-size: 14px; color: #e9ecef;">
                 <% if ("Y".equals(loginEmp.getManager())) { %>
                     <span style="color: #ffc107; font-weight: bold; font-size: 13px; margin-right: 5px;">[관리자]</span>
                 <% } %>
@@ -94,7 +67,7 @@
                 <a href="adminEqList.do" class="nav-btn admin">재고 관리</a>
                 <a href="admin.do" class="nav-btn admin">사원 관리</a>
                 <span style="color: #495057;">|</span>
-            <% } %> --%>
+            <% } %>
 
             <a href="officeMap.jsp" class="nav-btn">오피스 예약</a>
             <a href="leaveForm.do" class="nav-btn">휴가 신청</a>
@@ -105,7 +78,7 @@
         </div>
     </div>
 
-    <%-- <div class="dashboard-container">
+    <div class="dashboard-container">
         <!-- 상단 카드 -->
         <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e9ecef;">
             <div><h3 style="margin: 0; color: #343a40;">안녕하세요, <b><%=loginEmp.getEmpName()%></b>님!</h3><p style="margin: 5px 0 0 0; color: #6c757d; font-size: 14px;"><%=loginEmp.getDept()%> 소속</p></div>
@@ -178,6 +151,6 @@
             </table>
         </div>
     </div>
- --%>
+
 </body>
 </html>

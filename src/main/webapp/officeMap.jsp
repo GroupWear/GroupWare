@@ -1,59 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.groupware.dto.EmployeeDTO"%>
-<%-- <%
+<%
 EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
 if (loginEmp == null) {
 	response.sendRedirect("index.jsp");
 	return;
 }
-%> --%>
+%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>사내 시스템 - 오피스 도면 예약</title>
-<style>
-	body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background-color: #f4f6f9; margin: 0; padding: 30px; }
-	
-	/* 상단 메뉴바 스타일 */
-	.header { display: flex; justify-content: space-between; align-items: center; background-color: #212529; color: #ffffff; padding: 15px 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
-	.header h2 { margin: 0; font-size: 20px; letter-spacing: 1px; cursor: pointer; } /* ★ 마우스 포인터 추가 */
-	.nav-buttons { display: flex; align-items: center; gap: 10px; }
-	.nav-btn { padding: 8px 16px; background-color: #343a40; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 13px; border: 1px solid #495057; transition: all 0.2s; }
-	.nav-btn:hover { background-color: #495057; border-color: #6c757d; }
-	.nav-btn.admin { border-color: #dc3545; color: #ffc107; }
-	.nav-btn.admin:hover { background-color: #dc3545; color: #ffffff; }
-	.nav-btn.logout { background-color: transparent; border: none; color: #adb5bd; text-decoration: underline; }
-	.nav-btn.logout:hover { color: #ffffff; }
-
-	/* 도면 영역 스타일 */
-	.map-wrapper { background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e9ecef; display: flex; flex-direction: column; align-items: center; max-width: 1060px; margin: 0 auto; }
-	.reservation-header { width: 1000px; text-align: left; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #212529; }
-	.reservation-header h3 { margin: 0 0 5px 0; font-size: 24px; color: #212529; font-weight: 800; letter-spacing: -0.5px; }
-	.reservation-header p { margin: 0; font-size: 14px; color: #6c757d; }
-	.floor-tabs { display: flex; gap: 10px; margin-bottom: 20px; width: 1000px; }
-	.floor-tab { padding: 10px 30px; background-color: #ffffff; border: 1px solid #ced4da; border-radius: 20px; font-size: 14px; font-weight: bold; color: #495057; cursor: pointer; transition: 0.2s; }
-	.floor-tab:hover { background-color: #f8f9fa; border-color: #adb5bd; }
-	.floor-tab.active { background-color: #343a40; color: #ffffff; border-color: #343a40; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-	.map-container { position: relative; width: 1000px; height: 550px; background-color: #ffffff; border: 1px solid #ced4da; background-size: 100% 100%; background-repeat: no-repeat; border-radius: 4px; }
-
-	#map1 { background-image: url('images/floor1_map.png'); display: block; }
-	#map2 { background-image: url('images/floor2_map.png'); display: none; }
-	#map3 { background-image: url('images/floor3_map.png'); display: none; }
-	#map4 { background-image: url('images/floor4_map.png'); display: none; }
-	#map5 { background-image: url('images/floor5_map.png'); display: none; }
-
-	.room-btn { position: absolute; background-color: rgba(52, 58, 64, 0.05); border: 1px dashed #adb5bd; cursor: pointer; transition: all 0.2s; box-sizing: border-box; border-radius: 2px; }
-	.room-btn:hover { background-color: rgba(33, 150, 243, 0.2); border: 2px solid #2196F3; }
-
-	#room104, #room204, #room304, #room404, #room504 { top: 4%; left: 4%; width: 24%; height: 34%; }
-	#room103, #room203, #room303, #room403, #room503 { top: 4%; left: 29%; width: 24%; height: 34%; }
-	#room102, #room202, #room302, #room402, #room502 { top: 4%; left: 53%; width: 19%; height: 34%; }
-	#room101, #room201, #room301, #room401, #room501 { top: 4%; left: 73%; width: 20%; height: 34%; }
-	#roomInterview1, #roomInterview2, #roomInterview3, #roomInterview, #roomInterview5 { top: 56%; left: 38%; width: 13%; height: 33%; }
-	#roomConsult1, #roomConsult2, #roomConsult3, #roomConsult, #roomConsult5 { top: 56%; left: 51%; width: 15%; height: 33%; }
-	#roomMeeting1, #roomMeeting2, #roomMeeting3, #roomMeeting, #roomMeeting5 { top: 39%; left: 81%; width: 12%; height: 49%; }
-</style>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/officeMap.css">
 <script>
     function switchFloor(floor) {
         for (let i = 1; i <= 5; i++) {
@@ -71,7 +30,7 @@ if (loginEmp == null) {
         <!-- ★ Groupware 글자 클릭 시 메인으로 이동하도록 수정 -->
 		<a href="main.jsp" style="text-decoration: none; color: inherit;"><h2>Groupware</h2></a>
 		<div class="nav-buttons">
-			<%-- <% if ("Y".equals(loginEmp.getManager())) { %>
+			<% if ("Y".equals(loginEmp.getManager())) { %>
 				<span style="color: #ffc107; font-weight: bold; font-size: 13px; margin-right: 5px;">[관리자]</span>
 			<% } %>
 			<span style="margin-right: 20px; font-size: 14px; color: #e9ecef;"><b><%=loginEmp.getEmpName()%></b>님</span>
@@ -80,7 +39,7 @@ if (loginEmp == null) {
 				<a href="adminEqList.do" class="nav-btn admin">재고 관리</a>
 				<a href="admin.do" class="nav-btn admin">사원 관리</a>
                 <span style="color: #495057;">|</span>
-			<% } %> --%>
+			<% } %>
             
             <!-- ★ 오피스 예약 및 휴가 신청 버튼 스타일 통일 (인라인 스타일 제거) -->
 			<a href="officeMap.jsp" class="nav-btn">오피스 예약</a>
