@@ -23,4 +23,5 @@ public class EmployeeDTO {
 	private int curLeave;
 	
 	private String retired; // 퇴사 여부
+	private int tempLevel; // 권한 임시 양도
 }
