@@ -42,3 +42,9 @@
 5. `http://localhost:8080/OfficeReserveERP/index.jsp` 로 접속하여 시스템을 시작합니다.
 
 ---
+<<<<<<< Updated upstream
+=======
+
+main test입니다
+test
+>>>>>>> Stashed changes
