@@ -38,6 +38,7 @@ public class RoomDAO {
                     dto.setCapacity(rs.getInt("CAPACITY"));
                     dto.setHasBeam(rs.getString("HAS_BEAM"));
                     dto.setDescription(rs.getString("DESCRIPTION"));
+                    dto.setEnable(rs.getString("ENABLE"));
                 }
             }
         } catch (Exception e) {
@@ -53,5 +54,30 @@ public class RoomDAO {
             }
         }
         return dto;
+    }
+    public boolean updateRoom(RoomDTO dto) {
+        boolean result = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        String sql = "UPDATE ROOM SET ROOM_NAME=?, CAPACITY=?, HAS_BEAM=?, DESCRIPTION=?, ENABLE=? WHERE ROOM_ID=?";
+
+        try {
+            conn = DBConnection.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, dto.getRoomName());
+            pstmt.setInt(2, dto.getCapacity());
+            pstmt.setString(3, dto.getHasBeam());
+            pstmt.setString(4, dto.getDescription());
+            pstmt.setString(5, dto.getEnable());
+            pstmt.setString(6, dto.getRoomId());
+
+            if (pstmt.executeUpdate() > 0) result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 자원 해제 로직 호출 (closeResource)
+        }
+        return result;
     }
 }

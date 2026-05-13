@@ -1,0 +1,212 @@
+@charset "UTF-8";
+
+body {
+	font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+	background-color: #f4f6f9;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	margin: 0;
+}
+
+.reserve-container {
+	background-color: #ffffff;
+	padding: 40px;
+	border-radius: 8px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+	width: 480px;
+	border-top: 5px solid #343a40;
+}
+
+.reserve-container h2 {
+	text-align: left;
+	color: #212529;
+	margin-top: 0;
+	margin-bottom: 20px;
+	font-size: 20px;
+	border-bottom: 2px solid #e9ecef;
+	padding-bottom: 15px;
+}
+
+.info-box {
+	background-color: #f8f9fa;
+	padding: 15px;
+	border-radius: 4px;
+	margin-bottom: 25px;
+	border: 1px solid #dee2e6;
+}
+
+.info-box h3 {
+	margin: 0 0 8px 0;
+	color: #343a40;
+	font-size: 16px;
+}
+
+.info-box p {
+	margin: 4px 0 0 0;
+	font-size: 13px;
+	color: #6c757d;
+}
+
+.form-group {
+	margin-bottom: 25px;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: 600;
+	color: #495057;
+	font-size: 13px;
+}
+
+.form-group input[type="date"], .form-group input[type="text"] {
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+	box-sizing: border-box;
+	background-color: #ffffff;
+}
+
+.form-group input:focus {
+	border-color: #495057;
+	outline: none;
+}
+
+.time-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 8px;
+	margin-top: 10px;
+}
+
+.time-btn {
+	padding: 10px 0;
+	background-color: #ffffff;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	color: #495057;
+	transition: all 0.15s;
+}
+
+.time-btn:hover:not(:disabled) {
+	border-color: #343a40;
+	color: #343a40;
+	background-color: #f8f9fa;
+}
+
+.time-btn.active {
+	background-color: #343a40;
+	color: #ffffff;
+	border-color: #343a40;
+}
+
+.time-btn:disabled {
+	background-color: #e9ecef;
+	color: #adb5bd;
+	cursor: not-allowed;
+	border-color: #e9ecef;
+}
+
+.time-btn.active:disabled {
+	background-color: #6c757d;
+	color: #ffffff;
+	border-color: #6c757d;
+	opacity: 1;
+}
+
+.timer-box {
+	display: none;
+	background-color: #fff3cd;
+	border: 1px solid #ffeeba;
+	padding: 12px;
+	border-radius: 4px;
+	text-align: center;
+	margin-bottom: 20px;
+	font-size: 13px;
+	color: #856404;
+}
+
+.timer-text {
+	font-weight: bold;
+	color: #d32f2f;
+	font-size: 16px;
+	margin-left: 5px;
+}
+
+.btn-group {
+	display: flex;
+	gap: 10px;
+	margin-top: 30px;
+}
+
+.btn-action {
+	flex: 1;
+	padding: 14px;
+	border: none;
+	border-radius: 4px;
+	font-size: 14px;
+	cursor: pointer;
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+	box-sizing: border-box;
+	transition: 0.2s;
+}
+
+.btn-hold {
+	background-color: #495057;
+	color: white;
+	width: 100%;
+	margin-top: 15px;
+}
+
+.btn-hold:hover {
+	background-color: #343a40;
+}
+
+.btn-submit {
+	background-color: #212529;
+	color: white;
+}
+
+.btn-submit:hover:not(:disabled) {
+	background-color: #000000;
+}
+
+.btn-submit:disabled {
+	background-color: #adb5bd;
+	cursor: not-allowed;
+}
+
+.btn-cancel {
+	background-color: #ffffff;
+	color: #495057;
+	border: 1px solid #ced4da;
+}
+
+.btn-cancel:hover {
+	background-color: #f8f9fa;
+}
+/* 수정 버튼 스타일 */
+.btn-modify {
+	margin-left: 10px;
+	padding: 5px 12px;
+	background-color: #ffffff;
+	color: #343a40;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+	font-size: 13px;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.btn-modify:hover {
+	background-color: #f8f9fa;
+	border-color: #343a40;
+}
