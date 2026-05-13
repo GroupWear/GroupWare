@@ -70,8 +70,8 @@ if (loginEmp == null) {
             <div class="room-btn" id="room103" onclick="location.href='reserve.do?roomId=103'"></div>
             <div class="room-btn" id="room102" onclick="location.href='reserve.do?roomId=102'"></div>
             <div class="room-btn" id="room101" onclick="location.href='reserve.do?roomId=101'"></div>
-            <div class="room-btn" id="roomInterview1" onclick="location.href='reserve.do?roomId=Interview1'"></div>
-            <div class="room-btn" id="roomConsult1" onclick="location.href='reserve.do?roomId=Consult1'"></div>
+            <!-- <div class="room-btn" id="roomInterview1" onclick="location.href='reserve.do?roomId=Interview1'"></div>
+            <div class="room-btn" id="roomConsult1" onclick="location.href='reserve.do?roomId=Consult1'"></div> -->
             <div class="room-btn" id="roomMeeting1" onclick="location.href='reserve.do?roomId=Meeting1'"></div>
         </div>
         <div id="map2" class="map-container">
@@ -79,8 +79,8 @@ if (loginEmp == null) {
             <div class="room-btn" id="room203" onclick="location.href='reserve.do?roomId=203'"></div>
             <div class="room-btn" id="room202" onclick="location.href='reserve.do?roomId=202'"></div>
             <div class="room-btn" id="room201" onclick="location.href='reserve.do?roomId=201'"></div>
-            <div class="room-btn" id="roomInterview2" onclick="location.href='reserve.do?roomId=Interview2'"></div>
-            <div class="room-btn" id="roomConsult2" onclick="location.href='reserve.do?roomId=Consult2'"></div>
+           <!--  <div class="room-btn" id="roomInterview2" onclick="location.href='reserve.do?roomId=Interview2'"></div>
+            <div class="room-btn" id="roomConsult2" onclick="location.href='reserve.do?roomId=Consult2'"></div> -->
             <div class="room-btn" id="roomMeeting2" onclick="location.href='reserve.do?roomId=Meeting2'"></div>
         </div>
         <div id="map3" class="map-container">
@@ -88,8 +88,8 @@ if (loginEmp == null) {
             <div class="room-btn" id="room303" onclick="location.href='reserve.do?roomId=303'"></div>
             <div class="room-btn" id="room302" onclick="location.href='reserve.do?roomId=302'"></div>
             <div class="room-btn" id="room301" onclick="location.href='reserve.do?roomId=301'"></div>
-            <div class="room-btn" id="roomInterview3" onclick="location.href='reserve.do?roomId=Interview3'"></div>
-            <div class="room-btn" id="roomConsult3" onclick="location.href='reserve.do?roomId=Consult3'"></div>
+            <!-- <div class="room-btn" id="roomInterview3" onclick="location.href='reserve.do?roomId=Interview3'"></div>
+            <div class="room-btn" id="roomConsult3" onclick="location.href='reserve.do?roomId=Consult3'"></div> -->
             <div class="room-btn" id="roomMeeting3" onclick="location.href='reserve.do?roomId=Meeting3'"></div>
         </div>
         <div id="map4" class="map-container">
@@ -97,8 +97,8 @@ if (loginEmp == null) {
             <div class="room-btn" id="room403" onclick="location.href='reserve.do?roomId=403'"></div>
             <div class="room-btn" id="room402" onclick="location.href='reserve.do?roomId=402'"></div>
             <div class="room-btn" id="room401" onclick="location.href='reserve.do?roomId=401'"></div>
-            <div class="room-btn" id="roomInterview" onclick="location.href='reserve.do?roomId=Interview'"></div>
-            <div class="room-btn" id="roomConsult" onclick="location.href='reserve.do?roomId=Consult'"></div>
+            <!-- <div class="room-btn" id="roomInterview" onclick="location.href='reserve.do?roomId=Interview'"></div>
+            <div class="room-btn" id="roomConsult" onclick="location.href='reserve.do?roomId=Consult'"></div> -->
             <div class="room-btn" id="roomMeeting" onclick="location.href='reserve.do?roomId=Meeting'"></div>
         </div>
         <div id="map5" class="map-container">
@@ -106,8 +106,8 @@ if (loginEmp == null) {
             <div class="room-btn" id="room503" onclick="location.href='reserve.do?roomId=503'"></div>
             <div class="room-btn" id="room502" onclick="location.href='reserve.do?roomId=502'"></div>
             <div class="room-btn" id="room501" onclick="location.href='reserve.do?roomId=501'"></div>
-            <div class="room-btn" id="roomInterview5" onclick="location.href='reserve.do?roomId=Interview5'"></div>
-            <div class="room-btn" id="roomConsult5" onclick="location.href='reserve.do?roomId=Consult5'"></div>
+            <!-- <div class="room-btn" id="roomInterview5" onclick="location.href='reserve.do?roomId=Interview5'"></div>
+            <div class="room-btn" id="roomConsult5" onclick="location.href='reserve.do?roomId=Consult5'"></div> -->
             <div class="room-btn" id="roomMeeting5" onclick="location.href='reserve.do?roomId=Meeting5'"></div>
         </div>
     </div>
