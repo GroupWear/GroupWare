@@ -1,0 +1,54 @@
+<<개발 환경 세팅>>
+주의) 이클립스 인코딩 UTF-8 확인 바랍니다.
+java 8
+tomcat 9 // https://tomcat.apache.org/download-90.cgi - core - zip
+oracle 11g // com.groupware.util-DBConnection - oracle 코드 사용 확인, 오라클 대신 h2 사용할 경우에는 오라클 설치 필요 x
+lombok jar 검색 후 설치(jar 실행 후, eclipse web developer 폴더 선택) // https://projectlombok.org/download, eclipse 폴더 내부에 있다면 추가 설치 필요 없음
+이클립스 https://www.eclipse.org/downloads/packages/release/2021-06/r for web developsers
+
+
+
+<초기 1회 세팅 순서> 
+//git bash를 사용하는 경우 위주로 작성합니다. 깃 설치 필요
+1. 워크스페이스 폴더를 생성하고, 이클립스의 워크스페이스를 그곳으로 변경합니다.
+2. 해당 폴더에서 우클릭 - git bash - git clone
+3. 해당 폴더 내부로 이동해서 git bash를 다시 열거나, 기존 창에 cd Groupware 입력하여 위치 이동
+4. git clone [리포지토리 주소]
+5. 이클립스를 실행하고 import project - general - existing projects - browse - 워크스페이스 선택
+
+6. 중앙 하단의 서버 탭을 열고 서버를 연결합니다 // 아파치 - 톰캣 9.0
+7. 프로젝트이름 우클릭 - properties - java build path - libraries - server runtime 클릭 후 오른쪽 
+	add libary - server runtime - finish
+8. 프로젝트 이름 우클릭 - maven - update project - force update of ~~ 체크 후 ok
+
+
+
+
+<h2 세팅>
+1. http://localhost:8080/Groupware/h2-console
+2. 초기 1회 데이터베이스 생성 필요
+3. cmd를 열고 type NUL > C:\Users\user\groupware_db.mv.db를 입력해 db 생성 // 개인 환경에서는 경로명 변경 필요
+4. dir C:\Users\user\groupware_db.mv.db를 입력해 db 생성 확인 또는 직접 찾아가서 확인
+5. jdbc:h2:~/groupware_db;MODE=Oracle;AUTO_SERVER=TRUE이 제대로 입력되었는지 확인하고 로그인
+
+
+
+<<refresh>>
+1. 프로젝트명 - refresh
+2. 하단 중앙 서버 - tomcat 우클릭 - clean
+3. 프로젝트명 - maven - update project
+4. 재접속
+
+<<run server>>
+프로젝트명 우클릭 - run as- run on server - finish
+
+
+<txt파일 소개>
+01. guide
+02. DB 설계 수정된 SETTING SQL
+03. DB 설계 수정된 DUMMY DATA SQL
+04. ORDER BY EMP_NO 적용된 ACCOUNT (로그인 테스트용)
+05. GIT BASH 사용하는 경우 일반적인 사용방법
+
+
+

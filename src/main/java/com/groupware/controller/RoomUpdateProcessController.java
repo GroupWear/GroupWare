@@ -33,7 +33,7 @@ public class RoomUpdateProcessController extends HttpServlet {
         out.println("<script>");
         if(isSuccess) {
             out.println("alert('회의실 정보가 수정되었습니다.');");
-            out.println("location.href='officeMap.jsp';"); // 요청하신 대로 officeMap으로 이동
+            out.println("location.href='officeMap.do';"); // 요청하신 대로 officeMap으로 이동
         } else {
             out.println("alert('수정에 실패했습니다.');");
             out.println("history.back();");

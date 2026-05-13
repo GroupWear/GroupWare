@@ -8,17 +8,16 @@
 <%@ page import="java.time.LocalDate"%>
 <%@ page import="java.time.LocalTime"%>
 <%@ page import="com.groupware.dto.LeaveHistoryDTO"%>
-<%-- ★ 이 줄이 꼭 있어야 합니다! --%>
+
 <%
 EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
 if (loginEmp == null) {
 	response.sendRedirect("index.jsp");
 	return;
 }
-
-List<RentalHistoryDTO> myList = (List<RentalHistoryDTO>) request.getAttribute("myList");
 List<ReservationDTO> reserveList = (List<ReservationDTO>) request.getAttribute("reserveList");
-List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("leaveList"); // ★ 컨트롤러에서 보내준 데이터
+/* List<RentalHistoryDTO> myList = (List<RentalHistoryDTO>) request.getAttribute("myList");
+List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("leaveList"); */ // ★ 컨트롤러에서 보내준 데이터
 %>
 <!DOCTYPE html>
 <html>
@@ -28,11 +27,11 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/myPage.css">
 
 <script>
-    function processReturn(rentalNo) {
+    /* function processReturn(rentalNo) {
         if (confirm("해당 비품을 반납 처리하시겠습니까?")) {
             location.href = 'returnProcess.do?rentalNo=' + rentalNo + '&from=mypage';
         }
-    }
+    } */
     function cancelReserve(resNo) {
         if (confirm("정말 이 예약을 취소하시겠습니까?")) {
             location.href = "cancelReserve.do?resNo=" + resNo + '&from=mypage';
@@ -125,7 +124,7 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 			</table>
 		</div>
 
-		<div class="section-title">내 비품 대여 현황</div>
+		<%-- <div class="section-title">내 비품 대여 현황</div>
 		<div class="table-wrapper">
 			<table>
 				<thead>
@@ -186,9 +185,9 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 					%>
 				</tbody>
 			</table>
-		</div>
+		</div> --%>
 		<!-- 3. 내 휴가 신청 현황 (새로 추가) -->
-		<div class="section-title">내 휴가 신청 현황</div>
+		<%-- <div class="section-title">내 휴가 신청 현황</div>
 		<div class="table-wrapper">
 			<table>
 				<thead>
@@ -230,7 +229,7 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 					%>
 				</tbody>
 			</table>
-		</div>
+		</div> --%>
 	</div>
 	</div>
 

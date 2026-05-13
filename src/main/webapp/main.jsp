@@ -30,11 +30,11 @@
     ReservationDAO resDao = new ReservationDAO();
     List<ReservationDTO> reserveList = resDao.getMyReservations(loginEmp.getEmpNo());
 
-    RentalDAO rentalDao = new RentalDAO();
+    /* RentalDAO rentalDao = new RentalDAO();
     List<RentalHistoryDTO> myList = rentalDao.getMyRentalList(loginEmp.getEmpNo());
 
     LeaveDAO leaveDao = new LeaveDAO();
-    List<LeaveHistoryDTO> myLeaveList = leaveDao.getMyLeaveList(loginEmp.getEmpNo());
+    List<LeaveHistoryDTO> myLeaveList = leaveDao.getMyLeaveList(loginEmp.getEmpNo()); */
 %>
 <!DOCTYPE html>
 <html>
@@ -44,7 +44,7 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
 
 <script>
-    function processReturn(rentalNo) { if (confirm("반납 처리하시겠습니까?")) location.href = 'returnProcess.do?rentalNo=' + rentalNo + '&from=main'; }
+    /* function processReturn(rentalNo) { if (confirm("반납 처리하시겠습니까?")) location.href = 'returnProcess.do?rentalNo=' + rentalNo + '&from=main'; } */
     function cancelReserve(resNo) { if (confirm("예약을 취소하시겠습니까?")) location.href = "cancelReserve.do?resNo=" + resNo + '&from=main'; }
 </script>
 </head>
@@ -111,7 +111,7 @@
         </div>
 
         <!-- 2. 비품 대여 현황 -->
-        <div class="section-title">내 비품 대여 현황</div>
+        <%-- <div class="section-title">내 비품 대여 현황</div>
         <div class="table-wrapper">
             <table>
                 <thead><tr><th>기안 번호</th><th>기안 제목</th><th>비품명</th><th>대여 기간</th><th>상태</th><th>비고</th></tr></thead>
@@ -130,10 +130,10 @@
                 <% } } %>
                 </tbody>
             </table>
-        </div>
+        </div> --%>
 
         <!-- 3. 휴가 신청 현황 -->
-        <div class="section-title">내 휴가 신청 현황</div>
+        <%-- <div class="section-title">내 휴가 신청 현황</div>
         <div class="table-wrapper">
             <table>
                 <thead><tr><th>문서 번호</th><th>휴가 기간</th><th>사용 일수</th><th>사유</th><th>상태</th></tr></thead>
@@ -150,7 +150,7 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div> --%>
 
 </body>
 </html>
