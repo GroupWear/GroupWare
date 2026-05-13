@@ -52,3 +52,7 @@ lombok jar 검색 후 설치(jar 실행 후, eclipse web developer 폴더 선택
 
 
 
+<<추가사항>>
+http://localhost:8080/Groupware/h2-console 으로 접속 안되면, pom.xml에 있는 groupid를 복사해서 Groupware 위치에 대체
+캐시가 남아있어 오피스 예약 페이지에서 이미지가 변하지 않는 경우 ctrl + f5
+
