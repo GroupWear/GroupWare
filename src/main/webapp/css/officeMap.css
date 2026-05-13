@@ -23,22 +23,22 @@ body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background-color: #
 	.floor-tab.active { background-color: #343a40; color: #ffffff; border-color: #343a40; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 	.map-container { position: relative; width: 1000px; height: 550px; background-color: #ffffff; border: 1px solid #ced4da; background-size: 100% 100%; background-repeat: no-repeat; border-radius: 4px; }
 
-	#map1 { background-image: url('../images/floor1_map.png'); display: block; }
-	#map2 { background-image: url('../images/floor2_map.png'); display: none; }
-	#map3 { background-image: url('../images/floor3_map.png'); display: none; }
-	#map4 { background-image: url('../images/floor4_map.png'); display: none; }
-	#map5 { background-image: url('../images/floor5_map.png'); display: none; }
+	#map1 { background-image: url('../images/floor4_map2.png'); display: block; }
+	#map2 { background-image: url('../images/floor4_map2.png'); display: none; }
+	#map3 { background-image: url('../images/floor4_map2.png'); display: none; }
+	#map4 { background-image: url('../images/floor4_map2.png'); display: none; }
+	#map5 { background-image: url('../images/floor4_map2.png'); display: none; }
 
 	.room-btn { position: absolute; background-color: rgba(52, 58, 64, 0.05); border: 1px dashed #adb5bd; cursor: pointer; transition: all 0.2s; box-sizing: border-box; border-radius: 2px; }
 	.room-btn:hover { background-color: rgba(33, 150, 243, 0.2); border: 2px solid #2196F3; }
 
-	#room104, #room204, #room304, #room404, #room504 { top: 4%; left: 4%; width: 24%; height: 34%; }
-	#room103, #room203, #room303, #room403, #room503 { top: 4%; left: 29%; width: 24%; height: 34%; }
-	#room102, #room202, #room302, #room402, #room502 { top: 4%; left: 53%; width: 19%; height: 34%; }
-	#room101, #room201, #room301, #room401, #room501 { top: 4%; left: 73%; width: 20%; height: 34%; }
-	#roomInterview1, #roomInterview2, #roomInterview3, #roomInterview, #roomInterview5 { top: 56%; left: 38%; width: 13%; height: 33%; }
-	#roomConsult1, #roomConsult2, #roomConsult3, #roomConsult, #roomConsult5 { top: 56%; left: 51%; width: 15%; height: 33%; }
-	#roomMeeting1, #roomMeeting2, #roomMeeting3, #roomMeeting, #roomMeeting5 { top: 39%; left: 81%; width: 12%; height: 49%; }
+	#room104, #room204, #room304, #room404, #room504 { top: 16%; left: 4%; width: 27%; height: 34%; }
+	#room103, #room203, #room303, #room403, #room503 { top: 16%; left: 31%; width: 24%; height: 34%; }
+	#room102, #room202, #room302, #room402, #room502 { top: 16%; left: 55%; width: 15%; height: 34%; }
+	#room101, #room201, #room301, #room401, #room501 { top: 16%; left: 70%; width: 26%; height: 34%; }
+	/* #roomInterview1, #roomInterview2, #roomInterview3, #roomInterview, #roomInterview5 { top: 56%; left: 38%; width: 13%; height: 33%; }
+	#roomConsult1, #roomConsult2, #roomConsult3, #roomConsult, #roomConsult5 { top: 56%; left: 51%; width: 15%; height: 33%; } */
+	#roomMeeting1, #roomMeeting2, #roomMeeting3, #roomMeeting, #roomMeeting5 { top: 50%; left: 81%; width: 15%; height: 25%; }
 	
 
 	
