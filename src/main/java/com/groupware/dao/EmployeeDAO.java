@@ -24,13 +24,13 @@ public class EmployeeDAO {
 
 	public EmployeeDTO loginCheck(String loginNo, String loginPw) {
 	    EmployeeDTO dto = null;
-	 // LOGIN_ID 대신 EMP_NO를 조회 조건으로 사용합니다.
+	 //  SQL문에 dept, max_leave, cur_leave 추가
 	    String sql = "SELECT EMP_NO, EMP_PW, EMP_NAME, EMP_LEVEL, MANAGER, DEPT, MAX_LEAVE, CUR_LEAVE, RETIRED "
 	               + "FROM EMPLOYEE WHERE EMP_NO = ? AND EMP_PW = ?";
 
 	    try (Connection conn = DBConnection.getConnection(); 
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+	 // trim() 사용자 오타방지 스페이스바 무시.	    	
 	        pstmt.setString(1, loginNo.trim());
 	        pstmt.setString(2, loginPw.trim());
 
@@ -43,7 +43,7 @@ public class EmployeeDAO {
 	                }
 
 	                dto = new EmployeeDTO();
-	                // DTO 필드와 DB 컬럼 매핑 (대소문자 무관하나 가독성을 위해 대문자 유지)
+
 	                dto.setEmpNo(rs.getInt("EMP_NO"));
 	                dto.setEmpPw(rs.getString("EMP_PW"));
 	                dto.setEmpName(rs.getString("EMP_NAME"));
