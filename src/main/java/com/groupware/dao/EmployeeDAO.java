@@ -1,5 +1,6 @@
 package com.groupware.dao;
 
+import java.io.Console;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +9,8 @@ import java.util.List;
 
 import com.groupware.dto.EmployeeDTO;
 import com.groupware.util.DBConnection;
+
+
 
 /**
  * 사원 관련 데이터베이스 연동을 담당하는 클래스입니다.
@@ -156,10 +159,12 @@ public class EmployeeDAO {
 
 	// 관리자 페이지용: 전체 사원 목록 조회
 	public List<EmployeeDTO> getAllEmployees() {
+
+
 		List<EmployeeDTO> list = new ArrayList<>();
 		// 관리자(Y)가 맨 위에, 그다음 직급 높은 순, 마지막으로 사번 순으로 정렬합니다.
-		String sql = "SELECT emp_no, emp_name, emp_level, manager FROM EMPLOYEE ORDER BY manager DESC, emp_level DESC, emp_no ASC";
-
+		String sql = "SELECT emp_no, emp_name, emp_level, manager, retired FROM EMPLOYEE ORDER BY manager DESC, emp_level DESC, emp_no ASC";
+		
 		try (Connection conn = DBConnection.getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				ResultSet rs = pstmt.executeQuery()) {
@@ -170,10 +175,16 @@ public class EmployeeDAO {
 				dto.setEmpName(rs.getString("emp_name"));
 				dto.setEmpLevel(rs.getInt("emp_level"));
 				dto.setManager(rs.getString("manager"));
+				dto.setRetired(rs.getString("retired"));//20260513 퇴사자 데이터 확인
 				list.add(dto);
 			}
+			/* 20260513 L.H.S 실행 쿼리문 */
+			System.out.println("EmployeeDAO.getAllEmployees 전체 사원 목록 조회"+sql);
 		} catch (Exception e) {
 			e.printStackTrace();
+			/* 20260513 L.H.S 오류 쿼리문 */
+			System.out.println("Employee.getAllEmployees 전체 사원 목록 조회 오류"+e);
+			
 		}
 		return list;
 	}
@@ -279,13 +290,15 @@ public class EmployeeDAO {
 	/**
 	 * [관리자용] 사원 퇴사 처리 (Soft Delete 방식) 실제 데이터를 삭제하지 않고, 비밀번호를 변경하여 로그인을 차단하고 모든 권한을
 	 * 회수합니다.
+	 * 20260513 LHS 퇴사자 처리 컬럼 추가
+	 * 
 	 */
 	public boolean deleteEmployee(int empNo) {
 		boolean result = false;
 
 		// DELETE 쿼리 대신 UPDATE 쿼리를 사용하여 계정을 비활성화(잠금) 처리합니다.
 		// EMP_PW를 'RETIRED'로 바꾸어 기존 비밀번호로 로그인할 수 없게 만듭니다.
-		String sql = "UPDATE EMPLOYEE SET EMP_PW = 'RETIRED', EMP_LEVEL = 0, MANAGER = 'N' WHERE EMP_NO = ?";
+		String sql = "UPDATE EMPLOYEE SET EMP_PW = 'RETIRED', EMP_LEVEL = 0, MANAGER = 'N', RETIRED = 'Y' WHERE EMP_NO = ?";
 
 		try (java.sql.Connection conn = com.groupware.util.DBConnection.getConnection();
 				java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -296,6 +309,11 @@ public class EmployeeDAO {
 			if (count > 0) {
 				result = true;
 			}
+			
+			/* 20260513 L.H.S 실행 쿼리문 */
+			System.out.println("EmployeeDAO.deleteEmployee 사원 퇴사 처리"+sql);
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
