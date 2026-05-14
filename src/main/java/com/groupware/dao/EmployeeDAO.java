@@ -18,61 +18,49 @@ import com.groupware.util.DBConnection;
 public class EmployeeDAO {
 
 	/**
-	 * 로그인 체크: 사번(empNo)과 비밀번호(empPw)가 일치하면 사원 정보를 반환합니다. (아이디 대신 사번으로 로그인하도록 수정됨)
+	 * 로그인 체크: 사번(empNo)과 비밀번호(empPw)가 일치하면 사원 정보를 반환합니다. 
+	 * (아이디 대신 사번으로 로그인하도록 수정됨)
 	 */
-//	public EmployeeDTO loginCheck(String loginNo, String loginPw) {
-//		EmployeeDTO dto = null;
-//		// LOGIN_ID 대신 EMP_NO를 조회 조건으로 사용합니다.
-//		String sql = "SELECT emp_no, emp_pw, emp_name, emp_level, manager FROM EMPLOYEE WHERE emp_no = ? AND emp_pw = ?";
-//
-//		try (Connection conn = DBConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//
-//			pstmt.setString(1, loginNo);
-//			pstmt.setString(2, loginPw);
-//
-//			try (ResultSet rs = pstmt.executeQuery()) {
-//				if (rs.next()) {
-//					dto = new EmployeeDTO();
-//					dto.setEmpNo(rs.getInt("emp_no"));
-//					dto.setEmpPw(rs.getString("emp_pw"));
-//					dto.setEmpName(rs.getString("emp_name"));
-//					dto.setEmpLevel(rs.getInt("emp_level"));
-//					dto.setManager(rs.getString("manager"));
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return dto;
-//	}
-	// 1. loginCheck 메서드 수정
+
 	public EmployeeDTO loginCheck(String loginNo, String loginPw) {
 	    EmployeeDTO dto = null;
-	    // SQL문에 dept, max_leave, cur_leave 추가
-	    String sql = "SELECT emp_no, emp_pw, emp_name, emp_level, manager, dept, max_leave, cur_leave "
-	               + "FROM EMPLOYEE WHERE emp_no = ? AND emp_pw = ?";
+	 // LOGIN_ID 대신 EMP_NO를 조회 조건으로 사용합니다.
+	    String sql = "SELECT EMP_NO, EMP_PW, EMP_NAME, EMP_LEVEL, MANAGER, DEPT, MAX_LEAVE, CUR_LEAVE, RETIRED "
+	               + "FROM EMPLOYEE WHERE EMP_NO = ? AND EMP_PW = ?";
 
 	    try (Connection conn = DBConnection.getConnection(); 
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-	        pstmt.setString(1, loginNo);
-	        pstmt.setString(2, loginPw);
+	        pstmt.setString(1, loginNo.trim());
+	        pstmt.setString(2, loginPw.trim());
 
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            if (rs.next()) {
+	                // 퇴사자 여부 확인
+	                if ("Y".equals(rs.getString("RETIRED"))) {
+	                    System.out.println("로그인 실패: 퇴사 처리된 계정입니다. (사번: " + loginNo + ")");
+	                    return null;
+	                }
+
 	                dto = new EmployeeDTO();
-	                dto.setEmpNo(rs.getInt("emp_no"));
-	                dto.setEmpPw(rs.getString("emp_pw"));
-	                dto.setEmpName(rs.getString("emp_name"));
-	                dto.setEmpLevel(rs.getInt("emp_level"));
-	                dto.setManager(rs.getString("manager"));
-	                // ★ 추가된 필드 세팅
-	                dto.setDept(rs.getString("dept"));
-	                dto.setMaxLeave(rs.getInt("max_leave"));
-	                dto.setCurLeave(rs.getInt("cur_leave"));
+	                // DTO 필드와 DB 컬럼 매핑 (대소문자 무관하나 가독성을 위해 대문자 유지)
+	                dto.setEmpNo(rs.getInt("EMP_NO"));
+	                dto.setEmpPw(rs.getString("EMP_PW"));
+	                dto.setEmpName(rs.getString("EMP_NAME"));
+	                dto.setEmpLevel(rs.getInt("EMP_LEVEL"));
+	                dto.setManager(rs.getString("MANAGER"));
+	                dto.setDept(rs.getString("DEPT"));
+	                dto.setMaxLeave(rs.getInt("MAX_LEAVE"));
+	                dto.setCurLeave(rs.getInt("CUR_LEAVE"));
+	                dto.setRetired(rs.getString("RETIRED"));
+	                
+	                System.out.println("로그인 성공: " + dto.getEmpName() + "님 환영합니다.");
+	            } else {
+	                System.out.println("로그인 실패: 일치하는 데이터가 없습니다. (입력사번: " + loginNo + ")");
 	            }
 	        }
 	    } catch (Exception e) {
+	        System.err.println("EmployeeDAO.loginCheck 오류 발생");
 	        e.printStackTrace();
 	    }
 	    return dto;
