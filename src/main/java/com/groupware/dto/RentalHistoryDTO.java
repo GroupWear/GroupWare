@@ -11,8 +11,10 @@ import lombok.AllArgsConstructor;
 public class RentalHistoryDTO {
     private int rentalNo;       
     private int empNo;          
-    private int eqNo;           
-    private String eqName;      
+    private int eqNo;       
+    private String title;  
+    private int reqCount; //사용자가 신청한 대여 수량
+         
     private Date rentalDate;    
     private Date returnDate;    
     private String status;      
@@ -24,17 +26,18 @@ public class RentalHistoryDTO {
     private String sign4;       
     private String sign5;       
     
-    private String title;            
+    
     private java.sql.Date sign1Date; 
     private java.sql.Date sign2Date; 
     private java.sql.Date sign3Date; 
     private java.sql.Date sign4Date; 
     private java.sql.Date sign5Date; 
-
-    private String empName;        
+    
+    //JOIN용
+  	private String eqName; 
+  	private String empName;        
     private int empLevel;          
     private int totalCount;        // 비품 총 수량 (EquipmentDTO와 완전 일치)
     private int remainCount;       // 비품 잔여 수량 (EquipmentDTO와 완전 일치)
     
-    private int reqCount; //사용자가 신청한 대여 수량
 }
