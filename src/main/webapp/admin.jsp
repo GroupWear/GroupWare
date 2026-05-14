@@ -46,10 +46,12 @@
 					<%-- 
 					1. 퇴사자 인원 안보이게 -- 처리 (완)
 					2. 권한 레벨 조정
-							- 직급 강등 안되게
-					3. 시스템 권한 
-					4. 인사관리
-					5. 신규 직원 INSERT 작업시 RETIRED = 'N' DEFAULT
+							- 직급 강등 안되게 -- 처리 (완)
+					3. 시스템 권한 -- 처리 (완)
+					4. 인사관리( 위임 부분 ) 
+						- 사장 제외하고 위임 변경 가능해야함
+						- 위임 취소하는 부분 만들어야함
+					5. 신규 직원 INSERT 작업시 RETIRED = 'N' DEFAULT -- 처리 (완)
 					--%>
 					
 			
@@ -82,12 +84,24 @@
 					                        <input type="hidden" name="action" value="updateLevel">
 					                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 					                        <select name="newLevel">
-					                            <option value="1" <%= emp.getEmpLevel() == 1 ? "selected" : "" %>>1단계 (일반)</option>
-					                            <option value="2" <%= emp.getEmpLevel() == 2 ? "selected" : "" %>>2단계</option>
-					                            <option value="3" <%= emp.getEmpLevel() == 3 ? "selected" : "" %>>3단계</option>
-					                            <option value="4" <%= emp.getEmpLevel() == 4 ? "selected" : "" %>>4단계 (부서장)</option>
-					                            <option value="5" <%= emp.getEmpLevel() == 5 ? "selected" : "" %>>5단계 (임원)</option>
-					                        </select>
+											    <% 
+											        int currentLevel = emp.getEmpLevel(); 
+											        // 1단계부터 5단계까지 반복문을 돌리는 코드
+											        for(int i = 1; i <= 5; i++) {
+											            // 현재 직급보다 크거나 같을 때만 옵션을 생성
+											            if (i >= currentLevel) {
+											    %>
+											                <option value="<%= i %>" <%= currentLevel == i ? "selected" : "" %>>
+											                    <%= i %>단계 <%= (i==1?"(일반)": i==4?"(부서장)": i==5?"(임원)":"") %>
+											                </option>
+											    <% 
+											            }
+											        } 
+											    %>
+											</select>
+					                        <% 
+					                        	
+					                        %>
 					                        <button type="submit" class="btn-action btn-update">수정</button>
 					                    </form>
 					                <% } %>
