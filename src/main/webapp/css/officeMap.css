@@ -104,14 +104,14 @@ body {
 #map5 { background-image: url('../images/floor5_map2.png'); display: none; }
 .room-btn { position: absolute; border: 1px dashed #cbd5e1; cursor: pointer; }
 .room-btn:hover { border: 2px solid #6366f1; background: rgba(99, 102, 241, 0.1); }
-#room404 { top: 5%; left: 0%; width: 21%; height: 30%; }
-#room403 { top: 0%; left: 21%; width: 21%; height: 35%; }
-#room402 { top: 0%; left: 60%; width: 20%; height: 35%; }
-#room401 { top: 0%; left: 80%; width: 20%; height: 35%; }
-#roomMeeting { top: 35%; left: 85%; width: 15%; height: 39%; }
-#roomInterview { top: 56%; left: 45%; width: 12%; height: 16%; }
-#roomConsult { top: 56%; left: 57%; width: 11%; height: 16%; }
-#room503 { top: 14%; left: 0%; width: 30%; height: 35%; }
-#room502 { top: 14%; left: 30%; width: 26%; height: 35%; }
-#room501 { top: 14%; left: 72%; width: 28%; height: 35%; }
-#roomMeeting5 { top: 50%; left: 84%; width: 16%; height: 29%; }
+#room404 { top: 5%; left: 14%; width: 15%; height: 30%; }
+#room403 { top: 0%; left: 29%; width: 15%; height: 35%; }
+#room402 { top: 0%; left: 57%; width: 14%; height: 35%; }
+#room401 { top: 0%; left: 71%; width: 15%; height: 35%; }
+#roomMeeting { top: 35%; left: 75%; width: 11%; height: 38%; }
+#roomInterview { top: 56%; left: 46%; width: 8%; height: 16%; }
+#roomConsult { top: 56%; left: 55%; width: 8%; height: 16%; }
+#room503 { top: 14%; left: 12%; width: 22%; height: 35%; }
+#room502 { top: 14%; left: 34%; width: 21%; height: 35%; }
+#room501 { top: 14%; left: 66%; width: 22%; height: 35%; }
+#roomMeeting5 { top: 50%; left: 76%; width: 12%; height: 29%; }
