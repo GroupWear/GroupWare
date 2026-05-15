@@ -151,7 +151,10 @@ public class EmployeeDAO {
 
 		List<EmployeeDTO> list = new ArrayList<>();
 		// 관리자(Y)가 맨 위에, 그다음 직급 높은 순, 마지막으로 사번 순으로 정렬합니다.
-		String sql = "SELECT emp_no, emp_name, emp_level, manager, retired FROM EMPLOYEE ORDER BY manager DESC, emp_level DESC, emp_no ASC";
+		String sql = "SELECT emp_no, emp_name, emp_level, manager, retired, "
+		           + "(SELECT COUNT(*) FROM EMPLOYEE WHERE 1=1 AND MANAGER = 'Y') AS count_manager " // count 뒤에 공백 추가
+		           + "FROM EMPLOYEE ORDER BY manager DESC, emp_level DESC, emp_no ASC";
+
 		
 		try (Connection conn = DBConnection.getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -164,6 +167,7 @@ public class EmployeeDAO {
 				dto.setEmpLevel(rs.getInt("emp_level"));
 				dto.setManager(rs.getString("manager"));
 				dto.setRetired(rs.getString("retired"));//20260513 퇴사자 데이터 확인
+				dto.setCount_manager(rs.getInt("count_manager"));//20260514 위임 카운트 데이터
 				list.add(dto);
 			}
 			/* 20260513 L.H.S 실행 쿼리문 */
@@ -189,6 +193,8 @@ public class EmployeeDAO {
 
 			if (pstmt.executeUpdate() > 0)
 				result = true;
+			
+			System.out.println("updateEmployeeLevel사원 직급 변경"+sql);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -200,7 +206,7 @@ public class EmployeeDAO {
 		boolean result = false;
 		// 두 개의 쿼리를 실행해야 하므로 수동 커밋 모드를 사용할 수도 있지만,
 		// 간단하게 두 번의 UPDATE 문을 순차적으로 실행합니다.
-		String sql1 = "UPDATE EMPLOYEE SET manager = 'N' WHERE emp_no = ?";
+		String sql1 = "UPDATE EMPLOYEE SET manager = 'N' WHERE emp_no = ? AND EMP_LEVEL <> 5";
 		String sql2 = "UPDATE EMPLOYEE SET manager = 'Y' WHERE emp_no = ?";
 
 		try (Connection conn = DBConnection.getConnection();
@@ -349,11 +355,12 @@ public class EmployeeDAO {
 
 	/**
 	 * [관리자용] 신규 사원 사전 등록 비밀번호(EMP_PW)는 비워두고 사번, 이름, 직급, 관리자 여부만 초기 세팅합니다.
+	 * 20260514 LHS : RETIRED 컬럼 추가 N
 	 */
 	public boolean insertEmployee(EmployeeDTO dto) {
 		boolean result = false;
 		// 비밀번호는 제외하고 INSERT 진행
-		String sql = "INSERT INTO EMPLOYEE (EMP_NO, EMP_NAME, EMP_LEVEL, MANAGER) VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO EMPLOYEE (EMP_NO, EMP_NAME, EMP_LEVEL, MANAGER,RETIRED) VALUES (?, ?, ?, ?,'N')";
 
 		try (java.sql.Connection conn = com.groupware.util.DBConnection.getConnection();
 				java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -367,9 +374,38 @@ public class EmployeeDAO {
 			if (count > 0) {
 				result = true;
 			}
+			System.out.println("(insertEmployee)신규 사원 사전 등록 비밀번호(EMP_PW)는 비워두고 사번, 이름, 직급, 관리자 여부 세팅 : "+sql);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	/*
+	 * 20260515 LHS 위임 취소
+	 * */
+	public boolean updateManagerStatus(int targetEmpNo, String status) {
+	    String sql = "UPDATE EMPLOYEE SET MANAGER = ? WHERE EMP_NO = ?";
+	
+	    boolean result = false;
+
+	  
+	    try (java.sql.Connection conn = com.groupware.util.DBConnection.getConnection();
+	         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setString(1, status);
+	        pstmt.setInt(2, targetEmpNo);
+
+	        int count = pstmt.executeUpdate();
+	        if (count > 0) {
+	            result = true;
+	        }
+	        
+	        System.out.println("(updateManagerStatus) 관리자 상태 변경 완료 [대상:" + targetEmpNo + ", 상태:" + status + "]");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return result;
 	}
 }

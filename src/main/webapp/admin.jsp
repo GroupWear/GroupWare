@@ -38,7 +38,7 @@
 						<th>성명</th>
 						<th>권한 레벨 조정</th>
 						<th>시스템 권한</th>
-						<th>인사 관리 (위임/퇴사)</th>
+						<th>인사 관리 (위임/퇴사/위임변경/위임취소)</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -46,10 +46,13 @@
 					<%-- 
 					1. 퇴사자 인원 안보이게 -- 처리 (완)
 					2. 권한 레벨 조정
-							- 직급 강등 안되게
-					3. 시스템 권한 
-					4. 인사관리
-					5. 신규 직원 INSERT 작업시 RETIRED = 'N' DEFAULT
+							- 직급 강등 안되게 -- 처리 (완)
+					3. 시스템 권한 -- 처리 (완)
+					4. 인사관리( 위임 부분 ) 
+						- 사장 제외하고 위임 변경 가능해야함
+						- 위임 취소하는 부분 만들어야함
+						- 위임은 
+					5. 신규 직원 INSERT 작업시 RETIRED = 'N' DEFAULT -- 처리 (완)
 					--%>
 					
 			
@@ -82,12 +85,24 @@
 					                        <input type="hidden" name="action" value="updateLevel">
 					                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 					                        <select name="newLevel">
-					                            <option value="1" <%= emp.getEmpLevel() == 1 ? "selected" : "" %>>1단계 (일반)</option>
-					                            <option value="2" <%= emp.getEmpLevel() == 2 ? "selected" : "" %>>2단계</option>
-					                            <option value="3" <%= emp.getEmpLevel() == 3 ? "selected" : "" %>>3단계</option>
-					                            <option value="4" <%= emp.getEmpLevel() == 4 ? "selected" : "" %>>4단계 (부서장)</option>
-					                            <option value="5" <%= emp.getEmpLevel() == 5 ? "selected" : "" %>>5단계 (임원)</option>
-					                        </select>
+											    <% 
+											        int currentLevel = emp.getEmpLevel(); 
+											        // 1단계부터 5단계까지 반복문을 돌리는 코드
+											        for(int i = 1; i <= 5; i++) {
+											            // 현재 직급보다 크거나 같을 때만 옵션을 생성
+											            if (i >= currentLevel) {
+											    %>
+											                <option value="<%= i %>" <%= currentLevel == i ? "selected" : "" %>>
+											                    <%= i %>단계 <%= (i==1?"(일반)": i==4?"(부서장)": i==5?"(임원)":"") %>
+											                </option>
+											    <% 
+											            }
+											        } 
+											    %>
+											</select>
+					                        <% 
+					                        	
+					                        %>
 					                        <button type="submit" class="btn-action btn-update">수정</button>
 					                    </form>
 					                <% } %>
@@ -103,8 +118,64 @@
 					                    <span class="badge-normal">일반 사원</span>
 					                <% } %>
 					            </td>
-					
-					            <!-- 5. 인사 관리 (위임/퇴사) -->
+								<!-- 5. 인사 관리 (위임/퇴사/위임변경/위임취소) -->
+								<td>
+								    <% 
+								        if (isRetired) { 
+								    %>
+								        <span style="color: #adb5bd; font-size: 13px;">-</span>
+								    <% 
+								        } else if (loginEmp != null && emp.getEmpNo() == loginEmp.getEmpNo()) { 
+								    %>
+								        <span style="color: #007bff; font-size: 12px; font-weight: bold;">본인(마스터)</span>
+								    <% 
+								        } else { 
+								            // 사장(5단계) 여부 확인
+								            boolean isCEO = (emp.getEmpLevel() == 5);
+								            // 현재 최고 관리자 권한 여부 확인 (Manager 컬럼이 'Y'인지)
+								            boolean isManager = "Y".equals(emp.getManager());
+								    %>
+								        <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
+								            
+								            <% if (!isCEO) { // 1. 사장은 모든 권한 수정 대상에서 제외 %>
+								                
+								                <% if (!isManager) { // 2. 최고관리자가 아닌 일반 인원들 %>
+								                    <!-- 위임 버튼 -->
+								                    <form action="adminAction.do" method="post" style="display: inline;">
+								                        <input type="hidden" name="action" value="transferManager">
+								                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
+								                        <button type="submit" class="btn-action btn-transfer" 
+								                                onclick="return confirm('이 사원에게 관리자 권한을 부여하시겠습니까?');">위임</button>
+								                    </form>
+								
+								                <% } else { // 3. 이미 최고관리자인 인원 (사장은 아님) %>
+								                    <!-- 위임 취소 버튼 -->
+								                    <form action="adminAction.do" method="post" style="display: inline;">
+								                        <input type="hidden" name="action" value="cancelManager">
+								                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
+								                        <button type="submit" class="btn-action" 
+								                                style="background-color: #6c757d; color: white;" 
+								                                onclick="return confirm('이 사원의 관리자 권한을 박탈(취소)하시겠습니까?');">위임취소</button>
+								                    </form>
+								                <% } %>
+								
+								                <!-- 퇴사 처리 (사장 제외 공통) -->
+								                <form action="adminAction.do" method="post" style="display: inline;">
+								                    <input type="hidden" name="action" value="deleteEmp">
+								                    <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
+								                    <button type="submit" class="btn-action btn-delete" 
+								                            onclick="return confirm('해당 사원을 퇴사 처리하시겠습니까?');">퇴사</button>
+								                </form>
+								
+								            <% } else { %>
+								                <!-- 사장(Level 5)인 경우 표시 -->
+								                <span style="color: #dc3545; font-size: 12px; font-weight: bold;">수정 불가(대표)</span>
+								            <% } %>
+								            
+								        </div>
+								    <% } %>
+								</td>					
+					            <%-- <!-- 5. 인사 관리 (위임/퇴사) -->
 					            <td>
 					                <% if (isRetired) { %>
 					                    <span style="color: #adb5bd; font-size: 13px;">-</span>
@@ -125,7 +196,7 @@
 					                <% } else { %>
 					                    <span style="color: #007bff; font-size: 12px; font-weight: bold;">본인(마스터)</span>
 					                <% } %>
-					            </td>
+					            </td> --%>
 					        </tr>
 					    <% 
 					            } // for end
@@ -186,3 +257,5 @@
 	</div>
 </body>
 </html>
+
+
