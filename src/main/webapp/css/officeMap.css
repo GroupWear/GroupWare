@@ -1,54 +1,117 @@
 @charset "UTF-8";
-body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background-color: #f4f6f9; margin: 0; padding: 30px; }
-	
-	/* 상단 메뉴바 스타일 */
-	.header { display: flex; justify-content: space-between; align-items: center; background-color: #212529; color: #ffffff; padding: 15px 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
-	.header h2 { margin: 0; font-size: 20px; letter-spacing: 1px; cursor: pointer; } /* ★ 마우스 포인터 추가 */
-	.nav-buttons { display: flex; align-items: center; gap: 10px; }
-	.nav-btn { padding: 8px 16px; background-color: #343a40; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 13px; border: 1px solid #495057; transition: all 0.2s; }
-	.nav-btn:hover { background-color: #495057; border-color: #6c757d; }
-	.nav-btn.admin { border-color: #dc3545; color: #ffc107; }
-	.nav-btn.admin:hover { background-color: #dc3545; color: #ffffff; }
-	.nav-btn.logout { background-color: transparent; border: none; color: #adb5bd; text-decoration: underline; }
-	.nav-btn.logout:hover { color: #ffffff; }
 
-	/* 도면 영역 스타일 */
-	.map-wrapper { background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e9ecef; display: flex; flex-direction: column; align-items: center; max-width: 1060px; margin: 0 auto; }
-	.reservation-header { width: 1000px; text-align: left; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #212529; }
-	.reservation-header h3 { margin: 0 0 5px 0; font-size: 24px; color: #212529; font-weight: 800; letter-spacing: -0.5px; }
-	.reservation-header p { margin: 0; font-size: 14px; color: #6c757d; }
-	.floor-tabs { display: flex; gap: 10px; margin-bottom: 20px; width: 1000px; }
-	.floor-tab { padding: 10px 30px; background-color: #ffffff; border: 1px solid #ced4da; border-radius: 20px; font-size: 14px; font-weight: bold; color: #495057; cursor: pointer; transition: 0.2s; }
-	.floor-tab:hover { background-color: #f8f9fa; border-color: #adb5bd; }
-	.floor-tab.active { background-color: #343a40; color: #ffffff; border-color: #343a40; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-	.map-container { position: relative; width: 1000px; height: 550px; background-color: #ffffff; border: 1px solid #ced4da; background-size: 100% 100%; background-repeat: no-repeat; border-radius: 4px; }
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f4f7fa;
+    margin: 0; padding: 0;
+    overflow-x: hidden; /* 가로 스크롤 방지 */
+}
 
-	/* #map1 { background-image: url('../images/floor4_map2.png'); display: block; }
-	#map2 { background-image: url('../images/floor4_map2.png'); display: none; }
-	#map3 { background-image: url('../images/floor4_map2.png'); display: none; } */
-	#map4 { background-image: url('../images/floor4_map2.png'); display: block; }
-	#map5 { background-image: url('../images/floor5_map2.png'); display: none; }
+/* 헤더 높이 및 정렬 고정 */
+.header {
+    background-color: #0f172a;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    position: sticky; top: 0; z-index: 1000;
+}
 
-	.room-btn { position: absolute; background-color: rgba(52, 58, 64, 0.05); border: 1px dashed #adb5bd; cursor: pointer; transition: all 0.2s; box-sizing: border-box; border-radius: 2px; }
-	.room-btn:hover { background-color: rgba(33, 150, 243, 0.2); border: 2px solid #2196F3; }
-	
-	#room404 { top: 5%; left: 0%; width: 21%; height: 30%; }
-	#room403 { top: 0%; left: 21%; width: 21%; height: 35%; }
-	#room402 { top: 0%; left: 60%; width: 20%; height: 35%; }
-	#room401 { top: 0%; left: 80%; width: 20%; height: 35%; }
-	#roomMeeting { top: 35%; left: 85%; width: 15%; height: 39%; }
-	#roomInterview { top: 56%; left: 45%; width: 12%; height: 16%; }
-	#roomConsult { top: 56%; left: 57%; width: 11%; height: 16%; }
+.header-inner {
+    width: 1000px; /* 메인 페이지와 동일하게 고정 */
+    min-width: 1000px; /* 줄어들어도 깨지지 않게 보장 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
 
-	/* #room104, #room204, #room304, #room404, */ #room503 { top: 14%; left: 0%; width: 30%; height: 35%; }
-	/* #room103, #room203, #room303, #room403, */ #room502 { top: 14%; left: 30%; width: 26%; height: 35%; }
-	/* #room102, #room202, #room302, #room402, */ /* #room502 { top: 14%; left: 56%; width: 15%; height: 35%; } */
-	/* #room101, #room201, #room301, #room401, */ #room501 { top: 14%; left: 72%; width: 28%; height: 35%; }
-	
-	
-	/* #roomInterview1, #roomInterview2, #roomInterview3, #roomInterview, #roomInterview5 { top: 56%; left: 38%; width: 13%; height: 33%; }
-	#roomConsult1, #roomConsult2, #roomConsult3, #roomConsult, #roomConsult5 { top: 56%; left: 51%; width: 15%; height: 33%; } */
-	/* #roomMeeting1, #roomMeeting2, #roomMeeting3, #roomMeeting, */ #roomMeeting5 { top: 50%; left: 84%; width: 16%; height: 29%; }
-	
+/* 로고 영역 고정 */
+.logo-area {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+.logo-group { color: #ffffff; font-weight: 800; font-size: 24px; }
+.logo-ware { color: #e2b857; font-weight: 300; font-size: 24px; margin-left: 2px; }
 
-	
+/* 네비게이션 버튼들 겹침 방지 */
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.user-profile-info {
+    color: #cbd5e1;
+    font-size: 13px;
+    margin-right: 15px;
+    white-space: nowrap; /* 글자 겹침 방지 핵심 */
+}
+
+.admin-tag {
+    background: #e2b857;
+    color: #0f172a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 11px;
+    margin-right: 5px;
+}
+
+.nav-btn {
+    padding: 8px 12px;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap; /* 줄바꿈 방지 */
+    transition: 0.2s;
+}
+
+.admin-special {
+    color: #e2b857 !important;
+    border: 1px solid rgba(226, 184, 87, 0.5);
+}
+
+.nav-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.active-page { background: #1e293b; color: #fff; }
+.logout { background: #be123c; color: #fff !important; margin-left: 10px; }
+
+/* 본문 레이아웃 위치 메인과 일치 */
+.dashboard-container { 
+    width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.map-wrapper {
+    background-color: #ffffff; padding: 30px; border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+    display: flex; flex-direction: column; align-items: center;
+}
+
+/* 이하 도면 관련 스타일 기존 데이터 유지 */
+.reservation-header { width: 100%; text-align: left; margin-bottom: 25px; border-bottom: 2px solid #0f172a; padding-bottom: 15px; }
+.reservation-header h3 { margin: 0; font-size: 24px; color: #0f172a; }
+.floor-tabs { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; }
+.floor-tab { padding: 10px 30px; border-radius: 8px; cursor: pointer; border: 1px solid #e2e8f0; background: #fff; font-weight: bold; }
+.floor-tab.active { background: #0f172a; color: #e2b857; }
+.map-container { position: relative; width: 100%; height: 500px; border: 1px solid #e2e8f0; background-size: contain; background-repeat: no-repeat; background-position: center; }
+#map4 { background-image: url('../images/floor4_map2.png'); display: block; }
+#map5 { background-image: url('../images/floor5_map2.png'); display: none; }
+.room-btn { position: absolute; border: 1px dashed #cbd5e1; cursor: pointer; }
+.room-btn:hover { border: 2px solid #6366f1; background: rgba(99, 102, 241, 0.1); }
+#room404 { top: 5%; left: 0%; width: 21%; height: 30%; }
+#room403 { top: 0%; left: 21%; width: 21%; height: 35%; }
+#room402 { top: 0%; left: 60%; width: 20%; height: 35%; }
+#room401 { top: 0%; left: 80%; width: 20%; height: 35%; }
+#roomMeeting { top: 35%; left: 85%; width: 15%; height: 39%; }
+#roomInterview { top: 56%; left: 45%; width: 12%; height: 16%; }
+#roomConsult { top: 56%; left: 57%; width: 11%; height: 16%; }
+#room503 { top: 14%; left: 0%; width: 30%; height: 35%; }
+#room502 { top: 14%; left: 30%; width: 26%; height: 35%; }
+#room501 { top: 14%; left: 72%; width: 28%; height: 35%; }
+#roomMeeting5 { top: 50%; left: 84%; width: 16%; height: 29%; }
