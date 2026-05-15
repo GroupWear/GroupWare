@@ -23,11 +23,11 @@
             <form action="login.do" method="post">
                 <div class="input-wrap">
                     <%-- 컨트롤러의 getParameter("empNo")와 name이 일치해야 합니다. --%>
-                    <input type="text" name="empNo" placeholder="사원번호" required>
+                    <input type="text" name="empNo" placeholder="사원번호를 입력하세요." required>
                 </div>
                 <div class="input-wrap">
                     <%-- 컨트롤러의 getParameter("password")와 name이 일치해야 합니다. --%>
-                    <input type="password" name="password" placeholder="비밀번호" required>
+                    <input type="password" name="password" placeholder="비밀번호를 입력하세요." required>
                 </div>
 
                 <%-- 로그인 실패 시 컨트롤러에서 보낸 에러 메시지를 출력합니다. --%>
