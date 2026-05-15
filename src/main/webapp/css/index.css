@@ -1,134 +1,91 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+@charset "UTF-8";
+
+
+/* [전체 배경] 로그인 화면 배경색 이미지(#f1f3f5)와 동일하게 설정 */
+body {
+    margin: 0; padding: 0;
+    background-color: #f1f3f5;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    display: flex; justify-content: center; align-items: center;
+    height: 100vh;
 }
 
-body, html {
-    width: 100%;
-    height: 100%;
-    background-color: #f4f4f7;
-    font-family: 'Noto Sans KR', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
+/* [메인 컨테이너] 카드를 중앙에 배치하기 위한 영역 */
 .main-container {
     width: 100%;
-    padding: 20px;
     display: flex;
     justify-content: center;
 }
 
+/* [로그인 카드] 상단 바 포인트 및 완전한 사각형(0px) 디자인 */
 .login-card {
-    width: 100%;
-    max-width: 420px;
-    background-color: #ffffff;
-    padding: 70px 50px;
-    border-radius: 4px; 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    text-align: center;
-}
-
-.brand-logo {
-    font-family: 'Inter', sans-serif;
-    font-size: 44px;
-    letter-spacing: -2px;
-    margin-bottom: 50px; 
-}
-
-.brand-logo .bold {
-    font-weight: 800;
-    color: #1a1a1a;
-}
-
-.brand-logo .thin {
-    font-weight: 300;
-    color: #C5A059; 
-}
-
-.subtitle {
-    font-size: 14px;
-    color: #94a3b8;
-    margin-top: -40px;
-    margin-bottom: 40px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-.input-wrap {
-    margin-bottom: 15px;
-}
-
-.input-wrap input {
-    width: 100%;
-    height: 56px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    padding: 0 20px;
-    font-size: 15px;
-    outline: none;
-    transition: all 0.2s ease;
-}
-
-.input-wrap input:focus {
-    border-color: #1a1a1a;
     background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.02);
+    width: 100%;
+    max-width: 400px;
+    padding: 60px 40px;
+    border-radius: 0 !important; /* !important를 붙여서 강제로 사각형 만들기 */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+    position: relative; /* 위치 기준점 */
+    
+    /* 핵심: 상단 검은색 바 */
+    border-top: 6px solid #0f172a !important; 
 }
 
+/* [로고 영역] Group(두껍게) + Ware(얇게) 브랜드 아이덴티티 */
+.brand-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.brand-logo { font-size: 36px; margin-bottom: 8px; }
+.brand-logo .bold { color: #0f172a; font-weight: 800; }
+.brand-logo .thin { color: #e2b857; font-weight: 300; }
 
+/* [입력창] 사각형 디자인 및 포커스 효과 */
+.input-wrap { margin-bottom: 15px; }
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 0; /* 입력창 사각형 통일 */
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: 0.2s;
+}
+input:focus {
+    outline: none;
+    border-color: #0f172a; /* 포커스 시 테두리 강조 */
+}
+
+/* [로그인 버튼] 다크 네이비 배경의 묵직한 버튼 */
 .login-submit {
     width: 100%;
-    height: 56px;
-    background: #1a1a1a;
+    padding: 16px;
+    background: #0f172a;
     color: #ffffff;
     border: none;
-    border-radius: 4px;
+    border-radius: 0; /* 버튼 사각형 통일 */
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
     margin-top: 10px;
-    transition: background 0.3s ease;
+    transition: 0.2s;
 }
+.login-submit:hover { background: #1e293b; }
 
-.login-submit:hover {
-    background: #000000;
-}
-
+/* [하단 링크] 계정 등록 및 비밀번호 찾기 */
 .link-footer {
-    margin-top: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
+    margin-top: 25px;
+    text-align: center;
+    font-size: 13px;
 }
-
 .link-footer a {
     color: #64748b;
     text-decoration: none;
-    font-size: 13.5px;
-    transition: color 0.2s;
+    font-weight: 600;
 }
-
-.link-footer a:hover {
-    color: #1a1a1a;
+.link-footer .sep {
+    color: #cbd5e1;
+    margin: 0 10px;
 }
-
-.sep {
-    color: #e2e8f0;
-}
-
-/* 반응형 최적화*/
-@media (max-width: 480px) {
-    .login-card {
-        padding: 50px 30px;
-        box-shadow: none;
-        background: transparent;
-    }
-    .brand-logo {
-        font-size: 38px;
-    }
-}
+.link-footer a:hover { color: #e2b857; }
