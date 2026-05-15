@@ -56,7 +56,7 @@ body {
     width: 100%;
     min-width: 900px;
     margin: 0;                /* 마진을 0으로 조정하여 상단에 밀착 */
-    padding: 15px 0;          /* 고정되었을 때 답답하지 않게 내부 여백 부여 */
+    padding: 15px 15px;          /* 고정되었을 때 답답하지 않게 내부 여백 부여 */
     box-sizing: border-box;
     
     /* 📌 상단 고정 핵심 속성 */
