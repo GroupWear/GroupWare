@@ -1,0 +1,139 @@
+@charset "UTF-8";
+body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background-color: #f4f6f9; padding: 40px; margin: 0; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid black; padding-bottom: 15px; }
+    .header h2 { margin: 0; color: black; font-size: 25px; }
+    .btn-back { padding: 10px 18px; background-color: black; color: white; text-decoration: none; border: 1px solid #ced4da; border-radius: 4px; font-weight: bold; font-size: 13px; transition: 0.2s; }
+    .btn-back:hover { background-color: #0d6efd; }
+    
+    /* 테이블 스타일 구조 정의 */
+    .table-container { background-color: white; border-radius: 6px; border: 1px solid #dee2e6; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+    .eq-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .eq-table th { background-color: #f8f9fa; color: black; font-weight: 700; padding: 16px 20px; border-bottom: 2px solid #dee2e6; font-size: 16px; }
+    .eq-table td { padding: 16px 20px; border-bottom: 1px solid #dee2e6; color: black; font-size: 16px; vertical-align: middle; }
+    .eq-table tbody tr:hover { background-color: #fcfcfc; }
+    
+    /* 테이블 내부 강조 서식 */
+    .eq-name { font-weight: bold; color: black; }
+    .eq-count b { color: #0d6efd; font-size: 16px; } /* 잔여 수량 파란색 강조 */
+    .text-danger b { color: #dc3545 !important; } /* 품절 수량 빨간색 강조 */
+    
+    /* 버튼 스타일 조정 (테이블 행 높이에 맞춤) */
+    .btn-rent { padding: 8px 16px; background-color: black; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; text-align: center; }
+    .btn-rent:hover { background-color: #0d6efd; }
+    .btn-disabled { padding: 8px 16px; background-color: #e9ecef; color: #adb5bd; border: 1px solid #dee2e6; border-radius: 4px; font-weight: bold; font-size: 13px; cursor: not-allowed; text-align: center; }
+    
+    /* 전체 화면 또는 감싸는 컨테이너 영역 */
+body {
+    /* 창 크기가 1000px보다 작아지면 하단에 가로 스크롤바가 생기며 내부 요소가 고정됨 */
+    min-width: 1000px; 
+    overflow-x: auto;  /* 가로 스크롤바 자동 활성화 */
+}
+
+.table-container {
+    width: 100%;
+    min-width: 900px; /* 테이블이 깨지지 않는 최소 가로 폭 지정 */
+}
+
+/* 대여 신청 / 재고 소진 버튼이 있는 마지막 td */
+.eq-table td:last-child {
+    width: 120px !important; /* 버튼이 들어갈 절대적인 가로 공간 확보 */
+    min-width: 120px;
+}
+
+/* 버튼 자체의 크기 고정 */
+.btn-rent, .btn-disabled {
+    width: 100px;
+    white-space: nowrap; /* 창이 줄어도 버튼 안의 텍스트가 줄바꿈되지 않음 */
+}
+
+/* 비품 명칭 등 텍스트가 길어질 때 줄바꿈 방지 (필요시 사용) */
+.eq-name {
+    white-space: nowrap;
+}
+
+/* 검색 바 전체를 감싸는 컨테이너 수정 */
+.search-bar-container {
+    width: 100%;
+    min-width: 900px;
+    margin: 0;                /* 마진을 0으로 조정하여 상단에 밀착 */
+    padding: 15px 0;          /* 고정되었을 때 답답하지 않게 내부 여백 부여 */
+    box-sizing: border-box;
+    
+    /* 📌 상단 고정 핵심 속성 */
+    position: sticky;
+    top: 0;                   /* 브라우저 최상단에 고정 */
+    z-index: 100;             /* 테이블 글자나 버튼보다 위에 위치하도록 설정 */
+    background-color: #ffffff;/* 스크롤 시 뒷배경 글자가 비치지 않도록 흰색 지정 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* 고정되었을 때 구분용 그림자 */
+}
+
+/* (선택 사항) 헤더 밑에 바로 붙도록 마진 조정 */
+.table-container {
+    width: 100%;
+    min-width: 900px;
+    margin-top: 15px;         /* 검색창과의 간격 유지 */
+}
+
+/* 폼 배치 설정 */
+.search-form {
+    display: flex;
+    gap: 10px;           /* 요소 사이의 간격 고정 */
+    align-items: center;
+}
+
+/* 검색 타입 선택창 고정 */
+.search-select {
+    width: 130px;        /* 가로 폭 고정 */
+    min-width: 130px;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+}
+
+/* 검색어 입력창 */
+.search-input {
+    flex-grow: 1;        /* 남은 공간을 꽉 채우도록 설정 */
+    min-width: 300px;    /* 창을 줄여도 최소 300px은 유지하여 찌그러짐 방지 */
+    height: 40px;
+    padding: 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+/* 검색 버튼 고정 */
+.btn-search {
+    width: 90px;         /* 버튼 가로 폭 절대 고정 */
+    min-width: 90px;     /* 창 크기가 줄어도 절대 안 움직임 */
+    height: 40px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap; /* 텍스트 줄바꿈 절대 방지 */
+    transition: background-color 0.2s;
+}
+
+.btn-search:hover {
+    background-color: #0d6efd; /* 마우스 올렸을 때 효과 */
+}
+
+/* 검색된 글자 마킹 스타일 */
+.mark-highlight {
+    background-color: #ffeb3b; /* 밝은 노란색 */
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(255, 235, 59, 0.8);
+    animation: pulse 1s infinite alternate; /* 깜빡이는 효과 */
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.03); }
+}
