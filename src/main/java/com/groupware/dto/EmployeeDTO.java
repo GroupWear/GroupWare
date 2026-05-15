@@ -24,4 +24,7 @@ public class EmployeeDTO {
 	
 	private String retired; // 퇴사 여부
 	private int tempLevel; // 권한 임시 양도
+	
+	private int count_manager; //총 직원 관리자 count 20260513
+	
 }

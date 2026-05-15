@@ -37,10 +37,14 @@ public class AdminController extends HttpServlet {
             return;
         }
 
+
         // DAO를 통해 전체 사원 목록을 가져옵니다.
         EmployeeDAO dao = new EmployeeDAO();
         List<EmployeeDTO> empList = dao.getAllEmployees();
-
+        
+        
+        
+        
         // request 영역에 데이터를 담고 JSP로 포워딩합니다.
         request.setAttribute("empList", empList);
         request.getRequestDispatcher("admin.jsp").forward(request, response);
