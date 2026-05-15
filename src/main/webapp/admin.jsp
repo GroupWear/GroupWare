@@ -4,11 +4,11 @@
 <%@ page import="com.groupware.dto.EmployeeDTO"%>
 <%@ page import="com.groupware.dao.EmployeeDAO"%>
 <%
-	EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
+	 EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
 	if (loginEmp == null) {
 		response.sendRedirect("index.jsp");
 		return;
-	}
+	} 
 	
 	List<EmployeeDTO> empList = (List<EmployeeDTO>) request.getAttribute("reserveList");
 	
