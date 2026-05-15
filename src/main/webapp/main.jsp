@@ -12,6 +12,7 @@
 <%@ page import="java.time.LocalDate"%>
 <%@ page import="java.time.LocalTime"%>
 <%
+	// 로그인 체크 세션없으면 로그인페이지로 이동
     EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
     if (loginEmp == null) {
         response.sendRedirect("index.jsp");
