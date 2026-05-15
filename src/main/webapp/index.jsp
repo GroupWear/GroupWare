@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GroupWear</title>
+    <title>GroupWare</title>
     <link rel="stylesheet" href="css/index.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -12,7 +12,7 @@
         <div class="login-card">
             <header class="brand-header">
                 <div class="brand-logo">
-                    <span class="bold">Group</span><span class="thin">Wear</span>
+                    <span class="bold">Group</span><span class="thin">Ware</span>
                 </div>
                 </header>
             
