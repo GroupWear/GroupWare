@@ -6,6 +6,7 @@ oracle 11g // com.groupware.util-DBConnection - oracle 코드 사용 확인, 오
 lombok jar 검색 후 설치(jar 실행 후, eclipse web developer 폴더 선택) // https://projectlombok.org/download, eclipse 폴더 내부에 있다면 추가 설치 필요 없음
 이클립스 https://www.eclipse.org/downloads/packages/release/2021-06/r for web developsers
 
+-
 
 
 <초기 1회 세팅 순서> 
@@ -13,7 +14,7 @@ lombok jar 검색 후 설치(jar 실행 후, eclipse web developer 폴더 선택
 1. 워크스페이스 폴더를 생성하고, 이클립스의 워크스페이스를 그곳으로 변경합니다.
 2. 해당 폴더에서 우클릭 - git bash - git clone
 3. 해당 폴더 내부로 이동해서 git bash를 다시 열거나, 기존 창에 cd Groupware 입력하여 위치 이동
-4. git clone [리포지토리 주소]
+4.
 5. 이클립스를 실행하고 import project - general - existing projects - browse - 워크스페이스 선택
 
 6. 중앙 하단의 서버 탭을 열고 서버를 연결합니다 // 아파치 - 톰캣 9.0
@@ -51,4 +52,8 @@ lombok jar 검색 후 설치(jar 실행 후, eclipse web developer 폴더 선택
 05. GIT BASH 사용하는 경우 일반적인 사용방법
 
 
+
+<<추가사항>>
+http://localhost:8080/Groupware/h2-console 으로 접속 안되면, pom.xml에 있는 groupid를 복사해서 Groupware 위치에 대체
+캐시가 남아있어 오피스 예약 페이지에서 이미지가 변하지 않는 경우 ctrl + f5
 
