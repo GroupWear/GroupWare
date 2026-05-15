@@ -47,7 +47,7 @@ public class AdminActionController extends HttpServlet {
         //값을 갖고 오기 위함 20260514 LHS
         List<EmployeeDTO> dto = dao.getAllEmployees();
         boolean isSuccess = false;
-
+        int currentManagerCount = dto.get(0).getCount_manager();// DB에서 실시간 관리자 수 조회
         
         out.println("<script>");
 
@@ -56,10 +56,10 @@ public class AdminActionController extends HttpServlet {
             if ("transferManager".equals(action) || "updateLevel".equals(action)) { 
                 
                 
-                int currentManagerCount = dto.get(0).getCount_manager();// DB에서 실시간 관리자 수 조회
+                
                 System.out.println(currentManagerCount);
                 // 관리자가 2명 이하인 상태에서 권한을 넘기거나 바꾸려고 하면 차단
-                if (currentManagerCount <= 2) {
+                if (currentManagerCount <= 1) {
                     out.println("alert('최소 2명의 관리자가 유지되어야 하므로 작업을 진행할 수 없습니다. 현재 관리자 수: " + currentManagerCount + "명');");
                     out.println("history.back();");
                     out.println("</script>");
@@ -104,6 +104,21 @@ public class AdminActionController extends HttpServlet {
                     out.println("alert('해당 사원의 퇴사(삭제) 처리가 완료되었습니다.');");
                     out.println("location.href='admin.do';");
                 }
+            }else if ("cancelManager".equals(action)) {
+                // [위임 취소 - 관리자 권한 박탈]
+                // 방어 로직: 관리자가 2명 이하일 경우 취소 불가
+                if (currentManagerCount <= 2) {
+                    out.println("alert('최소 관리자 인원(2명) 유지를 위해 권한을 취소할 수 없습니다.');");
+                    out.println("location.href='admin.do';");
+                    return;
+                }
+                isSuccess = dao.updateManagerStatus(targetEmpNo, "N");
+                if (isSuccess) 
+                {
+                	out.println("alert('관리자 권한이 취소되었습니다.');");
+                	out.println("location.href='admin.do';");
+                }
+
             }
 
             if (!isSuccess) {

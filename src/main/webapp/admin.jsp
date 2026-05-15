@@ -38,7 +38,7 @@
 						<th>성명</th>
 						<th>권한 레벨 조정</th>
 						<th>시스템 권한</th>
-						<th>인사 관리 (위임/퇴사)</th>
+						<th>인사 관리 (위임/퇴사/위임변경/위임취소)</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -51,6 +51,7 @@
 					4. 인사관리( 위임 부분 ) 
 						- 사장 제외하고 위임 변경 가능해야함
 						- 위임 취소하는 부분 만들어야함
+						- 위임은 
 					5. 신규 직원 INSERT 작업시 RETIRED = 'N' DEFAULT -- 처리 (완)
 					--%>
 					
@@ -117,8 +118,64 @@
 					                    <span class="badge-normal">일반 사원</span>
 					                <% } %>
 					            </td>
-					
-					            <!-- 5. 인사 관리 (위임/퇴사) -->
+								<!-- 5. 인사 관리 (위임/퇴사/위임변경/위임취소) -->
+								<td>
+								    <% 
+								        if (isRetired) { 
+								    %>
+								        <span style="color: #adb5bd; font-size: 13px;">-</span>
+								    <% 
+								        } else if (loginEmp != null && emp.getEmpNo() == loginEmp.getEmpNo()) { 
+								    %>
+								        <span style="color: #007bff; font-size: 12px; font-weight: bold;">본인(마스터)</span>
+								    <% 
+								        } else { 
+								            // 사장(5단계) 여부 확인
+								            boolean isCEO = (emp.getEmpLevel() == 5);
+								            // 현재 최고 관리자 권한 여부 확인 (Manager 컬럼이 'Y'인지)
+								            boolean isManager = "Y".equals(emp.getManager());
+								    %>
+								        <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
+								            
+								            <% if (!isCEO) { // 1. 사장은 모든 권한 수정 대상에서 제외 %>
+								                
+								                <% if (!isManager) { // 2. 최고관리자가 아닌 일반 인원들 %>
+								                    <!-- 위임 버튼 -->
+								                    <form action="adminAction.do" method="post" style="display: inline;">
+								                        <input type="hidden" name="action" value="transferManager">
+								                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
+								                        <button type="submit" class="btn-action btn-transfer" 
+								                                onclick="return confirm('이 사원에게 관리자 권한을 부여하시겠습니까?');">위임</button>
+								                    </form>
+								
+								                <% } else { // 3. 이미 최고관리자인 인원 (사장은 아님) %>
+								                    <!-- 위임 취소 버튼 -->
+								                    <form action="adminAction.do" method="post" style="display: inline;">
+								                        <input type="hidden" name="action" value="cancelManager">
+								                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
+								                        <button type="submit" class="btn-action" 
+								                                style="background-color: #6c757d; color: white;" 
+								                                onclick="return confirm('이 사원의 관리자 권한을 박탈(취소)하시겠습니까?');">위임취소</button>
+								                    </form>
+								                <% } %>
+								
+								                <!-- 퇴사 처리 (사장 제외 공통) -->
+								                <form action="adminAction.do" method="post" style="display: inline;">
+								                    <input type="hidden" name="action" value="deleteEmp">
+								                    <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
+								                    <button type="submit" class="btn-action btn-delete" 
+								                            onclick="return confirm('해당 사원을 퇴사 처리하시겠습니까?');">퇴사</button>
+								                </form>
+								
+								            <% } else { %>
+								                <!-- 사장(Level 5)인 경우 표시 -->
+								                <span style="color: #dc3545; font-size: 12px; font-weight: bold;">수정 불가(대표)</span>
+								            <% } %>
+								            
+								        </div>
+								    <% } %>
+								</td>					
+					            <%-- <!-- 5. 인사 관리 (위임/퇴사) -->
 					            <td>
 					                <% if (isRetired) { %>
 					                    <span style="color: #adb5bd; font-size: 13px;">-</span>
@@ -139,7 +196,7 @@
 					                <% } else { %>
 					                    <span style="color: #007bff; font-size: 12px; font-weight: bold;">본인(마스터)</span>
 					                <% } %>
-					            </td>
+					            </td> --%>
 					        </tr>
 					    <% 
 					            } // for end
@@ -200,3 +257,5 @@
 	</div>
 </body>
 </html>
+
+

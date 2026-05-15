@@ -214,28 +214,25 @@ public class EmployeeDAO {
 	}
 
 	// 2. 관리자 권한 이양 (기존 관리자는 N, 새 관리자는 Y로 변경)
-	// 2. 관리자 권한 이양 (최고 관리자는 2명까지 양도가 가능함)20260514 
 	public boolean transferManagerRole(int oldManagerNo, int newManagerNo) {
 		boolean result = false;
 		// 두 개의 쿼리를 실행해야 하므로 수동 커밋 모드를 사용할 수도 있지만,
 		// 간단하게 두 번의 UPDATE 문을 순차적으로 실행합니다.
-//		String sql1 = "UPDATE EMPLOYEE SET manager = 'N' WHERE emp_no = ?";
+		String sql1 = "UPDATE EMPLOYEE SET manager = 'N' WHERE emp_no = ? AND EMP_LEVEL <> 5";
 		String sql2 = "UPDATE EMPLOYEE SET manager = 'Y' WHERE emp_no = ?";
 
 		try (Connection conn = DBConnection.getConnection();
-//				PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+				PreparedStatement pstmt1 = conn.prepareStatement(sql1);
 				PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
 
 			// 기존 관리자 권한 박탈
-//			pstmt1.setInt(1, oldManagerNo);
-//			pstmt1.executeUpdate();
+			pstmt1.setInt(1, oldManagerNo);
+			pstmt1.executeUpdate();
 
 			// 새 관리자 권한 부여
 			pstmt2.setInt(1, newManagerNo);
 			if (pstmt2.executeUpdate() > 0)
 				result = true;
-			
-			System.out.println("transferManagerRole 쿼리 :"+sql2);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -394,5 +391,33 @@ public class EmployeeDAO {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	/*
+	 * 20260515 LHS 위임 취소
+	 * */
+	public boolean updateManagerStatus(int targetEmpNo, String status) {
+	    String sql = "UPDATE EMPLOYEE SET MANAGER = ? WHERE EMP_NO = ?";
+	
+	    boolean result = false;
+
+	  
+	    try (java.sql.Connection conn = com.groupware.util.DBConnection.getConnection();
+	         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setString(1, status);
+	        pstmt.setInt(2, targetEmpNo);
+
+	        int count = pstmt.executeUpdate();
+	        if (count > 0) {
+	            result = true;
+	        }
+	        
+	        System.out.println("(updateManagerStatus) 관리자 상태 변경 완료 [대상:" + targetEmpNo + ", 상태:" + status + "]");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return result;
 	}
 }
