@@ -1,28 +1,109 @@
 @charset "UTF-8";
- body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background-color: #f4f6f9; margin: 0; padding: 30px; }
-    .header { display: flex; justify-content: space-between; align-items: center; background-color: #212529; color: #ffffff; padding: 15px 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
-    .header h2 { margin: 0; font-size: 20px; letter-spacing: 1px; cursor: pointer; }
-    .nav-buttons { display: flex; align-items: center; gap: 10px; }
-    .nav-btn { padding: 8px 16px; background-color: #343a40; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 13px; border: 1px solid #495057; transition: all 0.2s; }
-    .nav-btn:hover { background-color: #495057; border-color: #6c757d; }
-    .nav-btn.admin { border-color: #dc3545; color: #ffc107; }
-    .nav-btn.admin:hover { background-color: #dc3545; color: #ffffff; }
-    .nav-btn.logout { background-color: transparent; border: none; color: #adb5bd; text-decoration: underline; }
-    .nav-btn.logout:hover { color: #ffffff; }
 
-    .dashboard-container { max-width: 1000px; margin: 0 auto; }
-    .section-title { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #343a40; display: flex; align-items: center; }
-    .section-title::before { content: ''; display: inline-block; width: 4px; height: 18px; background-color: #6c757d; margin-right: 10px; }
-    .table-wrapper { background-color: #ffffff; border-radius: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); margin-bottom: 40px; overflow: hidden; border: 1px solid #e9ecef; }
-    table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; }
-    th, td { padding: 14px 12px; border-bottom: 1px solid #e9ecef; }
-    th { background-color: #f8f9fa; color: #495057; font-weight: 600; border-bottom: 2px solid #dee2e6; }
-    .status-badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; }
-    .bg-warning { background-color: #fff8e1; color: #f57c00; border: 1px solid #ffe0b2; }
-    .bg-success { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-    .bg-danger { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
-    .bg-primary { background-color: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
-    .bg-secondary { background-color: #f1f3f5; color: #495057; border: 1px solid #dee2e6; }
-    .btn-action { padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; transition: all 0.2s; }
-    .btn-return { background-color: #343a40; color: #ffffff; border: 1px solid #343a40; }
-    .btn-cancel { background-color: #ffffff; color: #dc3545; border: 1px solid #dc3545; }
+/* 전체 배경 및 폰트 설정 */
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f4f7fa;
+    margin: 0; padding: 0;
+    color: #334155;
+}
+
+/* 헤더: 신뢰감을 주는 다크 네이비 */
+.header {
+    background-color: #0f172a;
+    height: 65px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: sticky; top: 0; z-index: 1000;
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto; height: 100%;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px;
+}
+
+/* 로고 스타일 (원본 재현) */
+.logo-area { text-decoration: none; display: flex; align-items: center; font-size: 24px; }
+.logo-group { color: #ffffff; font-weight: 800; }
+.logo-ware { color: #e2b857; font-weight: 300; margin-left: 1px; }
+
+/* 네비게이션 영역 */
+.nav-buttons { display: flex; align-items: center; gap: 8px; }
+.user-profile-info { margin-right: 15px; font-size: 14px; color: #94a3b8; }
+
+/* 관리자 뱃지 */
+.admin-tag {
+    background: rgba(226, 184, 87, 0.15);
+    color: #e2b857;
+    border: 1px solid #e2b857;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 800; margin-right: 6px;
+}
+
+/* 공통 버튼 스타일 */
+.nav-btn {
+    padding: 8px 14px; color: #cbd5e1; text-decoration: none;
+    border-radius: 6px; font-weight: 600; font-size: 13px; transition: 0.3s;
+}
+.nav-btn:hover { color: #ffffff; background: rgba(255,255,255,0.08); }
+
+/* ★ 관리자 전용 메뉴 특별 스타일 (골드 보더 + 발광 효과) */
+.nav-btn.admin-special {
+    color: #e2b857 !important;
+    border: 1px solid rgba(226, 184, 87, 0.5);
+    background: rgba(226, 184, 87, 0.05);
+}
+.nav-btn.admin-special:hover {
+    background: rgba(226, 184, 87, 0.2);
+    box-shadow: 0 0 10px rgba(226, 184, 87, 0.3);
+}
+
+.nav-btn.logout { background: #be123c; color: #fff !important; margin-left: 10px; }
+.nav-btn.logout:hover { background: #e11d48; }
+
+/* 컨테이너 및 카드 */
+.dashboard-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+
+.info-card {
+    background: #ffffff; padding: 30px; border-radius: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;
+}
+.welcome-box h3 { margin: 0; font-size: 20px; color: #1e293b; }
+.welcome-box h3 b { color: #6366f1; } /* 포인트 컬러: 인디고 블루 */
+.welcome-box p { margin: 8px 0 0 0; color: #64748b; font-size: 14px; }
+
+.leave-box { text-align: right; }
+.leave-label { font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 4px; }
+.leave-count .current { font-size: 32px; font-weight: 800; color: #0ea5e9; } /* 하늘색 강조 */
+.leave-count .divider { font-size: 18px; color: #e2e8f0; margin: 0 5px; }
+.leave-count .total { font-size: 18px; color: #94a3b8; }
+
+/* 테이블 스타일 */
+.section-title {
+    font-size: 18px; font-weight: 700; margin: 40px 0 15px; color: #1e293b;
+    display: flex; align-items: center;
+}
+.section-title::before {
+    content: ''; width: 4px; height: 18px; background: #6366f1;
+    margin-right: 10px; border-radius: 2px;
+}
+
+.table-wrapper {
+    background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
+    overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+table { width: 100%; border-collapse: collapse; }
+th { background: #f8fafc; padding: 16px; color: #475569; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+td { padding: 16px; border-bottom: 1px solid #f1f5f9; text-align: center; font-size: 14px; }
+
+/* 상태 배지 색상 최적화 */
+.status-badge { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+.status-blue { background: #e0e7ff; color: #4338ca; }
+.status-gray { background: #f1f5f9; color: #64748b; }
+.status-red { background: #ffe4e6; color: #be123c; }
+
+.btn-action { border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.btn-cancel { background: #fff; color: #be123c; border: 1px solid #ffe4e6; }
+.btn-cancel:hover { background: #be123c; color: #fff; }
