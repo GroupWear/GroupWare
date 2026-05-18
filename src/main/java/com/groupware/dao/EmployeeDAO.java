@@ -202,11 +202,12 @@ public class EmployeeDAO {
 	}
 
 	// 2. 관리자 권한 이양 (기존 관리자는 N, 새 관리자는 Y로 변경)
-	public boolean transferManagerRole(int oldManagerNo, int newManagerNo) {
+//	public boolean transferManagerRole(int oldManagerNo, int newManagerNo) {
+		public boolean transferManagerRole(int newManagerNo) {
 		boolean result = false;
 		// 두 개의 쿼리를 실행해야 하므로 수동 커밋 모드를 사용할 수도 있지만,
 		// 간단하게 두 번의 UPDATE 문을 순차적으로 실행합니다.
-		String sql1 = "UPDATE EMPLOYEE SET manager = 'N' WHERE emp_no = ? AND EMP_LEVEL <> 5";
+		String sql1 = "UPDATE EMPLOYEE SET manager = 'N' WHERE emp_no = (SELECT EMP_NO FROM EMPLOYEE WHERE 1=1 AND MANAGER = 'Y' AND EMP_LEVEL <> 5)";
 		String sql2 = "UPDATE EMPLOYEE SET manager = 'Y' WHERE emp_no = ?";
 
 		try (Connection conn = DBConnection.getConnection();
@@ -214,7 +215,7 @@ public class EmployeeDAO {
 				PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
 
 			// 기존 관리자 권한 박탈
-			pstmt1.setInt(1, oldManagerNo);
+//			pstmt1.setInt(1, oldManagerNo);
 			pstmt1.executeUpdate();
 
 			// 새 관리자 권한 부여

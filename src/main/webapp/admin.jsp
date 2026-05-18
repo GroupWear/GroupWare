@@ -112,9 +112,11 @@
 					            <td>
 					                <% if (isRetired) { %>
 					                    <span class="badge-retired" style="color: #999;">접근불가</span>
-					                <% } else if ("Y".equals(emp.getManager())) { %>
+					                <% } else if (emp.getEmpLevel() == 5) { %>
 					                    <span class="badge-manager" style="color: #007bff; font-weight: bold;">최고 관리자</span>
-					                <% } else { %>
+					                <% }else if ("Y".equals(emp.getManager())) { %>
+				                    <span class="badge-manager" style="color: #007bff; font-weight: bold;">중간 관리자</span>
+				                	<% } else { %>
 					                    <span class="badge-normal">일반 사원</span>
 					                <% } %>
 					            </td>
@@ -134,38 +136,44 @@
 								            boolean isCEO = (emp.getEmpLevel() == 5);
 								            // 현재 최고 관리자 권한 여부 확인 (Manager 컬럼이 'Y'인지)
 								            boolean isManager = "Y".equals(emp.getManager());
+								            // 총 Manager 직원 수
+								            //int isGetManagerCount = emp.getCount_manager();
 								    %>
 								        <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
 								            
 								            <% if (!isCEO) { // 1. 사장은 모든 권한 수정 대상에서 제외 %>
 								                
 								                <% if (!isManager) { // 2. 최고관리자가 아닌 일반 인원들 %>
-								                    <!-- 위임 버튼 -->
+								                    <!-- 위임 버튼 if 들어가서 처리 해보자 -->
 								                    <form action="adminAction.do" method="post" style="display: inline;">
 								                        <input type="hidden" name="action" value="transferManager">
 								                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 								                        <button type="submit" class="btn-action btn-transfer" 
 								                                onclick="return confirm('이 사원에게 관리자 권한을 부여하시겠습니까?');">위임</button>
 								                    </form>
+								                    
+								                    <!-- 퇴사 처리 (사장 제외 공통) -->
+									                <form action="adminAction.do" method="post" style="display: inline;">
+									                    <input type="hidden" name="action" value="deleteEmp">
+									                    <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
+									                    <button type="submit" class="btn-action btn-delete" 
+									                            onclick="return confirm('해당 사원을 퇴사 처리하시겠습니까?');">퇴사</button>
+									                </form>
+								                
 								
-								                <% } else { // 3. 이미 최고관리자인 인원 (사장은 아님) %>
+								                <% } 
+								                else { // 3. 이미 최고관리자인 인원 (사장은 아님) %>
 								                    <!-- 위임 취소 버튼 -->
-								                    <form action="adminAction.do" method="post" style="display: inline;">
+								                    <%-- <form action="adminAction.do" method="post" style="display: inline;">
 								                        <input type="hidden" name="action" value="cancelManager">
 								                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 								                        <button type="submit" class="btn-action" 
 								                                style="background-color: #6c757d; color: white;" 
 								                                onclick="return confirm('이 사원의 관리자 권한을 박탈(취소)하시겠습니까?');">위임취소</button>
-								                    </form>
+								                    </form> --%>
 								                <% } %>
 								
-								                <!-- 퇴사 처리 (사장 제외 공통) -->
-								                <form action="adminAction.do" method="post" style="display: inline;">
-								                    <input type="hidden" name="action" value="deleteEmp">
-								                    <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
-								                    <button type="submit" class="btn-action btn-delete" 
-								                            onclick="return confirm('해당 사원을 퇴사 처리하시겠습니까?');">퇴사</button>
-								                </form>
+								                
 								
 								            <% } else { %>
 								                <!-- 사장(Level 5)인 경우 표시 -->
