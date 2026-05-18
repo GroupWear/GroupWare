@@ -8,6 +8,12 @@
 		response.sendRedirect("index.jsp");
 		return;
 	}
+	
+	List<EmployeeDTO> empList = (List<EmployeeDTO>) request.getAttribute("reserveList");
+	
+	// 데이터 가져오기
+/*     EmployeeDAO resDao = new EmployeeDAO();
+    List<EquipmentDTO> reserveList = resDao.getAllEmployees(); */
 %>
 <!DOCTYPE html>
 <html>
@@ -49,10 +55,10 @@
                 1. 재고 수량 확인 ( SELECT )
                 2. 정보 수정 통해 ( UPDATE )
                 3. 영구 폐기를 통해 ( DELETE )
+                --%>
                 
                 
-                
-                <% if (eqList != null && !eqList.isEmpty()) {
+                <%-- <% if (eqList != null && !eqList.isEmpty()) {
                     for (EquipmentDTO eq : eqList) { 
                 %>
                 <tr>
@@ -67,7 +73,7 @@
                 </tr>
                 <%  } } else { %>
                 <tr><td colspan="5" style="padding: 40px; color: #6c757d;">시스템에 등록된 비품 마스터 데이터가 없습니다.</td></tr>
-                <% } %> --%>
+                <% } %>  --%>
             </tbody>
         </table>
     </div>

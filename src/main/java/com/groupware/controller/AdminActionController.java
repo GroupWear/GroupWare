@@ -53,27 +53,60 @@ public class AdminActionController extends HttpServlet {
 
         try {
         	
-            if ("transferManager".equals(action) || "updateLevel".equals(action)) { 
+//            if ("transferManager".equals(action) || "updateLevel".equals(action)) { 
                 
                 
                 
-                System.out.println(currentManagerCount);
-                // 관리자가 2명 이하인 상태에서 권한을 넘기거나 바꾸려고 하면 차단
-                if (currentManagerCount <= 1) {
-                    out.println("alert('최소 2명의 관리자가 유지되어야 하므로 작업을 진행할 수 없습니다. 현재 관리자 수: " + currentManagerCount + "명');");
-                    out.println("history.back();");
-                    out.println("</script>");
-                    out.flush();
-                    out.close();
-                    return; // 여기서 서블릿 실행을 종료시킵니다.
-                }
-            }
+//                System.out.println(currentManagerCount);
+//                // 관리자가 2명 이하인 상태에서 권한을 넘기거나 바꾸려고 하면 차단
+//                if (currentManagerCount <= 1) {
+//                    out.println("alert('최소 2명의 관리자가 유지되어야 하므로 작업을 진행할 수 없습니다. 현재 관리자 수: " + currentManagerCount + "명');");
+//                    out.println("history.back();");
+//                    out.println("</script>");
+//                    out.flush();
+//                    out.close();
+//                    return; // 여기서 서블릿 실행을 종료시킵니다.
+//                }
+            
 
         	
         	
         	
         	
-            if ("updateLevel".equals(action)) {
+//            if ("updateLevel".equals(action)) {
+//                // 직급 변경 로직
+//                int newLevel = Integer.parseInt(request.getParameter("newLevel"));
+//                isSuccess = dao.updateEmployeeLevel(targetEmpNo, newLevel);
+//                
+//                if (isSuccess) {
+//                    
+//                	out.println("alert('직급이 성공적으로 변경되었습니다.');");
+//                	
+//                	if(!"Y".equals(loginEmp.getManager()))
+//        			{
+//                		session.invalidate();
+//                		out.println("alert('관리자 권한을 성공적으로 넘겼습니다. 일반 사원 권한으로 변경되어 로그아웃됩니다.');");
+//                		out.println("location.href='index.jsp';");
+//                		
+//        			}else
+//        				out.println("location.href='admin.do';");
+//                	
+////                	if("Y".equals(loginEmp.getManager()))
+////                	{
+////                		
+////                		out.println("alert('직급이 성공적으로 변경되었습니다.');");
+////                        out.println("location.href='admin.do';");
+////                	}else
+////                	{
+////                		// 권한을 넘겼으므로 세션을 초기화하고 강제 로그아웃 처리합니다.
+////                        session.invalidate();
+////                        out.println("alert('관리자 권한을 성공적으로 넘겼습니다. 일반 사원 권한으로 변경되어 로그아웃됩니다.');");
+////                        out.println("location.href='index.jsp';");
+////                	}
+//                	
+//                	
+//                }
+        	if ("updateLevel".equals(action)) {
                 // 직급 변경 로직
                 int newLevel = Integer.parseInt(request.getParameter("newLevel"));
                 isSuccess = dao.updateEmployeeLevel(targetEmpNo, newLevel);
@@ -85,16 +118,60 @@ public class AdminActionController extends HttpServlet {
                 
             } else if ("transferManager".equals(action)) {
                 // 권한 이양 로직
-                isSuccess = dao.transferManagerRole(loginEmp.getEmpNo(), targetEmpNo);
+//                isSuccess = dao.transferManagerRole(loginEmp.getEmpNo(), targetEmpNo);
                 
-                if (isSuccess) {
-                    // 권한을 넘겼으므로 세션을 초기화하고 강제 로그아웃 처리합니다.
-                	// 20260514 2명까지 위임이 가능하므로 초기화 시킬 이유가 없음 20260514
-                    //session.invalidate();
-                    //20260514 관리자 권한 양도 한 후 admin 페이지로 넘기는 부분 수정
-                    out.println("alert('관리자 권한을 성공적으로 넘겼습니다.');");
-                    out.println("location.href='admin.do';");
-                }
+                
+//                if (isSuccess) {
+//                    // 권한을 넘겼으므로 세션을 초기화하고 강제 로그아웃 처리합니다.
+//                	// 20260514 2명까지 위임이 가능하므로 초기화 시킬 이유가 없음 20260514
+//                    //session.invalidate();
+//                    //20260514 관리자 권한 양도 한 후 admin 페이지로 넘기는 부분 수정
+//                    out.println("alert('관리자 권한을 성공적으로 넘겼습니다.');");
+//                    out.println("location.href='admin.do';");
+//                }
+                
+              // 직급 변경 로직
+              isSuccess = dao.transferManagerRole(targetEmpNo);
+              
+              if (isSuccess) {
+                  
+
+              	
+//              	if(!"Y".equals(loginEmp.getManager()))
+//      			{
+//              		session.invalidate();
+//              		out.println("alert('관리자 권한을 성공적으로 넘겼습니다. 일반 사원 권한으로 변경되어 로그아웃됩니다.');");
+//              		out.println("location.href='index.jsp';");
+//              		
+//      			}else
+//      				out.println("location.href='admin.do';");
+//              	
+//	              	if("Y".equals(loginEmp.getManager()))
+//	              	{
+//	              		
+//	              		out.println("alert('직급이 성공적으로 변경되었습니다.');");
+//	                      out.println("location.href='admin.do';");
+//	              	}else
+//	              	{
+//	              		// 권한을 넘겼으므로 세션을 초기화하고 강제 로그아웃 처리합니다.
+//	                      session.invalidate();
+//	                      out.println("alert('관리자 권한을 성공적으로 넘겼습니다. 일반 사원 권한으로 변경되어 로그아웃됩니다.');");
+//	                      out.println("location.href='index.jsp';");
+//	              	}
+              	//사장인 경우만 처리 empLevel
+              	if(loginEmp.getEmpLevel() == '5')
+              	{
+              		
+              		out.println("alert('직급이 성공적으로 변경되었습니다.');");
+                      out.println("location.href='admin.do';");
+              	}else
+              	{
+              		// 권한을 넘겼으므로 세션을 초기화하고 강제 로그아웃 처리합니다.
+                      session.invalidate();
+                      out.println("alert('관리자 권한을 성공적으로 넘겼습니다. 일반 사원 권한으로 변경되어 로그아웃됩니다.');");
+                      out.println("location.href='index.jsp';");
+              	}
+              }
                 
             } else if ("deleteEmp".equals(action)) {
                 // 퇴사(삭제) 처리 로직
@@ -104,28 +181,30 @@ public class AdminActionController extends HttpServlet {
                     out.println("alert('해당 사원의 퇴사(삭제) 처리가 완료되었습니다.');");
                     out.println("location.href='admin.do';");
                 }
-            }else if ("cancelManager".equals(action)) {
-                // [위임 취소 - 관리자 권한 박탈]
-                // 방어 로직: 관리자가 2명 이하일 경우 취소 불가
-                if (currentManagerCount <= 2) {
-                    out.println("alert('최소 관리자 인원(2명) 유지를 위해 권한을 취소할 수 없습니다.');");
-                    out.println("location.href='admin.do';");
-                    return;
-                }
-                isSuccess = dao.updateManagerStatus(targetEmpNo, "N");
-                if (isSuccess) 
-                {
-                	out.println("alert('관리자 권한이 취소되었습니다.');");
-                	out.println("location.href='admin.do';");
-                }
-
             }
+//            else if ("cancelManager".equals(action)) {
+//                // [위임 취소 - 관리자 권한 박탈]
+//                // 방어 로직: 관리자가 2명 이하일 경우 취소 불가
+//                if (currentManagerCount <= 2) {
+//                    out.println("alert('최소 관리자 인원(2명) 유지를 위해 권한을 취소할 수 없습니다.');");
+//                    out.println("location.href='admin.do';");
+//                    return;
+//                }
+//                isSuccess = dao.updateManagerStatus(targetEmpNo, "N");
+//                if (isSuccess) 
+//                {
+//                	out.println("alert('관리자 권한이 취소되었습니다.');");
+//                	out.println("location.href='admin.do';");
+//                }
+//
+//            }
 
             if (!isSuccess) {
                 out.println("alert('요청하신 작업 처리에 실패했습니다.');");
                 out.println("history.back();");
             }
-
+            
+//            }
         } catch (Exception e) {
             e.printStackTrace();
             out.println("alert('서버 오류가 발생했습니다.');");
