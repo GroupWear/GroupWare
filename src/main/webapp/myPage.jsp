@@ -106,14 +106,14 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 						<td><span class="status-badge <%=statusClass%>"><%=displayStatus%></span></td>
 						<td>
 							<!-- ★ 수정된 로직: 실시간 상태가 '예약완료'일 때만 예약 취소 버튼을 노출 --> <%
- if ("예약완료".equals(displayStatus)) {
- %>
+ 							if ("예약완료".equals(displayStatus)) {
+ 							%>
 							<button class="btn-action btn-cancel"
 								onclick="cancelReserve(<%=dto.getResNo()%>)">예약 취소</button> <%
- } else {
- %> <span style="color: #ced4da;">-</span> <%
- }
- %>
+ 							} else {
+ 							%> <span style="color: #ced4da;">-</span> <%
+ 							}
+ 							%>
 						</td>
 					</tr>
 					<%
@@ -124,7 +124,7 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 			</table>
 		</div>
 
-		<%-- <div class="section-title">내 비품 대여 현황</div>
+		<div class="section-title">내 비품 대여 현황</div>
 		<div class="table-wrapper">
 			<table>
 				<thead>
@@ -137,7 +137,7 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 						<th>비고</th>
 					</tr>
 				</thead>
-				<tbody>
+				<%-- <tbody>
 					<%
 					if (myList == null || myList.isEmpty()) {
 					%>
@@ -173,21 +173,21 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 							<button class="btn-action btn-return"
 								onclick="processReturn('<%=item.getRentalNo()%>')">반납
 								처리</button> <%
- } else {
- %> <span style="color: #ced4da;">-</span> <%
- }
- %>
+ 							} else {
+ 							%> <span style="color: #ced4da;">-</span> <%
+ 							}
+ 							%>
 						</td>
 					</tr>
 					<%
 					}
 					}
 					%>
-				</tbody>
+				</tbody> --%>
 			</table>
-		</div> --%>
+		</div> 
 		<!-- 3. 내 휴가 신청 현황 (새로 추가) -->
-		<%-- <div class="section-title">내 휴가 신청 현황</div>
+		<div class="section-title">내 휴가 신청 현황</div>
 		<div class="table-wrapper">
 			<table>
 				<thead>
@@ -199,7 +199,7 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 						<th>결재 상태</th>
 					</tr>
 				</thead>
-				<tbody>
+				<%-- <tbody>
 					<%
 					if (leaveList == null || leaveList.isEmpty()) {
 					%>
@@ -227,9 +227,9 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 					}
 					}
 					%>
-				</tbody>
+				</tbody> --%>
 			</table>
-		</div> --%>
+		</div> 
 	</div>
 	</div>
 
