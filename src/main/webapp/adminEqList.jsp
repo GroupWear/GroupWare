@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.groupware.dto.EmployeeDTO"%>
-
+<%@ page import="com.groupware.dto.EquipmentDTO"%>
+<%@ page import="com.groupware.dao.EmployeeDAO"%>
 <%
 	EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
 	if (loginEmp == null) {
@@ -10,40 +11,207 @@
 	}
 	
 	List<EmployeeDTO> empList = (List<EmployeeDTO>) request.getAttribute("reserveList");
+	List<EquipmentDTO> eqList = (List<EquipmentDTO>) request.getAttribute("eqList");
 	
 	// 데이터 가져오기
-/*     EmployeeDAO resDao = new EmployeeDAO();
-    List<EquipmentDTO> reserveList = resDao.getAllEmployees(); */
+
 %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>사내 시스템 - 재고 관리</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/adminEqList.css">
+	<meta charset="UTF-8">
+	<title>사내 시스템 - 재고 관리</title>
+	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/adminEqList.css">
+	<%-- <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css?v=1.5"> --%>
 </head>
+				<%-- 
+                1. 재고 수량 확인 ( SELECT ) -- ok
+                2. 정보 수정 통해 ( UPDATE ) -- ok
+                3. 영구 폐기를 통해 ( DELETE ) --ok 비품대여 신청 로직 완성 후 테스트 확인
+                4. 신규 비품 등록 ( INSERT ) -- ok
+                5. 검색 ( SEARCH ) --ok
+                --%>
 <body>
+<script>
+    function deleteEquipment(eqNo) {
+        if (confirm("해당 비품 데이터를 시스템에서 영구 삭제하시겠습니까?\n(경고: 현재 사원이 대여 중인 비품은 삭제할 수 없습니다)")) {
+            document.getElementById("delEqNo").value = eqNo;
+            document.getElementById("deleteForm").submit();
+        }
+    }
 
+    function openUpdateModal(no, name, total, remain) {
+        document.getElementById("upEqNo").value = no;
+        document.getElementById("upEqName").value = name;
+        document.getElementById("upTotalCount").value = total;
+        document.getElementById("upRemainCount").value = remain;
+        
+        document.getElementById("updateModal").style.display = "block";
+        document.getElementById("modalOverlay").style.display = "block";
+    }
+
+    function closeUpdateModal() {
+        document.getElementById("updateModal").style.display = "none";
+        document.getElementById("modalOverlay").style.display = "none";
+    }
+ 	// 전역 변수 설정: 원본 텍스트, 이전 검색어, 현재 포커스 인덱스 기록
+    const originalTexts = new Map();
+    let lastKeyword = "";
+    let currentMatchIndex = -1;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // 페이지 로드 시 각 셀의 순수 원본 텍스트만 메모리에 기록
+        document.querySelectorAll('.eq-no, .eq-name').forEach((td, index) => {
+            td.setAttribute('data-search-id', index);
+            originalTexts.set(index.toString(), td.textContent.trim());
+        });
+    });
+
+    function searchAndScroll() {
+        const searchType = document.getElementById("searchType").value;
+        const keyword = document.getElementById("searchKeyword").value.trim();
+        const lowerKeyword = keyword.toLowerCase();
+
+        if (keyword === "") {
+            alert("검색어를 입력해주세요.");
+            return;
+        }
+
+        // [핵심 로직] 새로운 단어를 검색한 경우: 마킹을 새로 하고 인덱스를 초기화함
+        if (lastKeyword !== lowerKeyword) {
+            // 1. 기존 노란 하이라이트 마킹 전체 초기화
+            document.querySelectorAll('.eq-no, .eq-name').forEach(td => {
+                const id = td.getAttribute('data-search-id');
+                if (originalTexts.has(id)) {
+                    td.innerHTML = originalTexts.get(id); 
+                }
+            });
+
+            // 2. 루프를 돌며 일치하는 모든 항목에 하이라이트 마킹 표시
+            const rows = document.querySelectorAll(".eq-row");
+            rows.forEach(row => {
+                const eqNoTd = row.querySelector(".eq-no");
+                const eqNameTd = row.querySelector(".eq-name");
+
+                if (searchType === "all" || searchType === "eqNo") {
+                    markCellIfMatch(eqNoTd, lowerKeyword);
+                }
+                if (searchType === "all" || searchType === "eqName") {
+                    markCellIfMatch(eqNameTd, lowerKeyword);
+                }
+            });
+
+            // 상태 기록 갱신
+            lastKeyword = lowerKeyword;
+            currentMatchIndex = -1; 
+        }
+
+        // 3. 화면에 생성된 모든 마킹 요소 리스트를 수집
+        const allMarks = document.querySelectorAll(".mark-highlight");
+		
+        if (allMarks.length > 0) {
+            // 다음 인덱스로 이동 (마지막 항목에 도달했다면 다시 0번째 첫 항목으로 회귀)
+            currentMatchIndex++;
+            if (currentMatchIndex >= allMarks.length) {
+                currentMatchIndex = 0; 
+            }
+
+            // 4. 선택된 순서의 다음(Next) 마킹 위치로 부드럽게 스크롤 이동
+            allMarks[currentMatchIndex].scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+            // 5. 사용자가 편하게 다음 검색을 이어나가도록 텍스트창 블록 지정 (기존 유지)
+            document.getElementById("searchKeyword").select();
+        } else {
+            alert("일치하는 비품 항목을 찾을 수 없습니다.");
+            document.getElementById("searchKeyword").focus();
+            lastKeyword = "";
+            currentMatchIndex = -1;
+        }
+    }
+
+    // 텍스트 매칭 및 실제 태그 치환 함수 (숫자 보존 정규식 방식 적용)
+    function markCellIfMatch(td, lowerKeyword) {
+        if (!td) return false;
+        
+        const originalText = td.textContent.trim();
+        const lowerText = originalText.toLowerCase();
+        const index = lowerText.indexOf(lowerKeyword);
+
+        if (index >= 0) {
+            const escapedKeyword = lowerKeyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(escapedKeyword, "gi");
+            td.innerHTML = originalText.replace(regex, `<span class="mark-highlight">$&</span>`);
+            return true; 
+        }
+        return false; 
+    }
+</script>
 <div class="container">
+	<%-- <div class="header">
+        <div class="header-inner">
+            <a href="main.jsp" class="logo-area">
+                <span class="logo-group">Group</span><span class="logo-ware">Ware</span>
+            </a>
+            
+            <div class="nav-buttons">
+                <span class="user-profile-info">
+                    <% if ("Y".equals(loginEmp.getManager())) { %>
+                        <span class="admin-tag">ADMIN</span>
+                    <% } %>
+                    <b><%=loginEmp.getEmpName()%></b>님
+                </span>
+
+                <% if ("Y".equals(loginEmp.getManager())) { %>
+                    <a href="adminEqList.do" class="nav-btn admin-special">재고 관리</a>
+                    <a href="admin.do" class="nav-btn admin-special">사원 관리</a>
+                <% } %>
+
+                <a href="officeMap.jsp" class="nav-btn">오피스 예약</a>
+                <a href="leaveForm.do" class="nav-btn">휴가 신청</a>
+                <a href="equipmentList.do" class="nav-btn">비품 대여 신청</a>
+                <a href="documentList.do" class="nav-btn">기안 문서함</a>
+                <a href="myPage.do" class="nav-btn">마이페이지</a>
+                <a href="logout.do" class="nav-btn logout">로그아웃</a>
+            </div>
+        </div>
+    </div> --%>
     <div class="page-header">
         <h2>공용 비품 마스터 데이터 관리</h2>
         <a href="main.jsp" class="btn-back">시스템 메인으로</a>
     </div>
+    
+	  
     
     <div class="insert-box">
         <h3>신규 비품 등록</h3>
         <form action="insertEq.do" method="post" style="display: flex; gap: 10px; flex: 1;">
             <input type="text" name="eqName" placeholder="비품 명칭 입력" required style="flex: 1;">
             <input type="number" name="totalCount" placeholder="초기 총 수량" required style="width: 120px;">
-            <button type="submit" class="btn-submit">DB 등록</button>
+            <button type="submit" class="btn-submit">등록</button>
         </form>
     </div>
+    
+    <!-- 검색 바 영역 -->
+	<div class="search-bar-container">
+	    <div class="search-form">
+	        <select id="searchType" class="search-select">
+	            <option value="all">전체 검색</option>
+	            <option value="eqName">비품 명칭</option>
+	            <option value="eqNo">비품 번호</option>
+	        </select>
+	        <input type="text" id="searchKeyword" class="search-input" placeholder="이동할 비품명 또는 번호 입력..." autocomplete="off" onkeyup="if(event.key === 'Enter') searchAndScroll()">
+	        <button type="button" class="btn-search" onclick="searchAndScroll()">검색 및 이동</button>
+	    </div>
+	</div>
 
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>관리 번호</th>
+                    <th>비품 번호</th>
                     <th>비품 명칭</th>
                     <th>보유 총 수량</th>
                     <th>대여 가능 수량</th>
@@ -51,19 +219,12 @@
                 </tr>
             </thead>
             <tbody>
-                <%-- 
-                1. 재고 수량 확인 ( SELECT )
-                2. 정보 수정 통해 ( UPDATE )
-                3. 영구 폐기를 통해 ( DELETE )
-                --%>
-                
-                
-                <%-- <% if (eqList != null && !eqList.isEmpty()) {
+                <% if (eqList != null && !eqList.isEmpty()) {
                     for (EquipmentDTO eq : eqList) { 
                 %>
-                <tr>
-                    <td style="color: #6c757d;"><%= eq.getEqNo() %></td>
-                    <td style="font-weight: 600; color: #343a40;"><%= eq.getEqName() %></td>
+                <tr class="eq-row">
+                    <td class="eq-no" style="color: #6c757d;"><%= eq.getEqNo() %></td>
+                    <td class="eq-name" style="font-weight: 600; color: #343a40;"><%= eq.getEqName() %></td>
                     <td><%= eq.getTotalCount() %> EA</td>
                     <td><strong style="color: <%= eq.getRemainCount() > 0 ? "#212529" : "#dc3545" %>;"><%= eq.getRemainCount() %> EA</strong></td>
                     <td>
@@ -73,7 +234,7 @@
                 </tr>
                 <%  } } else { %>
                 <tr><td colspan="5" style="padding: 40px; color: #6c757d;">시스템에 등록된 비품 마스터 데이터가 없습니다.</td></tr>
-                <% } %>  --%>
+                <% } %>
             </tbody>
         </table>
     </div>
@@ -106,30 +267,5 @@
 <form id="deleteForm" action="deleteEq.do" method="post">
     <input type="hidden" name="eqNo" id="delEqNo">
 </form>
-
-<script>
-    function deleteEquipment(eqNo) {
-        if (confirm("해당 비품 데이터를 시스템에서 영구 삭제하시겠습니까?\n(경고: 현재 사원이 대여 중인 비품은 삭제할 수 없습니다)")) {
-            document.getElementById("delEqNo").value = eqNo;
-            document.getElementById("deleteForm").submit();
-        }
-    }
-
-    function openUpdateModal(no, name, total, remain) {
-        document.getElementById("upEqNo").value = no;
-        document.getElementById("upEqName").value = name;
-        document.getElementById("upTotalCount").value = total;
-        document.getElementById("upRemainCount").value = remain;
-        
-        document.getElementById("updateModal").style.display = "block";
-        document.getElementById("modalOverlay").style.display = "block";
-    }
-
-    function closeUpdateModal() {
-        document.getElementById("updateModal").style.display = "none";
-        document.getElementById("modalOverlay").style.display = "none";
-    }
-</script>
-
 </body>
 </html>

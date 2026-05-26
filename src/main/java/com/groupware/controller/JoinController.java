@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.groupware.dao.EmployeeDAO;
+import com.groupware.util.CryptoUtil;
 
 /**
  * [JoinController]
@@ -27,11 +28,15 @@ public class JoinController extends HttpServlet {
         String empNo = request.getParameter("empNo").trim();
         String password = request.getParameter("password").trim();
 
+        // ★ 2. 단일 값(비밀번호) 암호화 처리 호출 작업
+        // 다른 곳(예: 로그인 컨트롤러 등)에서도 CryptoUtil.encrypt() 또는 decrypt()로 똑같이 호출할 수 있습니다.
+        String encryptedPassword = CryptoUtil.encrypt(password);
+        
         EmployeeDAO dao = new EmployeeDAO();
         
         // ★ 중요: 보내주신 DAO 코드에 정의된 메서드명 'updateEmployeePassword'를 사용해야 함
         // 인자 타입은 둘 다 String이므로 그대로 전달
-        boolean isSuccess = dao.updateEmployeePassword(empNo, password);
+        boolean isSuccess = dao.updateEmployeePassword(empNo, encryptedPassword);
 
         response.setContentType("text/html; charset=UTF-8");
         if (isSuccess) {
