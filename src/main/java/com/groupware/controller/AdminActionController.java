@@ -158,12 +158,14 @@ public class AdminActionController extends HttpServlet {
 //	                      out.println("alert('관리자 권한을 성공적으로 넘겼습니다. 일반 사원 권한으로 변경되어 로그아웃됩니다.');");
 //	                      out.println("location.href='index.jsp';");
 //	              	}
+            	 System.out.println(loginEmp.getEmpLevel());
               	//사장인 경우만 처리 empLevel
-              	if(loginEmp.getEmpLevel() == '5')
+//              	if(loginEmp.getEmpLevel() == '5')
+            	if(loginEmp.getEmpLevel() == 5)
               	{
               		
               		out.println("alert('직급이 성공적으로 변경되었습니다.');");
-                      out.println("location.href='admin.do';");
+                    out.println("location.href='admin.do';");
               	}else
               	{
               		// 권한을 넘겼으므로 세션을 초기화하고 강제 로그아웃 처리합니다.
