@@ -2,6 +2,8 @@ package com.groupware.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.groupware.dao.EmployeeDAO;
 import com.groupware.dto.EmployeeDTO;
+import com.groupware.util.CryptoUtil;
 
 @WebServlet("/changePw.do")
 public class ChangePwController extends HttpServlet {
@@ -37,21 +40,50 @@ public class ChangePwController extends HttpServlet {
         }
         
         int empNo = loginEmp.getEmpNo();
-        String currentPw = request.getParameter("currentPw");
-        String newPw = request.getParameter("newPw");
-        String newPwConfirm = request.getParameter("newPwConfirm");
+        String currentPw = request.getParameter("currentPw").trim();
+        String newPw = request.getParameter("newPw").trim();
+        String newPwConfirm = request.getParameter("newPwConfirm").trim();
+        
 
+       
+        //Int -> String 사번 Int형에서 String으로 변환 LHS
+        String empNO_String = String.valueOf(empNo);
+        //DB에 있는 PW 복호화 작업을 통해 사용자가 입력한 pw 일치 여부 확인
+        EmployeeDAO dao = new EmployeeDAO();
+        EmployeeDTO dto = dao.getEmployeeByNo(empNO_String);
+//      System.out.println("데이터 TEST : "+dto.getEmpPw());
+        
+        //현재 데이터 상에 있는 PW 복호화 작업 및 사용자가 입력한 pw 일치하는지 확인
+        String decryptedPassword = CryptoUtil.decrypt(dto.getEmpPw().trim()).trim();
+        String encrypted_present_Password = CryptoUtil.encrypt(currentPw).trim();
+//        System.out.println("복호화 비번 : "+decryptedPassword);
+//        System.out.println("현재  비번 : "+encrypted_present_Password);
+//        System.out.println("현재  비번 : "+dto.getEmpPw().trim());
+//      System.out.println("비번 일치여부 : "+currentPw.equals(decryptedPassword));
+
+
+         
+        // 새 비밀번호 일치 확인
+        if (!currentPw.equals(decryptedPassword)) {
+        	out.println("<script>alert('현재 비밀번호가 일치하지 않습니다.'); history.back();</script>");
+        	return;
+        }
+        
         // 새 비밀번호 일치 확인
         if (!newPw.equals(newPwConfirm)) {
-            out.println("<script>alert('새 비밀번호가 일치하지 않습니다.'); history.back();</script>");
+        	out.println("<script>alert('새 비밀번호가 일치하지 않습니다.'); history.back();</script>");
             return;
         }
+
 
         try {
             EmployeeDAO empDAO = new EmployeeDAO();
             
+          //현재 데이터 상에 있는 PW 복호화 작업 및 사용자가 입력한 pw 일치하는지 확인
+            String encryptedPassword = CryptoUtil.encrypt(newPw);
+            
             // [수정 및 검증] 기존 원본 구조를 유지하며 자바 로직과 스크립트 분리
-            if (empDAO.updatePasswordWithVerify(empNo, currentPw, newPw)) {
+            if (empDAO.updatePasswordWithVerify(empNo, encrypted_present_Password, encryptedPassword)) {
                 
                 /* * ★ 핵심 수정 구역 ★
                  * 자바에서 무효화 처리를 먼저 명확히 실행한 후, 
