@@ -61,7 +61,7 @@ public class FindPwController extends HttpServlet {
                 } else {
                     // [성공] 비밀번호 팝업 알림
                     out.println("<script>");
-                    out.println("alert('" + empNameTrimmed + "님의 비밀번호는 [" + foundPassword + "] 입니다.');");
+//                    out.println("alert('" + empNameTrimmed + "님의 비밀번호는 [" + foundPassword + "] 입니다.');");
                     out.println("location.href='index.jsp';"); // 확인 후 로그인 메인 페이지로 이동
                     out.println("</script>");
                 }

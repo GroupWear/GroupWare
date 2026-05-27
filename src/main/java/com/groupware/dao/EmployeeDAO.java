@@ -119,14 +119,14 @@ public class EmployeeDAO {
 	public EmployeeDTO getEmployeeByNo(String empNo) {
 	    EmployeeDTO dto = null;
 	    // SQL문에 dept, max_leave, cur_leave 추가
-	    String sql = "SELECT emp_no, emp_name, emp_level, manager, dept, max_leave, cur_leave , retired "
+	    String sql = "SELECT emp_no, emp_name, emp_level, manager, dept, max_leave, cur_leave , retired, emp_pw "
 	               + "FROM EMPLOYEE WHERE emp_no = ?";
 
 	    try (Connection conn = DBConnection.getConnection(); 
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
 	        pstmt.setString(1, empNo);
-
+	        
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            if (rs.next()) {
 	                dto = new EmployeeDTO();
@@ -140,6 +140,11 @@ public class EmployeeDAO {
 	                dto.setCurLeave(rs.getInt("cur_leave"));
 	                // ★ 추가된 필드 세팅
 	                dto.setRetired(rs.getString("retired"));
+	                // ★ 추가된 필드 세팅
+	                dto.setEmpPw(rs.getString("emp_pw"));
+	                
+	                System.out.println(sql);
+//	                System.out.println(dto.getEmpPw()+": Test");
 	            }
 	        }
 	    } catch (Exception e) {
