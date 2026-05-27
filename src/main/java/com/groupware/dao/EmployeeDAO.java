@@ -73,12 +73,12 @@ public class EmployeeDAO {
 		boolean result = false;
 		// 사번을 조건으로 비밀번호를 업데이트합니다.
 		String sql = "UPDATE EMPLOYEE SET emp_pw = ? WHERE emp_no = ?";
-
+		System.out.println("암호화 : "+empPw);
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
 			pstmt.setString(1, empPw);
 			pstmt.setString(2, empNo);
-
+			
 			int count = pstmt.executeUpdate();
 			if (count > 0) {
 				result = true;
@@ -115,10 +115,11 @@ public class EmployeeDAO {
 //		return dto;
 //	}
 	// 2. getEmployeeByNo 메서드 수정 (회원가입 시 정보 확인용)
+	//20260526 LHS retired 추가
 	public EmployeeDTO getEmployeeByNo(String empNo) {
 	    EmployeeDTO dto = null;
 	    // SQL문에 dept, max_leave, cur_leave 추가
-	    String sql = "SELECT emp_no, emp_name, emp_level, manager, dept, max_leave, cur_leave "
+	    String sql = "SELECT emp_no, emp_name, emp_level, manager, dept, max_leave, cur_leave , retired "
 	               + "FROM EMPLOYEE WHERE emp_no = ?";
 
 	    try (Connection conn = DBConnection.getConnection(); 
@@ -137,6 +138,8 @@ public class EmployeeDAO {
 	                dto.setDept(rs.getString("dept"));
 	                dto.setMaxLeave(rs.getInt("max_leave"));
 	                dto.setCurLeave(rs.getInt("cur_leave"));
+	                // ★ 추가된 필드 세팅
+	                dto.setRetired(rs.getString("retired"));
 	            }
 	        }
 	    } catch (Exception e) {

@@ -18,12 +18,15 @@
                    우선은 에러가 나지 않도록 처리합니다.
                 */
                 String currentPw = dto.getEmpPw(); // DAO SQL에 추가 전까지는 null일 수 있음
+
+                
                 
                 // 가입 가능 조건: 비밀번호가 없거나 비어있는 경우
                 if (currentPw == null || currentPw.trim().isEmpty()) {
                     StringBuilder json = new StringBuilder();
                     json.append("{");
                     json.append("\"result\": \"success\",");
+                    json.append("\"retired\": \"" + (dto.getRetired() != null ? dto.getRetired() : "") + "\",");// DAO 에서 퇴사자 여부 값 받아오기
                     json.append("\"name\": \"" + (dto.getEmpName() != null ? dto.getEmpName() : "") + "\",");
                     json.append("\"dept\": \"" + (dto.getDept() != null ? dto.getDept() : "미배정") + "\",");
                     // getPosName() 대신 존재하는 getEmpLevel()을 사용하거나 수동 매칭
