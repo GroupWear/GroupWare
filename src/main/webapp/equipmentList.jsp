@@ -2,25 +2,67 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.groupware.dto.EquipmentDTO" %>
+<%@ page import="com.groupware.dto.EmployeeDTO" %> 
+
 <%
+    EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
+
+    if (loginEmp == null) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
+
     List<EquipmentDTO> eqList = (List<EquipmentDTO>) request.getAttribute("eqList");
 %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>사내 시스템 - 비품 대여 신청</title>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/equipmentList.css">
+    <!-- 경로 뒤에 ?v=1.1 이나 임의의 숫자를 붙여서 저장하세요 -->
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/equipmentList.css?v=1.1">
 </head>
 <body>
-
+    
+    <!-- 1. 상단 네비게이션 헤더 (최상단 고정 고유 레이어) -->
     <div class="header">
-        <h2>비품 대여 신청</h2>
-        <div><a href="main.jsp" class="btn-back">시스템 메인으로</a></div>
+        <div class="header-inner">
+            <a href="main.jsp" class="logo-area">
+                <span class="logo-group">Group</span><span class="logo-ware">Ware</span>
+            </a>
+            
+            <div class="nav-buttons">
+                <span class="user-profile-info">
+                    <% if ("Y".equals(loginEmp.getManager())) { %>
+                        <span class="admin-tag">ADMIN</span>
+                    <% } %>
+                    <b><%=loginEmp.getEmpName()%></b>님
+                </span>
+
+                <% if ("Y".equals(loginEmp.getManager())) { %>
+                    <a href="adminEqList.do" class="nav-btn admin-special">재고 관리</a>
+                    <a href="admin.do" class="nav-btn admin-special">사원 관리</a>
+                <% } %>
+
+                <a href="officeMap.jsp" class="nav-btn">오피스 예약</a>
+                <a href="leaveForm.do" class="nav-btn">휴가 신청</a>
+                <a href="equipmentList.do" class="nav-btn">비품 대여 신청</a>
+                <a href="documentList.do" class="nav-btn">기안 문서함</a>
+                <a href="myPage.do" class="nav-btn">마이페이지</a>
+                <a href="logout.do" class="nav-btn logout">로그아웃</a>
+            </div>
+        </div>
     </div>
     
-    <!-- 검색 바 영역 -->
+    <!-- 2. 페이지 대제목 영역 (고정 영역에서 완전히 제외하여 최상단 헤더 밑에 배치) -->
+    <div class="table-container" style="margin-top: 30px; margin-bottom: 0;">
+        <div class="headertitle">
+            <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #1e293b;">비품 대여 신청</h2>
+        </div>
+    </div>
+    
+    <!-- 3. 실시간 고정형 검색 바 영역 (헤더 바로 하단인 top: 65px 지점에 단독 고정) -->
 	<div class="search-bar-container">
 	    <div class="search-form">
 	        <select id="searchType" class="search-select">
@@ -33,8 +75,8 @@
 	    </div>
 	</div>
 
-    <!-- 기존 grid-container를 table-container 구조로 변경 -->
-    <div class="table-container">
+    <!-- 4. 메인 비품 목록 테이블 영역 (이하 기존 코드 유지) -->
+    <div class="table-container" style="margin-top: 10px;">
         <table class="eq-table">
             <thead>
                 <tr>
@@ -49,18 +91,18 @@
                     for (EquipmentDTO eq : eqList) {
                 %>
                     <tr class="eq-row">
-                        <!-- 1. 비품 번호 출력 -->
+                        <!-- 비품 번호 출력 -->
                         <td class="eq-no" style="text-align: center;"><%= eq.getEqNo() %></td>
                         
-                        <!-- 2. 비품 명칭 출력 -->
+                        <!-- 비품 명칭 출력 -->
                         <td class="eq-name" style="text-align: center;"><%= eq.getEqName() %></td>
                         
-                        <!-- 3. 잔여 수량 조건별 강조 출력 -->
+                        <!-- 잔여 수량 조건별 강조 출력 -->
                         <td style="text-align: center;" class="eq-count <%= eq.getRemainCount() == 0 ? "text-danger" : "" %>">
                             <b><%= eq.getRemainCount() %></b> / <%= eq.getTotalCount() %> EA
                         </td>
                         
-                        <!-- 4. 작동 상태 버튼 출력 -->
+                        <!-- 작동 상태 버튼 출력 -->
                         <td style="text-align: center;">
                             <% if (eq.getRemainCount() > 0) { %>
                                 <button class="btn-rent" onclick="location.href='rentForm.do?eqNo=<%= eq.getEqNo() %>'">대여 신청</button>
@@ -71,7 +113,7 @@
                     </tr>
                 <% } } else { %>
                     <tr>
-                        <td colspan="4" style="text-align: center; color: #6c757d; padding: 40px;">등록된 비품 목록이 없습니다.</td>
+                        <td colspan="4" style="text-align: center; color: #64748b; padding: 50px; font-size: 15px;">등록된 비품 목록이 없습니다.</td>
                     </tr>
                 <% } %>
             </tbody>
