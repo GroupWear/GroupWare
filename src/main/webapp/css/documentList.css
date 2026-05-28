@@ -1,0 +1,37 @@
+@charset "UTF-8";
+/* 기안 문서함용 탭 메뉴 스타일 정의 */
+        .tab-menu-container {
+            display: flex;
+            gap: 10px;
+            margin: 30px 0 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0;
+        }
+        .tab-btn {
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #64748b;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            color: #6366f1;
+        }
+        .tab-btn.active {
+            color: #6366f1;
+            border-bottom: 3px solid #6366f1;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .table-wrapper {
+            margin-top: 0 !important;
+        }

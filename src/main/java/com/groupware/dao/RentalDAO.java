@@ -11,20 +11,21 @@ import com.groupware.util.DBConnection;
 
 public class RentalDAO {
 
+	  /* 📌 [오류 해결 완료] 물음표 개수 불일치 및 인덱스 누락 완벽 교정 */
     public boolean insertRental(RentalHistoryDTO dto) {
         boolean result = false;
         Connection conn = null;
         PreparedStatement pstmt = null;
         PreparedStatement pstmtEq = null;
 
-        // ★ REQ_COUNT 추가됨
+        // 🛠️ 총 19개 컬럼: SEQ_RENTAL.NEXTVAL(1개) + 물음표 ? (18개)로 개수를 정확하게 맞추었습니다.
         String sql = "INSERT INTO RENTAL_HISTORY (RENTAL_NO, TITLE, EMP_NO, EQ_NO, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, "
                    + "SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REQ_COUNT) "
                    + "VALUES (SEQ_RENTAL.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             conn = DBConnection.getConnection();
-            conn.setAutoCommit(false); 
+            conn.setAutoCommit(false); // 트랜잭션 시작
 
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, dto.getTitle());
@@ -45,37 +46,32 @@ public class RentalDAO {
             pstmt.setDate(15, dto.getSign4Date());
             pstmt.setString(16, dto.getSign5());
             pstmt.setDate(17, dto.getSign5Date());
-            pstmt.setInt(18, dto.getReqCount()); // ★ 수량 바인딩
+            pstmt.setInt(18, dto.getReqCount()); 
 
             int count = pstmt.executeUpdate();
 
             if (count > 0) {
-                if ("대여중".equals(dto.getStatus())) {
-                    // ★ 신청 수량만큼 차감
-                    String updateEqSql = "UPDATE EQUIPMENT SET REMAIN_COUNT = REMAIN_COUNT - ? WHERE EQ_NO = ? AND REMAIN_COUNT >= ?";
-                    pstmtEq = conn.prepareStatement(updateEqSql);
-                    pstmtEq.setInt(1, dto.getReqCount());
-                    pstmtEq.setInt(2, dto.getEqNo());
-                    pstmtEq.setInt(3, dto.getReqCount());
-                    
-                    int eqCount = pstmtEq.executeUpdate();
-                    if (eqCount > 0) {
-                        conn.commit();
-                        result = true;
-                    } else {
-                        conn.rollback(); 
-                    }
-                } else {
-                    conn.commit(); 
+                // 📌 [변경]: 상태와 관계없이 기안서 등록 성공 시 무조건 비품 수량을 즉시 차감합니다.
+                String updateEqSql = "UPDATE EQUIPMENT SET REMAIN_COUNT = REMAIN_COUNT - ? WHERE EQ_NO = ? AND REMAIN_COUNT >= ?";
+                pstmtEq = conn.prepareStatement(updateEqSql);
+                pstmtEq.setInt(1, dto.getReqCount());
+                pstmtEq.setInt(2, dto.getEqNo());
+                pstmtEq.setInt(3, dto.getReqCount()); // 재고가 신청 수량보다 많을 때만 실행되도록 안전 가드
+                
+                int eqCount = pstmtEq.executeUpdate();
+                if (eqCount > 0) {
+                    conn.commit(); // 기안 등록 + 재고 차감 둘 다 성공 시 커밋
                     result = true;
+                } else {
+                    conn.rollback(); // 재고 부족 등의 이유로 차감 실패 시 전체 롤백
                 }
             }
         } catch (Exception e) {
             try { if (conn != null) conn.rollback(); } catch (Exception ex) {}
             e.printStackTrace();
         } finally {
-            closeResource(conn, pstmt, null);
             if (pstmtEq != null) try { pstmtEq.close(); } catch(Exception e) {}
+            closeResource(conn, pstmt, null);
         }
         return result;
     }
@@ -136,6 +132,7 @@ public class RentalDAO {
         return dto;
     }
 
+    /* 📌 2. 결재 승인/반려 제어 로직 수정 (최종 승인 시에는 재고 변동 X, '반려' 시에만 재고 환원) */
     public boolean processApproval(int rentalNo, int eqNo, int step, String empName, boolean isApprove) {
         boolean result = false;
         Connection conn = null;
@@ -144,20 +141,20 @@ public class RentalDAO {
 
         String signCol = "SIGN" + step;
         String dateCol = "SIGN" + step + "_DATE";
-        String status = isApprove ? "승인대기" : "반려됨";
+        
+        // 승인 시 최종 5단계면 '대여중', 그 전 단계면 '승인대기'유지 / 반려 시 '반려됨'
+        String status = isApprove ? (step == 5 ? "대여중" : "승인대기") : "반려됨";
         int nextStep = isApprove ? step + 1 : step;
-
-        if (isApprove && step == 5) status = "대여중";
 
         String sql = "UPDATE RENTAL_HISTORY SET " + signCol + " = ?, " + dateCol + " = SYSDATE, STATUS = ?, APPROVAL_STEP = ? WHERE RENTAL_NO = ?";
         
-        // ★ 승인 시 기안에 적혀있던 수량만큼 차감
-        String updateEqSql = "UPDATE EQUIPMENT SET REMAIN_COUNT = REMAIN_COUNT - (SELECT REQ_COUNT FROM RENTAL_HISTORY WHERE RENTAL_NO = ?) "
-                           + "WHERE EQ_NO = ? AND REMAIN_COUNT >= (SELECT REQ_COUNT FROM RENTAL_HISTORY WHERE RENTAL_NO = ?)";
+        // 📌 [변경]: 기안이 반려되었을 때(isApprove == false), 선점했던 수량(REQ_COUNT)만큼 재고를 다시 더해줍니다(+).
+        String refundEqSql = "UPDATE EQUIPMENT SET REMAIN_COUNT = REMAIN_COUNT + (SELECT REQ_COUNT FROM RENTAL_HISTORY WHERE RENTAL_NO = ?) "
+                           + "WHERE EQ_NO = ?";
 
         try {
             conn = DBConnection.getConnection();
-            conn.setAutoCommit(false); 
+            conn.setAutoCommit(false); // 트랜잭션 시작
 
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, empName);
@@ -166,29 +163,32 @@ public class RentalDAO {
             pstmt.setInt(4, rentalNo);
             int count = pstmt.executeUpdate();
 
-            if (count > 0 && isApprove && step == 5) {
-                pstmtEq = conn.prepareStatement(updateEqSql);
-                pstmtEq.setInt(1, rentalNo);
-                pstmtEq.setInt(2, eqNo);
-                pstmtEq.setInt(3, rentalNo);
-                
-                int eqCount = pstmtEq.executeUpdate();
-                if (eqCount > 0) {
+            if (count > 0) {
+                if (!isApprove) {
+                    // 📌 [반려 상황]: 결재 상태가 반려로 바뀌었다면 묶여있던 재고 복구 실행
+                    pstmtEq = conn.prepareStatement(refundEqSql);
+                    pstmtEq.setInt(1, rentalNo);
+                    pstmtEq.setInt(2, eqNo);
+                    
+                    int eqCount = pstmtEq.executeUpdate();
+                    if (eqCount > 0) {
+                        conn.commit();
+                        result = true;
+                    } else {
+                        conn.rollback();
+                    }
+                } else {
+                    // [승인 상황]: 이미 신청 단계에서 수량을 깎았으므로, 결재 단계 승인 시에는 별도의 재고 수정 없이 상태만 업데이트하고 커밋합니다.
                     conn.commit();
                     result = true;
-                } else {
-                    conn.rollback(); 
                 }
-            } else if (count > 0) {
-                conn.commit(); 
-                result = true;
             }
         } catch (Exception e) {
             try { if (conn != null) conn.rollback(); } catch (Exception ex) {}
             e.printStackTrace();
         } finally {
-            closeResource(conn, pstmt, null);
             if (pstmtEq != null) try { pstmtEq.close(); } catch(Exception e) {}
+            closeResource(conn, pstmt, null);
         }
         return result;
     }
