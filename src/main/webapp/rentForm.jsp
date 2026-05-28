@@ -1,4 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.groupware.dto.EquipmentDTO" %>
+<%-- 📌 1. useBean 선언부를 JSP 최상단으로 끌어올려 EL 태그와 스크립틀릿이 정상 동작하도록 고쳤습니다 --%>
+<jsp:useBean id="equipment" type="com.groupware.dto.EquipmentDTO" scope="request"/>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -22,9 +25,9 @@
     <!-- 대여 정보를 입력받아 처리할 서블릿(/rentInsert.do)으로 전송 -->
     <form action="rentInsert.do" method="post" onsubmit="return validateForm()">
         
-        <!-- 1. 대여 대상 비품 번호를 hidden 필드로 서버에 전송 -->
+        <!-- 대여 대상 비품 번호를 hidden 필드로 서버에 전송 -->
         <input type="hidden" id="eqNo" name="eqNo" value="${equipment.eqNo}" />
-        <!-- 2. 검증을 위한 잔여 수량 스크립트용 hidden 필드 -->
+        <!-- 검증을 위한 잔여 수량 스크립트용 hidden 필드 -->
         <input type="hidden" id="maxRemain" value="${equipment.remainCount}" />
 
         <!-- 비품 요약 정보 표 -->
@@ -40,7 +43,6 @@
             <tr>
                 <th>대여 가능 수량</th>
                 <td>
-                    <%-- CSS 스타일 규칙(remain-count, text-danger)에 맞게 EL 삼항연산자 적용 --%>
                     <span class="${equipment.remainCount == 0 ? 'text-danger' : 'remain-count'}">
                         ${equipment.remainCount}
                     </span>
@@ -48,8 +50,6 @@
                         / ${equipment.totalCount} EA
                     </span>
     
-                    <%-- 롬복 객체 속성을 읽어 자바 조건문으로 제어합니다 --%>
-                    <jsp:useBean id="equipment" type="com.groupware.dto.EquipmentDTO" scope="request"/>
                     <% if (equipment.getRemainCount() == 0) { %>
                         <span class="text-danger">(현재 대여 가능한 재고가 없습니다)</span>
                     <% } %>
@@ -60,14 +60,27 @@
         <!-- 신청자 정보 및 대여 세부 입력 폼 -->
         <div class="form-group">
             <label for="rentCount">신청 수량 (EA)</label>
-            <!-- HTML5 검증: min을 1로, max를 현재 remainCount로 지정하여 초과 입력 방지 -->
             <input type="number" id="rentCount" name="rentCount" class="form-control" 
                    min="1" max="${equipment.remainCount}" placeholder="신청할 수량을 입력하세요." required 
                    ${equipment.remainCount == 0 ? 'disabled' : ''}>
         </div>
 
+        <%-- 📌 2. 컨트롤러(RentInsertController)에서 요구하는 필수 날짜 파라미터 2개를 새로 추가했습니다 --%>
+        <div class="form-group">
+            <label for="rentalDate">대여 시작일</label>
+            <input type="date" id="rentalDate" name="rentalDate" class="form-control" required
+                   ${equipment.remainCount == 0 ? 'disabled' : ''}>
+        </div>
+
+        <div class="form-group">
+            <label for="returnDate">반납 예정일</label>
+            <input type="date" id="returnDate" name="returnDate" class="form-control" required
+                   ${equipment.remainCount == 0 ? 'disabled' : ''}>
+        </div>
+
         <div class="form-group">
             <label for="rentPurpose">대여 사유</label>
+            <%-- 📌 3. name 속성을 컨트롤러 규격에 맞춰 "rentPurpose"로 유지했습니다 --%>
             <textarea id="rentPurpose" name="rentPurpose" class="form-control" rows="4" 
                       placeholder="대여 목적 및 사유를 상세히 입력해 주세요." required
                       ${equipment.remainCount == 0 ? 'disabled' : ''}></textarea>
@@ -75,7 +88,6 @@
 
         <!-- 버튼 영역 (CSS .btn-area 구조 반영) -->
         <div class="btn-area">
-            <%-- 재고가 0개이면 신청하기 버튼을 비활성화(disabled) 합니다. --%>
             <button type="submit" class="btn btn-submit" ${equipment.remainCount == 0 ? 'disabled' : ''}>
                 ${equipment.remainCount == 0 ? '대여 불가 (재고 소진)' : '신청서 제출'}
             </button>
@@ -92,25 +104,44 @@
 function validateForm() {
     const rentCountInput = document.getElementById("rentCount");
     const maxRemainInput = document.getElementById("maxRemain");
+    const rentalDateInput = document.getElementById("rentalDate");
+    const returnDateInput = document.getElementById("returnDate");
     
     const rentCount = parseInt(rentCountInput.value, 10);
     const maxRemain = parseInt(maxRemainInput.value, 10);
+    const sDate = rentalDateInput.value;
+    const eDate = returnDateInput.value;
 
-    // 1. 숫자가 맞는지 검증
+    // 1. 신청 수량 숫자 및 음수값 유효성 검증
     if (isNaN(rentCount) || rentCount <= 0) {
         alert("올바른 신청 수량을 입력해 주세요.");
         rentCountInput.focus();
         return false;
     }
 
-    // 2. 잔여 재고보다 많이 신청하는지 최종 검증
+    // 2. 잔여 재고 초과 신청 검증
     if (rentCount > maxRemain) {
         alert("현재 대여 가능한 수량(" + maxRemain + "개)을 초과하여 신청할 수 없습니다.");
         rentCountInput.focus();
         return false;
     }
 
-    // 3. 최종 제출 확인 대화상자
+    // 3. 날짜 입력 누락 방지 가드
+    if (!sDate || !eDate) {
+        alert("대여 시작일과 반납 예정일을 모두 선택해 주세요.");
+        if (!sDate) rentalDateInput.focus();
+        else returnDateInput.focus();
+        return false;
+    }
+
+    // 4. 대여 종료일이 시작일보다 빠른 역전 오류 검증
+    if (new Date(sDate) > new Date(eDate)) {
+        alert("반납 예정일은 대여 시작일보다 빠를 수 없습니다.");
+        returnDateInput.focus();
+        return false;
+    }
+
+    // 5. 모든 검증 통과 시 최종 제출 컨펌창 팝업
     return confirm("입력하신 내용으로 비품 대여를 신청하시겠습니까?");
 }
 </script>

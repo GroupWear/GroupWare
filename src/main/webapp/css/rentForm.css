@@ -79,6 +79,21 @@ h2 {
     box-shadow: 0 0 5px rgba(52, 152, 218, 0.3);
 }
 
+/* 📌 [추가] 날짜 선택 상자 및 달력 아이콘 영역에 손가락 모양 커서 지정 */
+input[type="date"].form-control {
+    cursor: pointer;
+}
+/* 크롬, 엣지, 웨일 등 브라우저 자체 달력 팝업 아이콘 위에서도 손가락 모양이 유지되도록 처리 */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+}
+
+/* 📌 [요청 사항 완비] 대여 사유 입력창 크기 조절 기능 절대 비활성화 및 가로 세팅 */
+textarea.form-control {
+    resize: none; 
+    font-family: inherit;
+}
+
 /* 버튼 영역 */
 .btn-area {
     display: flex;
