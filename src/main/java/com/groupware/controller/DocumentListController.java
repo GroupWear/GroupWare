@@ -57,6 +57,10 @@ public class DocumentListController extends HttpServlet {
             }
             request.setAttribute("leaveList", leaveList);
             
+            // 📌 [신규 추가]: 돌아갈 탭 파라미터를 받아서 존재하면 request에 심어 JSP로 보냅니다.
+            String activeTab = request.getParameter("tab");
+            request.setAttribute("activeTab", activeTab); 
+            
             // 데이터 탑재 후 기안 문서함 화면(JSP)으로 포워딩
             request.getRequestDispatcher("documentList.jsp").forward(request, response);
             

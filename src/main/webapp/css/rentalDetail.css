@@ -1,0 +1,43 @@
+@charset "UTF-8";
+.detail-container { max-width: 850px; margin: 40px auto; padding: 35px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); font-family: 'Pretendard', sans-serif; }
+.detail-header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; border-bottom: 2px solid #6366f1; padding-bottom: 15px; }
+.detail-title { font-size: 26px; font-weight: 800; color: #1e293b; margin: 0; }
+
+/* 5단계 결재선 스타일 */
+.approval-container { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 35px; }
+.stamp-box { width: 100px; border: 1px solid #cbd5e1; text-align: center; border-radius: 6px; overflow: hidden; background: #ffffff; }
+.stamp-step { background: #f1f5f9; padding: 6px 0; font-size: 12px; font-weight: 700; color: #475569; border-bottom: 1px solid #cbd5e1; }
+.stamp-name { padding: 18px 0; font-size: 15px; font-weight: 800; color: #0f172a; min-height: 22px; }
+.stamp-name.signed { color: #4f46e5; position: relative; }
+/* 승인 도장 효과 연출 */
+.stamp-name.signed::after { content: '(인)'; font-size: 11px; color: #ef4444; margin-left: 3px; vertical-align: super; }
+.stamp-date { font-size: 11px; color: #64748b; padding-bottom: 6px; background: #fafafa; border-top: 1px dashed #e2e8f0; }
+
+/* 문서 상세 테이블 스타일 */
+.info-table { width: 100%; border-collapse: collapse; margin-bottom: 35px; table-layout: fixed; }
+.info-table th { width: 18%; background: #f8fafc; padding: 14px; border: 1px solid #e2e8f0; text-align: left; color: #334155; font-weight: 700; font-size: 14px; }
+.info-table td { width: 32%; padding: 14px; border: 1px solid #e2e8f0; color: #475569; font-size: 14px; word-break: break-all; }
+.emphasize-text { color: #6366f1; font-weight: 700; }
+
+/* 결재 상태 배지 */
+.status-badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; }
+.status-wait { background: #e0e7ff; color: #4f46e5; }
+.status-active { background: #dcfce7; color: #16a34a; }
+.status-reject { background: #fee2e2; color: #dc2626; }
+.status-finish { background: #f1f5f9; color: #475569; }
+
+/* 하단 제어 버튼 조작 컴포넌트 가로 한 줄 배치 잠금 */
+.btn-group { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; /* 💡 가로 높이 정렬선 일치 */
+    gap: 15px; 
+    border-top: 1px solid #e2e8f0; 
+    padding-top: 25px; 
+    width: 100%;
+}
+.btn { padding: 12px 28px; font-size: 15px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-decoration: none; text-align: center; }
+.btn-back { background: #64748b; color: #ffffff; }
+.btn-approve { background: #22c55e; color: #ffffff; }
+.btn-reject { background: #ef4444; color: #ffffff; }
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }

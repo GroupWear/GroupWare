@@ -14,6 +14,10 @@
     // 2. 컨트롤러 등에서 넘겨받은 기안 목록 수령
     List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("leaveList");
     List<RentalHistoryDTO> eqList = (List<RentalHistoryDTO>) request.getAttribute("docList");
+    
+ 	// 컨트롤러에서 넘어온 활성화 타겟 탭 정보 확인
+    String activeTab = (String) request.getAttribute("activeTab");
+    boolean isEqTab = "equipment".equals(activeTab); // 상세화면에서 복귀했는지 여부
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -59,21 +63,52 @@
     </div>
 
     <!-- 2. 메인 콘텐츠 영역 -->
-    <div class="dashboard-container">
+    <div class="dashboard-container" style="padding-top: 80px;"> <!-- 💡 헤더바(65px) 공간 확보용 탑 패딩 주입 -->
         
-        <div class="headertitle" style="margin-top: 30px; margin-bottom: 15px;">
+        <!-- 📌 [순서 보정 1]: 대제목이 무조건 검색바보다 먼저 렌더링되어야 합니다. -->
+        <div class="headertitle" style="margin-bottom: 20px;">
             <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #1e293b;">통합 기안 문서함</h2>
         </div>
         
-        <!-- 3. 기안 분류별 탭 버튼 영역 (오피스 제거 후 휴가 신청을 기본 활성화) -->
-        <div class="tab-menu-container">
-            <button class="tab-btn active" onclick="switchTab(event, 'tab-leave')">휴가 신청 기안</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-equipment')">비품 대여 신청 기안</button>
+         <!-- 3. 실시간 통합 검색바 컴포넌트 (버튼 클릭 전용 제어형) -->
+        <div class="search-bar-container" style="position: static; padding: 0 0 20px 0;">
+            <div class="search-form">
+                <!-- 검색 분류 선택 -->
+                <select id="searchType" class="search-select" onchange="toggleSearchInput()">
+                    <option value="all">전체 검색</option>
+                    <option value="title">기안 제목</option>
+                    <option value="empName">신청자 (비품)</option>
+                    <option value="status">결재 상태</option>
+                </select>
+                
+                <!-- 📌 [수정]: onkeyup 속성을 지우고, 엔터(Enter) 쳤을 때만 작동하도록 onkeydown 가드를 심었습니다. -->
+                <input type="text" id="keyword" class="search-input" placeholder="검색어를 입력한 후 우측 검색 버튼을 누르거나 엔터를 치세요..." 
+                       onkeydown="if(event.keyCode==13) { filterDocuments(); return false; }">
+                
+                <!-- 결재 상태 고유 드롭다운 버튼 (선택 시 즉시 검색) -->
+                <select id="statusSelect" class="search-select search-input" style="display: none; flex-grow: 1;" onchange="filterDocuments()">
+                    <option value="">-- 결재 상태를 선택하세요 --</option>
+                    <option value="승인대기">승인대기</option>
+                    <option value="대여중">대여중</option>
+                    <option value="미반납">미반납</option>
+                    <option value="반납완료">반납완료</option>
+                    <option value="반려됨">반려됨</option>
+                </select>
+                
+                <!-- 📌 진짜 주인공인 검색 버튼 -->
+                <button type="button" class="btn-search" onclick="filterDocuments()">검색</button>
+            </div>
         </div>
+        
+        <!-- 3. 기안 분류별 탭 버튼 영역 (isEqTab 결과에 따라 active 위치 자동 분기) -->
+		<div class="tab-menu-container">
+		    <button class="tab-btn <%= !isEqTab ? "active" : "" %>" onclick="switchTab(event, 'tab-leave')">휴가 신청 기안</button>
+		    <button class="tab-btn <%= isEqTab ? "active" : "" %>" onclick="switchTab(event, 'tab-equipment')">비품 대여 신청 기안</button>
+		</div>
 
-        <!-- 4. 탭 내부 콘텐츠: 휴가 신청 테이블 (기본 표시) -->
-        <div id="tab-leave" class="tab-content active" style="display: block;">
-            <div class="table-wrapper">
+        <!-- 4. 탭 내부 콘텐츠: 휴가 신청 테이블 -->
+		<div id="tab-leave" class="tab-content <%= !isEqTab ? "active" : "" %>" style="display: <%= !isEqTab ? "block" : "none" %>;">
+		    <div class="table-wrapper">
                 <!-- 📌 여기에 style 속성이 직접 들어갔습니다 -->
                 <table style="min-width: 900px; table-layout: fixed;">
                     <thead>
@@ -93,8 +128,9 @@
                         if ("반려됨".equals(leave.getStatus())) statusClass = "status-red";
                         else if ("승인완료".equals(leave.getStatus())) statusClass = "status-gray";
                     %>
-                        <tr>
-                            <td><%= leave.getLeaveNo() %></td>
+                        <!-- 👍 수정 후: data-doc-id 속성에 고유 문서 번호를 바인딩해 줍니다 -->
+						<tr data-doc-id="leave_<%= leave.getLeaveNo() %>">
+						    <td><%= leave.getLeaveNo() %></td>
                             <td><%= leave.getStartDate() %> ~ <%= leave.getEndDate() %></td>
                             <td><b><%= leave.getUseDays() %>일</b></td>
                             <td style="text-align: left; padding-left: 20px;"><%= leave.getReason() %></td>
@@ -106,73 +142,251 @@
             </div>
         </div>
 
-        <!-- 5. 탭 내부 콘텐츠: 비품 대여 테이블 -->
-        <div id="tab-equipment" class="tab-content">
-		    <div class="table-wrapper">
-		         <!-- 📌 여기에 style 속성이 직접 들어갔습니다 -->
-                <table style="min-width: 900px; table-layout: fixed;">
-		            <thead>
-					    <tr>
-					        <th style="width: 10%;">기안 번호</th>
-					        <th style="width: 20%;">기안 제목</th> <!-- 25% -> 20% 축소 -->
-					        <th style="width: 15%;">신청자</th> 
-					        <th style="width: 15%;">비품 명칭</th>
-					        <th style="width: 10%;">대여 수량</th>
-					        <th style="width: 15%;">대여 기간</th>
-					        <th style="width: 15%;">결재 상태</th> <!-- 📌 10% -> 15% 확장 완료 -->
-					    </tr>
-					</thead>
+         <!-- 5. 탭 내부 콘텐츠: 비품 대여 테이블 -->
+        <div id="tab-equipment" class="tab-content" style="display: none;">
+            <!-- 📌 table-wrapper가 찌그러지지 않도록 부모 폭을 100%로 확실히 명시합니다. -->
+            <div class="table-wrapper" style="width: 100%; max-width: none;">
+                
+                <!-- 📌 테이블에 class="eq-table"을 주입하고 width: 100%로 시원하게 폅니다. -->
+                <table class="eq-table" style="width: 100%; table-layout: fixed;">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%; text-align: center;">기안 번호</th>
+                            <th style="width: 35%; text-align: center;">기안 제목</th>
+                            <th style="width: 15%; text-align: center;">신청자</th> 
+                            <th style="width: 10%; text-align: center;">대여 수량</th>
+                            <th style="width: 15%; text-align: center;">대여 기간</th>
+                            <th style="width: 15%; text-align: center;">결재 상태</th>
+                        </tr>
+                    </thead>
 		            <tbody>
 		            <% if (eqList == null || eqList.isEmpty()) { %>
-		                <tr><td colspan="7" class="empty-data">신청된 비품 대여 기안 내역이 없습니다.</td></tr>
+		                <tr><td colspan="6" class="empty-data">신청된 비품 대여 기안 내역이 없습니다.</td></tr> <!-- 💡 colspan 7에서 6으로 수정 -->
 		            <% } else { 
 		                for (RentalHistoryDTO eq : eqList) { 
 		                    String statusClass = "status-blue";
 		                    if ("반려됨".equals(eq.getStatus())) statusClass = "status-red";
 		                    else if ("반납완료".equals(eq.getStatus()) || "이용 종료".equals(eq.getStatus())) statusClass = "status-gray";
-		            %>
-		                <tr>
-		                    <td><%= eq.getRentalNo() %></td>
-		                    <td style="text-align: left; padding-left: 15px;"><%= eq.getTitle() != null ? eq.getTitle() : "제목 없음" %></td>
 		                    
-		                    <!-- 📌 RentalDAO.getAllDocumentList()가 JOIN으로 가져온 기안자 사원명을 출력합니다. -->
+		                    // 해당 문서가 승인대기 중이고, 현재 문서의 결재 단계가 로그인 유저의 직급 등급 레벨과 일치할 때
+		                    boolean isMyApprovalTurn = "승인대기".equals(eq.getStatus()) && (eq.getApprovalStep() == loginEmp.getEmpLevel());
+		            %>
+		                <!-- 👍 수정 후: data-doc-id 속성에 고유 렌탈 번호를 바인딩해 줍니다 -->
+						<tr data-doc-id="rent_<%= eq.getRentalNo() %>">
+						    <td><%= eq.getRentalNo() %></td>
+		                    <td style="text-align: left; padding-left: 15px;">
+		                        <a href="rentalDetail.do?rentalNo=<%= eq.getRentalNo() %>" 
+		                           style="color: #6366f1; text-decoration: none; font-weight: 600;">
+		                            <%= eq.getTitle() != null ? eq.getTitle() : "제목 없음" %>
+		                        </a>
+		                    </td>
 		                    <td><b><%= eq.getEmpName() != null ? eq.getEmpName() : "미상" %></b></td>
 		                    
-		                    <td class="emphasize"><%= eq.getEqName() != null ? eq.getEqName() : "미지정 비품" %></td>
-		                    <td><b><%= eq.getReqCount() %></b> EA</td>
+		                  <!-- 📌 [블록 성질 해제 가드]: b 태그의 display를 inline으로 강제 변환하여 옆으로 한 줄 출력을 보장합니다. -->
+							<td style="white-space: nowrap !important; text-align: center !important;">
+							    <b style="display: inline !important; float: none !important;"><%= eq.getReqCount() %></b>&nbsp;EA
+							</td>
 		                    <td><%= eq.getRentalDate() %> ~ <%= eq.getReturnDate() %></td>
-		                    <td><span class="status-badge <%= statusClass %>"><%= eq.getStatus() %></span></td>
+		                    
+		                    <!-- 결재 상태 칸 (빨간 글씨 + 깜빡이 애니메이션 유지) -->
+		                    <td style="vertical-align: middle; padding: 10px 0;">
+		                        <span class="status-badge <%= statusClass %>" style="margin-bottom: 4px;"><%= eq.getStatus() %></span>
+		                        
+		                        <% if (isMyApprovalTurn) { %>
+		                            <div class="approval-blink" style="font-size: 11px; color: #ef4444; font-weight: 800; margin-top: 3px;">
+		                                결재 바랍니다
+		                            </div>
+		                        <% } %>
+		                    </td>
 		                </tr>
 		            <% } } %>
 		            </tbody>
 		        </table>
 		    </div>
 		</div>
+		
+		<style>
+		.approval-blink {
+		    animation: alert-flash 0.8s infinite alternate ease-in-out;
+		}
+		
+		@keyframes alert-flash {
+		    from {
+		        opacity: 0.3;
+		        transform: scale(0.98);
+		    }
+		    to {
+		        opacity: 1;
+		        transform: scale(1);
+		    }
+		}
+		</style>
 
-    <!-- 6. 탭 전환 자바스크립트 제어 -->
-    <script>
-        function switchTab(event, tabId) {
-            // 모든 탭 콘텐츠 숨기기
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => {
-                content.style.display = 'none';
-                content.classList.remove('active');
-            });
-            
-            // 모든 탭 버튼 비활성화
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // 선택한 탭 콘텐츠 표시 및 버튼 활성화
-            const targetContent = document.getElementById(tabId);
-            if (targetContent) {
-                targetContent.style.display = 'block';
-                targetContent.classList.add('active');
-            }
-            event.currentTarget.classList.add('active');
-        }
-    </script>
+    <!-- 6. 탭 전환, 드롭다운 및 고성능 필터/스크롤 엔진 (최종 완결본) -->
+	<script>
+	let currentMatchIndex = -1;
+	let matchRows = []; // 검색 조건에 매칭된 tr 엘리먼트들을 담을 배열
+	let lastKeyword = ""; // 이전 검색어를 저장하여 새 검색인지 연속 이동인지 판별
+	
+	function switchTab(event, tabId) {
+	    const contents = document.querySelectorAll('.tab-content');
+	    contents.forEach(content => { content.style.display = 'none'; content.classList.remove('active'); });
+	    
+	    const buttons = document.querySelectorAll('.tab-btn');
+	    buttons.forEach(btn => { btn.classList.remove('active'); });
+	    
+	    const targetContent = document.getElementById(tabId);
+	    if (targetContent) { 
+	        targetContent.style.display = 'block'; 
+	        targetContent.classList.add('active'); 
+	        
+	        // 💡 [핵심 안전장치]: 탭이 전환되거나 초기 로드될 때 숨겨진 행들을 강제로 전부 노출시킵니다.
+	        const rows = targetContent.querySelectorAll('tbody tr');
+	        rows.forEach(row => { row.style.display = ""; });
+	    }
+	    if (event && event.currentTarget) event.currentTarget.classList.add('active');
+	    
+	    // 탭 전환 시 검색 인터페이스 완전 리셋 및 전체 화면 노출
+	    document.getElementById("searchType").value = "all";
+	    document.getElementById("keyword").value = "";
+	    document.getElementById("statusSelect").value = "";
+	    toggleSearchInput();
+	    
+	    currentMatchIndex = -1;
+	    matchRows = [];
+	    lastKeyword = "";
+	}
+	
+	function toggleSearchInput() {
+	    const searchType = document.getElementById("searchType").value;
+	    const keywordInput = document.getElementById("keyword");
+	    const statusSelect = document.getElementById("statusSelect");
+	    
+	    if (searchType === "status") {
+	        keywordInput.style.display = "none"; statusSelect.style.display = "block"; keywordInput.value = "";
+	    } else {
+	        keywordInput.style.display = "block"; statusSelect.style.display = "none"; statusSelect.value = "";
+	    }
+	}
+	
+	// 📌 [순수 필터링 및 고성능 부드러운 스크롤 엔진]
+	function filterDocuments() {
+	    const searchType = document.getElementById("searchType").value;
+	    let keyword = (searchType === "status") ? document.getElementById("statusSelect").value : document.getElementById("keyword").value;
+	    
+	    if (!keyword) keyword = "";
+	    keyword = keyword.trim().toLowerCase();
+	
+	    // 검색어가 바뀐 경우 인덱스 및 타겟 배열 초기화
+	    if (keyword !== lastKeyword) {
+	        currentMatchIndex = -1;
+	        matchRows = [];
+	        lastKeyword = keyword;
+	    }
+	
+	    const activeTab = document.querySelector('.tab-content.active');
+	    if (!activeTab) return;
+	    
+	    const rows = activeTab.querySelectorAll('tbody tr');
+	    
+	    // DOM 탐색 및 조건 매칭 데이터 수집 (최초 1회 또는 검색어 변경 시에만 배열 빌드)
+	    if (matchRows.length === 0 && keyword !== "") {
+	        rows.forEach(row => {
+	            if (row.querySelector('.empty-data')) return; // 데이터 없음 행 방어
+	            
+	            const aTag = row.querySelector('td a');
+	            const bTag = row.querySelector('td b');
+	            const badge = row.querySelector('.status-badge');
+	            const cells = row.getElementsByTagName('td');
+	            
+	            // 공백 및 유니코드 리스크 완벽 제거 가공
+	            const leaveReasonText = cells && cells[3] ? cells[3].innerText.replace(/\u00a0/g, " ").replace(/\s+/g, " ").toLowerCase().trim() : "";
+	            const titleText = aTag ? aTag.innerText.replace(/\u00a0/g, " ").replace(/\s+/g, " ").toLowerCase().trim() : "";
+	            const empNameText = bTag ? bTag.innerText.replace(/\u00a0/g, " ").replace(/\s+/g, " ").toLowerCase().trim() : "";
+	            const statusText = badge ? badge.innerText.replace(/\u00a0/g, " ").replace(/\s+/g, " ").toLowerCase().trim() : "";
+	            const fullText = row.innerText.replace(/\u00a0/g, " ").replace(/\s+/g, " ").toLowerCase();
+	            
+	            let isMatch = false;
+	            
+	            if (searchType === "all") {
+	                isMatch = fullText.includes(keyword);
+	            } else if (searchType === "title") {
+	                if (titleText.includes(keyword) || (titleText === "" && leaveReasonText.includes(keyword))) isMatch = true;
+	            } else if (searchType === "empName") {
+	                if (empNameText.includes(keyword)) isMatch = true;
+	            } else if (searchType === "status") {
+	                if (statusText.includes(keyword) || (fullText.includes("결재 바랍니다") && "결재 바랍니다".includes(keyword))) {
+	                    isMatch = true;
+	                }
+	            }
+	            
+	            if (isMatch) {
+	                matchRows.push(row);
+	            }
+	        });
+	    }
+	
+	    // 레이아웃 상태 제어 (화면 노출/숨김)
+	    rows.forEach(row => {
+	        if (row.querySelector('.empty-data')) return;
+	        
+	        if (keyword === "") {
+	            row.style.display = ""; // 검색어 비어있으면 전체 노출
+	        } else {
+	            if (matchRows.includes(row)) {
+	                row.style.display = "";
+	            } else {
+	                row.style.display = "none";
+	            }
+	        }
+	    });
+	
+	    // 📌 [순차 스크롤 무빙 시스템 작동]
+	    if (keyword !== "") {
+	        if (matchRows.length > 0) {
+	            currentMatchIndex = (currentMatchIndex + 1) % matchRows.length;
+	
+	            setTimeout(() => {
+	                matchRows[currentMatchIndex].scrollIntoView({
+	                    behavior: "smooth",
+	                    block: "center"
+	                });
+	            }, 50);
+	
+	            if (searchType !== "status") {
+	                document.getElementById("keyword").select();
+	            }
+	        } else {
+	            alert("일치하는 기안 내역을 찾을 수 없습니다.");
+	            currentMatchIndex = -1;
+	            matchRows = [];
+	        }
+	    }
+	}
+	
+	// 📌 [상세 정보 연동]: 목록의 행을 클릭했을 때 서블릿 상세페이지로 이동시키는 함수
+	function goToDetail(rentalNo) {
+	    if (!rentalNo) {
+	        alert("유효하지 않은 문서 번호입니다.");
+	        return;
+	    }
+	    location.href = "rentalDetail.do?rentalNo=" + rentalNo;
+	}
+	
+	// 📌 [신규 보정]: 브라우저 로딩 시 파라미터(?tab=equipment)를 정밀 분석하여 화면 복구
+	window.addEventListener('DOMContentLoaded', function() {
+	    const urlParams = new URLSearchParams(window.location.search);
+	    const tabParam = urlParams.get('tab');
+	    
+	    // 파라미터가 비품대여(equipment)이거나 해시가 붙어있을 때 작동
+	    if (tabParam === 'equipment' || window.location.hash === '#equipment') {
+	        switchTab(null, 'tab-equipment');
+	        
+	        // 버튼 탭 스타일 동적 활성화 (클래스 매칭 방어 코드)
+	        const eqTabBtn = document.querySelector('.tab-btn[onclick*="tab-equipment"]');
+	        if (eqTabBtn) eqTabBtn.classList.add('active');
+	    }
+	});
+	</script>
 </body>
 </html>

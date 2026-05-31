@@ -1,0 +1,193 @@
+-- ==========================================
+-- [시나리오 1] 회의실 예약 데이터 (약 15건)
+-- ==========================================
+
+-- 1) 이용 종료 건 (과거)
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 5, '401', TRUNC(SYSDATE-3), '10:00', '12:00', '영업팀 주간 실적 보고', '예약완료');
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 3, '501', TRUNC(SYSDATE-2), '13:00', '15:00', '개발팀 코드 리뷰', '예약완료');
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 19, '403', TRUNC(SYSDATE-1), '14:00', '16:00', '재무팀 정산 회의', '예약완료');
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 2, 'Meeting', TRUNC(SYSDATE-1), '16:00', '18:00', '신입사원 채용 면접', '예약완료');
+
+-- 2) 오늘 진행 및 예정 건
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 14, '403', TRUNC(SYSDATE), '09:00', '11:00', '외부 법무법인 미팅', '예약완료');
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 4, '501', TRUNC(SYSDATE), '14:00', '16:00', '신규 프로젝트 기술 셋업', '예약완료');
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 8, '401', TRUNC(SYSDATE), '16:00', '17:00', '경영진 주간 보고 준비', '예약완료');
+
+-- 3) 미래 예약 건
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 6, '501', TRUNC(SYSDATE+2), '10:00', '12:00', '기획팀 아이디에이션 회의', '예약완료');
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 13, '401', TRUNC(SYSDATE+3), '13:00', '15:00', '주요 클라이언트 초청 행사', '예약완료');
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 12, '403', TRUNC(SYSDATE+5), '15:00', '18:00', 'R&D 부서 월간 세미나', '예약완료');
+
+-- 4) 취소된 예약 건
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 2, 'Meeting5', TRUNC(SYSDATE+1), '09:00', '11:00', '인사팀 채용 면접(일정 취소)', '취소됨');
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 9, '502', TRUNC(SYSDATE+2), '14:00', '15:00', '보안 점검 회의(연기)', '취소됨');
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 18, '403', TRUNC(SYSDATE+4), '10:00', '12:00', '해외지사 화상회의(취소)', '취소됨');
+
+-- 5) 임시 선점 중인 고스트 데이터 (타이머 만료 연출)
+INSERT INTO RESERVATION (RES_NO, EMP_NO, ROOM_ID, RES_DATE, START_TIME, END_TIME, PURPOSE, STATUS, EXPIRE_TIME) 
+VALUES (SEQ_RESERVATION.NEXTVAL, 5, '503', TRUNC(SYSDATE), '11:00', '12:00', '임시 선점', '임시선점', SYSDATE - INTERVAL '10' MINUTE);
+
+
+-- ==========================================
+-- [시나리오 2] 비품 대여 데이터 (실제 비품 마스터 매핑 최종본 - 총 15건)
+-- ==========================================
+
+-- ------------------------------------------
+-- 파트 1. [승인대기] 진행 중인 핵심 테스트 기안 (최신글 15번~11번)
+-- ------------------------------------------
+-- 15번 기안자: 안총무 (레벨 1) -> 현재 2차 결재대기 (SIGN2~5 공백) / EQ_NO 21: 대여용 법인 카드 (공용)
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, REASON)
+VALUES (15, 17, 21, '대여용 법인 카드 (공용) 대여 신청', 1, TRUNC(SYSDATE+1), TRUNC(SYSDATE+2), '승인대기', 2, '안총무', TRUNC(SYSDATE), '정기 주주총회 및 이사회 연석 총회 진행 시 외부 초청 위원 다과비 결제 및 관련 인쇄 대리 정산을 위해 대여합니다.');
+
+-- 14번 기안자: 정사원 (레벨 1) -> 현재 2차 결재대기 (SIGN2~5 공백) / EQ_NO 12: 샤오미 보조배터리 20000mAh
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, REASON)
+VALUES (14, 5, 12, '샤오미 보조배터리 20000mAh 대여 신청', 2, TRUNC(SYSDATE+1), TRUNC(SYSDATE+5), '승인대기', 2, '정사원', TRUNC(SYSDATE), '대외 협력사 릴레이 미팅 및 상시 출장 스케줄로 인한 모바일 디바이스 상시 충전 목적으로 신청합니다.');
+
+-- [교정본 13번] 황인프(레벨 2)가 신청하여 담당(SIGN2) 서명이 들어가고 현재 3차 상급자 결재 대기 중인 상태
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, REASON)
+VALUES (13, 16, 8, '로지텍 MX Master 3S 마우스 대여 신청', 3, TRUNC(SYSDATE+2), TRUNC(SYSDATE+90), '승인대기', 3, '황인프', TRUNC(SYSDATE), '인프라부서 신설 파트 사무 공간 조성에 따른 배정 인원 업무용 입력 장비 기본 수량 확보를 위해 대여를 요청합니다.');
+
+-- 12번 기안자: 송사원 (레벨 1) -> 1차 자동 / 2차 최대리 승인 / 현재 3차 결재대기 / EQ_NO 15: Galaxy Tab S9 FE
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, REASON)
+VALUES (12, 11, 15, 'Galaxy Tab S9 FE 대여 신청', 1, TRUNC(SYSDATE+3), TRUNC(SYSDATE+10), '승인대기', 3, '송사원', TRUNC(SYSDATE), '최대리', TRUNC(SYSDATE), '메타버스 가상 쇼룸 메인 프로젝트 프로토타입 3D 렌더링 화면 왜곡 현상 테스트 및 센서 추적 정밀 디버깅 목적으로 대여합니다.');
+
+-- 11번 📌 [5단계 대기 문서 - 최고 등급]: 1~4차 승인 완료 / 현재 최종 김대표 결재대기 / EQ_NO 4: Dell 32인치 4K 모니터
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE)
+VALUES (11, 10, 4, 'Dell 32인치 4K 모니터 대여 신청', 5, TRUNC(SYSDATE+1), TRUNC(SYSDATE+730), '승인대기', 5, '고마켓', TRUNC(SYSDATE), '고마켓', TRUNC(SYSDATE), '홍글로', TRUNC(SYSDATE), '윤재무', TRUNC(SYSDATE), '영업부 내근 처리 인원 증대 및 데이터 정산 속도 향상을 위한 고성능 업무용 PC 장비 다량 대여 요청의 건.');
+
+
+-- ------------------------------------------
+-- 파트 2. [대여중] 김대표 승인 완료되어 정상 사용 중 (10번~8번 / 재고 차감 반영 완료)
+-- ------------------------------------------
+-- 10번 기안자: 송사원 (레벨 1) -> 1단계 담당이므로 SIGN1부터 시작하여 SIGN5까지 최종 완료
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (10, 11, 1, 'MacBook Pro 16형 (M3) 대여 신청', 1, TRUNC(SYSDATE-5), TRUNC(SYSDATE+360), '대여중', 6, '송사원', TRUNC(SYSDATE-5), '최대리', TRUNC(SYSDATE-5), '박개발', TRUNC(SYSDATE-5), '유법무', TRUNC(SYSDATE-5), '김대표', TRUNC(SYSDATE-5), '개발팀 신규 배정 인원의 상시 코딩 테스트 및 통합 시스템 제어를 위한 기본 PC 장비를 대여 및 수령하고자 합니다.');
+
+-- 9번 기안자: 조대리 (레벨 2) -> 2단계 담당이므로 SIGN1(하급자)은 NULL 처리, SIGN2(담당)부터 SIGN5까지 완료
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (9, 7, 19, 'GoPro Hero 12 대여 신청', 1, TRUNC(SYSDATE-3), TRUNC(SYSDATE), '대여중', 6, '조대리', TRUNC(SYSDATE-3), '강기획', TRUNC(SYSDATE-3), '이인사', TRUNC(SYSDATE-3), '김대표', TRUNC(SYSDATE-3), '사내 미디어 센터 공식 유튜브 채널 업로드용 기획 부서 단합 대회 단체 인트로 시네마틱 영상 촬영 목적으로 장비를 신청합니다.');
+
+-- 8번 기안자: 윤재무 (레벨 4) -> 4단계 담당이므로 SIGN1~3(하급자)은 NULL 처리, SIGN4(담당)와 SIGN5(최종)만 완료
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (8, 8, 1, 'MacBook Pro 16형 (M3) 대여 신청', 1, TRUNC(SYSDATE-1), TRUNC(SYSDATE+14), '대여중', 6, '윤재무', TRUNC(SYSDATE-1), '김대표', TRUNC(SYSDATE-1), '상반기 지사 회계 감사 투입 시 보안 취약점 외부 노출을 제어하고 대외비 정산 자료를 완전 격리 보존하기 위하여 대여를 요청합니다.');
+
+-- ------------------------------------------
+-- 파트 3. [미반납] 대여 종료일 초과 연체 상태 (7번~6번 / 재고 차감 반영 완료)
+-- ------------------------------------------
+-- 7번 기안자: 정사원 (레벨 1) -> 1단계 담당이므로 SIGN1부터 SIGN5까지 전 단계 승인 완료 후 연체
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (7, 5, 12, '샤오미 보조배터리 20000mAh 대여 신청', 2, TRUNC(SYSDATE-12), TRUNC(SYSDATE-2), '대여중', 6, '정사원', TRUNC(SYSDATE-12), '고마켓', TRUNC(SYSDATE-12), '홍글로', TRUNC(SYSDATE-12), '윤재무', TRUNC(SYSDATE-12), '김대표', TRUNC(SYSDATE-12), '외부 컨설팅 파트 전사적 종일 외근 및 현장 릴레이 미팅 스케줄로 모바일 기기 상시 전원 수급을 위해 신청합니다.');
+
+-- 6번 기안자: 권사업 (레벨 3) -> 3단계 담당이므로 SIGN1~2(하급자)는 NULL 처리, SIGN3(담당)부터 SIGN5까지 완료 후 연체
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (6, 15, 23, 'HDMI to HDMI 케이블 (3m) 대여 신청', 1, TRUNC(SYSDATE-15), TRUNC(SYSDATE-5), '대여중', 6, '권사업', TRUNC(SYSDATE-15), '이인사', TRUNC(SYSDATE-15), '김대표', TRUNC(SYSDATE-15), '외부 협력사 초청 중회의실 디스플레이 포트 출력 오류 대응 및 임시 프레젠테이션 선로 구성을 위해 긴급 대여합니다.');
+
+-- ------------------------------------------
+-- 파트 4. [반납완료] 사용 완료 후 자산 복구 마감 (5번~3번)
+-- ------------------------------------------
+-- 5번 기안자: 고마켓 (레벨 2) -> 2단계 담당(SIGN2)부터 시작하여 SIGN5까지 최종 완료 후 반납
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (5, 10, 35, '디지털 카메라 (Canon EOS R6) 대여 신청', 1, TRUNC(SYSDATE-20), TRUNC(SYSDATE-18), '반납완료', 6, '고마켓', TRUNC(SYSDATE-21), '홍글로', TRUNC(SYSDATE-21), '윤재무', TRUNC(SYSDATE-21), '김대표', TRUNC(SYSDATE-20), '전사 하반기 단합 행사 다큐멘터리 아카이빙 사진 촬영 및 인쇄용 프레스 킷 이미지 리소스 생성을 위한 장비 요청 건입니다.');
+
+-- 4번 기안자: 신영업 (레벨 2) -> 2단계 담당(SIGN2)부터 시작하여 SIGN5까지 최종 완료 후 반납
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (4, 13, 16, '대여용 빔프로젝터 (Epson) 대여 신청', 1, TRUNC(SYSDATE-15), TRUNC(SYSDATE-13), '반납완료', 6, '신영업', TRUNC(SYSDATE-16), '홍글로', TRUNC(SYSDATE-16), '이인사', TRUNC(SYSDATE-16), '김대표', TRUNC(SYSDATE-15), '대구 지사 대규모 특약점 대상 상생 협력 세미나 진행 및 신제품 홍보 슬라이드 다량 대면 투사를 위하여 단기 대여합니다.');
+
+-- 3번 기안자: 최대리 (레벨 2) -> 2단계 담당(SIGN2)부터 시작하여 SIGN5까지 최종 완료 후 반납
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (3, 4, 15, 'Galaxy Tab S9 FE 대여 신청', 1, TRUNC(SYSDATE-10), TRUNC(SYSDATE-6), '반납완료', 6, '최대리', TRUNC(SYSDATE-11), '박개발', TRUNC(SYSDATE-11), '유법무', TRUNC(SYSDATE-11), '김대표', TRUNC(SYSDATE-10), '신규 디자인 컴포넌트 해상도 파편화 테스트 및 모바일 UI 반응형 레이아웃 정상 동작 확인을 위해 요청합니다.');
+
+-- ------------------------------------------
+-- 파트 5. [반려됨] 상급자 거절로 종결 처리된 기안 (2번~1번)
+-- ------------------------------------------
+-- 2번 기안자: 고마켓 (레벨 2) -> SIGN2(담당 고마켓) 서명 후 3차 결재권자인 SIGN3(홍글로) 선에서 반려 종결
+-- 💡 괄호 결함 방어용 오리지널 파싱 포맷인 "(반려)" 구조를 그대로 밀어 넣습니다. 자바가 1칸 공백 보정을 수행합니다.
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, REASON)
+VALUES (2, 10, 30, '블루투스 스피커 (Marshall) 대여 신청', 2, TRUNC(SYSDATE+1), TRUNC(SYSDATE+30), '반려됨', 3, '고마켓', TRUNC(SYSDATE), '홍글로(반려)', TRUNC(SYSDATE), '마케팅부서 상반기 야외 게릴라 프로모션 이벤트 부스 인테리어 배경 음악 및 현장 가이드 사운드 실시간 야외 송출을 위해 신청합니다.');
+
+-- 1번 기안자: 이인사 (레벨 4) -> SIGN4(담당 이인사) 서명 후 5차 최종 결재권자인 SIGN5(김대표) 선에서 반려 종결
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (1, 2, 4, 'Dell 32인치 4K 모니터 대여 신청', 4, TRUNC(SYSDATE+3), TRUNC(SYSDATE+7), '반려됨', 5, '이인사', TRUNC(SYSDATE), '김대표(반려)', TRUNC(SYSDATE), '인사팀 면접 전형 전용 듀얼 모니터 대여 요청의 건.');
+
+
+-- ------------------------------------------
+-- [안전 조치]: 중복 PK 방지용 시퀀스 재정렬 가드 작동
+-- ------------------------------------------
+ALTER SEQUENCE SEQ_RENTAL RESTART WITH 16;
+
+-- ==========================================
+-- [시나리오 3] 휴가 신청 데이터 (약 15건)
+-- ==========================================
+
+-- 1) [승인완료] 최종 승인 및 연차 차감 완료
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, 
+                            SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 1, TRUNC(SYSDATE+20), TRUNC(SYSDATE+22), 3, '개인 리프레시 및 가족 여행', '승인완료', 5, 
+        '김대표', SYSDATE, '김대표', SYSDATE, '김대표', SYSDATE, '김대표', SYSDATE, '김대표', SYSDATE);
+UPDATE EMPLOYEE SET CUR_LEAVE = CUR_LEAVE - 3 WHERE EMP_NO = 1;
+
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, 
+                            SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 8, TRUNC(SYSDATE-5), TRUNC(SYSDATE-4), 2, '정기 연차 사용', '승인완료', 5, 
+        '윤재무', SYSDATE-10, '윤재무', SYSDATE-10, '윤재무', SYSDATE-10, '윤재무', SYSDATE-10, '김대표', SYSDATE-9);
+UPDATE EMPLOYEE SET CUR_LEAVE = CUR_LEAVE - 2 WHERE EMP_NO = 8;
+
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, 
+                            SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 14, TRUNC(SYSDATE+10), TRUNC(SYSDATE+14), 5, '장기 근속 포상 휴가', '승인완료', 5, 
+        '유법무', SYSDATE-2, '유법무', SYSDATE-2, '유법무', SYSDATE-2, '유법무', SYSDATE-2, '김대표', SYSDATE-1);
+UPDATE EMPLOYEE SET CUR_LEAVE = CUR_LEAVE - 5 WHERE EMP_NO = 14;
+
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, 
+                            SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 3, TRUNC(SYSDATE+2), TRUNC(SYSDATE+2), 1, '은행 업무 및 개인 용무', '승인완료', 5, 
+        '박개발', SYSDATE-5, '박개발', SYSDATE-5, '박개발', SYSDATE-5, '이인사', SYSDATE-4, '김대표', SYSDATE-3);
+UPDATE EMPLOYEE SET CUR_LEAVE = CUR_LEAVE - 1 WHERE EMP_NO = 3;
+
+-- 2) [승인대기] 단계별 결재 대기 중
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, 
+                            SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 5, TRUNC(SYSDATE+8), TRUNC(SYSDATE+8), 1, '가족 경조사 참석', '승인대기', 3, '정사원', SYSDATE, '정사원', SYSDATE);
+
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, 
+                            SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 2, TRUNC(SYSDATE+15), TRUNC(SYSDATE+16), 2, '예비군 훈련 참여', '승인대기', 5, 
+        '이인사', SYSDATE, '이인사', SYSDATE, '이인사', SYSDATE, '이인사', SYSDATE);
+
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, 
+                            SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 7, TRUNC(SYSDATE+5), TRUNC(SYSDATE+6), 2, '이사 준비', '승인대기', 4, 
+        '조대리', SYSDATE, '조대리', SYSDATE, '강기획', SYSDATE);
+
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, 
+                            SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 11, TRUNC(SYSDATE+7), TRUNC(SYSDATE+8), 2, '백신 접종 및 병원 진료', '승인대기', 3, 
+        '송사원', SYSDATE, '송사원', SYSDATE);
+
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 20, TRUNC(SYSDATE+25), TRUNC(SYSDATE+26), 2, '개인 사정', '승인대기', 2, '서정산', SYSDATE);
+
+-- 3) [반려됨] 반려 케이스
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 16, TRUNC(SYSDATE+1), TRUNC(SYSDATE+3), 3, '일정 중복으로 인한 반려', '반려됨', 2, '황인프', SYSDATE);
+
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP)
+VALUES (SEQ_LEAVE.NEXTVAL, 10, TRUNC(SYSDATE-1), TRUNC(SYSDATE-1), 1, '단순 변심 취소', '반려됨', 1);
+
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE)
+VALUES (SEQ_LEAVE.NEXTVAL, 19, TRUNC(SYSDATE+12), TRUNC(SYSDATE+13), 2, '팀 주요 행사 겹침', '반려됨', 3, '백회계', SYSDATE-1, '백회계', SYSDATE-1);
+
+COMMIT;

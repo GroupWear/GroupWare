@@ -80,8 +80,8 @@
 
         <div class="form-group">
             <label for="rentPurpose">대여 사유</label>
-            <%-- 📌 3. name 속성을 컨트롤러 규격에 맞춰 "rentPurpose"로 유지했습니다 --%>
-            <textarea id="rentPurpose" name="rentPurpose" class="form-control" rows="4" 
+            <%-- 📌 3. name 속성을 컨트롤러 규격에 맞춰 "content"로 유지했습니다 --%>
+            <textarea id="rentPurpose" name="content" class="form-control" rows="4" 
                       placeholder="대여 목적 및 사유를 상세히 입력해 주세요." required
                       ${equipment.remainCount == 0 ? 'disabled' : ''}></textarea>
         </div>

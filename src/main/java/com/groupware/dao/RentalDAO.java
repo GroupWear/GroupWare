@@ -11,23 +11,25 @@ import com.groupware.util.DBConnection;
 
 public class RentalDAO {
 
-	  /* 📌 [오류 해결 완료] 물음표 개수 불일치 및 인덱스 누락 완벽 교정 */
+	/* 📌 [오류 해결 완료] 물음표 개수 불일치 및 인덱스 누락 완벽 교정 */
     public boolean insertRental(RentalHistoryDTO dto) {
         boolean result = false;
         Connection conn = null;
         PreparedStatement pstmt = null;
         PreparedStatement pstmtEq = null;
 
-        // 🛠️ 총 19개 컬럼: SEQ_RENTAL.NEXTVAL(1개) + 물음표 ? (18개)로 개수를 정확하게 맞추었습니다.
+        // 💡 [핵심 교정]: 컬럼명은 총 19개입니다. VALUES 뒤의 물음표(?) 개수를 정확히 19개로 복구했습니다.
         String sql = "INSERT INTO RENTAL_HISTORY (RENTAL_NO, TITLE, EMP_NO, EQ_NO, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, "
-                   + "SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REQ_COUNT) "
-                   + "VALUES (SEQ_RENTAL.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                   + "SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REQ_COUNT, REASON) "
+                   + "VALUES (SEQ_RENTAL.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
 
         try {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false); // 트랜잭션 시작
 
             pstmt = conn.prepareStatement(sql);
+            
+            // 💡 1번부터 19번까지의 파라미터가 유실 없이 100% 매칭됩니다.
             pstmt.setString(1, dto.getTitle());
             pstmt.setInt(2, dto.getEmpNo());
             pstmt.setInt(3, dto.getEqNo());
@@ -46,7 +48,10 @@ public class RentalDAO {
             pstmt.setDate(15, dto.getSign4Date());
             pstmt.setString(16, dto.getSign5());
             pstmt.setDate(17, dto.getSign5Date());
+            
             pstmt.setInt(18, dto.getReqCount()); 
+            // 📌 [교정 확인]: 19번째 파라미터인 대여 사유(REASON 컬럼)에 정상 바인딩됩니다.
+            pstmt.setString(19, dto.getContent()); 
 
             int count = pstmt.executeUpdate();
 
@@ -65,6 +70,8 @@ public class RentalDAO {
                 } else {
                     conn.rollback(); // 재고 부족 등의 이유로 차감 실패 시 전체 롤백
                 }
+            } else {
+                conn.rollback(); // 기안 등록 자체 실패 시 롤백
             }
         } catch (Exception e) {
             try { if (conn != null) conn.rollback(); } catch (Exception ex) {}
@@ -82,7 +89,7 @@ public class RentalDAO {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
+        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.REASON, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
                 + "CASE WHEN h.STATUS = '대여중' AND h.RETURN_DATE < TRUNC(SYSDATE) THEN '미반납' ELSE h.STATUS END AS STATUS, "
                 + "h.APPROVAL_STEP, h.SIGN1, h.SIGN1_DATE, h.SIGN2, h.SIGN2_DATE, h.SIGN3, h.SIGN3_DATE, "
                 + "h.SIGN4, h.SIGN4_DATE, h.SIGN5, h.SIGN5_DATE, h.REQ_COUNT, "
@@ -113,9 +120,16 @@ public class RentalDAO {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "SELECT h.*, e.EMP_NAME, e.EMP_LEVEL, eq.EQ_NAME, eq.TOTAL_COUNT, eq.REMAIN_COUNT "
-                + "FROM RENTAL_HISTORY h " + "LEFT JOIN EMPLOYEE e ON h.EMP_NO = e.EMP_NO "
-                + "LEFT JOIN EQUIPMENT eq ON h.EQ_NO = eq.EQ_NO " + "WHERE h.RENTAL_NO = ?";
+     // 💡 h.REASON 컬럼을 명시하여 데이터베이스에서 사유를 확실하게 받아옵니다.
+        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.REASON, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
+                + "CASE WHEN h.STATUS = '대여중' AND h.RETURN_DATE < TRUNC(SYSDATE) THEN '미반납' ELSE h.STATUS END AS STATUS, "
+                + "h.APPROVAL_STEP, h.SIGN1, h.SIGN1_DATE, h.SIGN2, h.SIGN2_DATE, h.SIGN3, h.SIGN3_DATE, "
+                + "h.SIGN4, h.SIGN4_DATE, h.SIGN5, h.SIGN5_DATE, h.REQ_COUNT, "
+                + "e.EMP_NAME, e.EMP_LEVEL, eq.EQ_NAME, eq.TOTAL_COUNT, eq.REMAIN_COUNT "
+                + "FROM RENTAL_HISTORY h "
+                + "LEFT JOIN EMPLOYEE e ON h.EMP_NO = e.EMP_NO "
+                + "LEFT JOIN EQUIPMENT eq ON h.EQ_NO = eq.EQ_NO "
+                + "WHERE h.RENTAL_NO = ?";
 
         try {
             conn = DBConnection.getConnection();
@@ -340,6 +354,8 @@ public class RentalDAO {
         dto.setSign4(rs.getString("SIGN4"));
         dto.setSign5(rs.getString("SIGN5"));
         dto.setTitle(rs.getString("TITLE"));
+     // 📌 [수정]: 이제 DB에 REASON 컬럼이 존재하므로 가드 없이 깨끗하게 데이터를 수령합니다.
+        dto.setContent(rs.getString("REASON"));
         dto.setSign1Date(rs.getDate("SIGN1_DATE"));
         dto.setSign2Date(rs.getDate("SIGN2_DATE"));
         dto.setSign3Date(rs.getDate("SIGN3_DATE"));
