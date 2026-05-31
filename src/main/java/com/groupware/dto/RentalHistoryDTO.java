@@ -40,4 +40,6 @@ public class RentalHistoryDTO {
     private int totalCount;        // 비품 총 수량 (EquipmentDTO와 완전 일치)
     private int remainCount;       // 비품 잔여 수량 (EquipmentDTO와 완전 일치)
     
+    private String content; // 📌 신규 추가: 비품 대여 신청 사유 (본문)
+    
 }

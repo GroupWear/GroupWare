@@ -27,4 +27,6 @@ public class EmployeeDTO {
 	
 	private int count_manager; //총 직원 관리자 count 20260513
 	
+	private int managerLevel; // 관리자 결재 단계 레벨 (1~5)
+	
 }

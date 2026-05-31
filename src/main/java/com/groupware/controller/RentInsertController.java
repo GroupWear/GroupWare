@@ -13,8 +13,8 @@ import javax.servlet.http.HttpSession;
 
 import com.groupware.dao.EquipmentDAO;
 import com.groupware.dao.RentalDAO;
-import com.groupware.dto.EquipmentDTO;
 import com.groupware.dto.EmployeeDTO;
+import com.groupware.dto.EquipmentDTO;
 import com.groupware.dto.RentalHistoryDTO;
 
 @WebServlet("/rentInsert.do")
@@ -29,15 +29,12 @@ public class RentInsertController extends HttpServlet {
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
         
-        // 2. 세션 로그인 체크 (누가 빌렸는지 사번 추출을 위해 필수)
+        // 2. 세션 로그인 체크
         HttpSession session = request.getSession();
         EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
         
         if (loginEmp == null) {
-            out.println("<script>");
-            out.println("alert('로그인이 필요한 서비스입니다.');");
-            out.println("location.href='index.jsp';");
-            out.println("</script>");
+            out.println("<script>alert('로그인이 필요한 서비스입니다.');location.href='index.jsp';</script>");
             out.close();
             return;
         }
@@ -47,11 +44,11 @@ public class RentInsertController extends HttpServlet {
             int eqNo = Integer.parseInt(request.getParameter("eqNo"));
             int rentCount = Integer.parseInt(request.getParameter("rentCount"));
             
-            // 대여 시작일과 반납 예정일 파라미터 (HTML의 <input type="date"> 규격 문자열 수령)
             String startDateStr = request.getParameter("rentalDate");
             String endDateStr = request.getParameter("returnDate");
+            String content = request.getParameter("content"); 
             
-            // 4. 데이터베이스 검증: 대여 신청 수량이 현재 실제 재고보다 많은지 선행 체크
+            // 4. 데이터베이스 검증: 실제 재고 체크 선행
             EquipmentDAO eqDao = new EquipmentDAO();
             EquipmentDTO equipment = eqDao.getEquipmentDetail(eqNo);
             
@@ -60,10 +57,7 @@ public class RentInsertController extends HttpServlet {
             }
             
             if (equipment.getRemainCount() < rentCount) {
-                out.println("<script>");
-                out.println("alert('대여 가능한 잔여 재고가 부족합니다. (현재 잔여: " + equipment.getRemainCount() + "개)');");
-                out.println("history.back();");
-                out.println("</script>");
+                out.println("<script>alert('대여 가능한 잔여 재고가 부족합니다. (현재 잔여: " + equipment.getRemainCount() + "개)');history.back();</script>");
                 return;
             }
             
@@ -71,45 +65,69 @@ public class RentInsertController extends HttpServlet {
             RentalHistoryDTO rentalDto = new RentalHistoryDTO();
             rentalDto.setEmpNo(loginEmp.getEmpNo());                  // 기안자 사번
             rentalDto.setEqNo(eqNo);                                 // 비품 번호
-            rentalDto.setReqCount(rentCount);                        // 📌 수정된 규격 필드명(reqCount)에 매핑
+            rentalDto.setReqCount(rentCount);                        // 신청 수량
             rentalDto.setTitle(equipment.getEqName() + " 대여 신청"); // 기안서 제목 자동 구성
-            rentalDto.setStatus("승인대기");                          // 최초 문서 상태 설정
-            rentalDto.setApprovalStep(1);                             // 결재 최초 1단계 세팅
+            rentalDto.setContent(content);                           // 대여 사유
             
-            // 날짜 예외 방어 가드 처리 (날짜 입력칸이 비어있다면 자동 기본값 주입)
-            if (startDateStr != null && !startDateStr.isEmpty()) {
-                rentalDto.setRentalDate(Date.valueOf(startDateStr));
-            } else {
-                rentalDto.setRentalDate(Date.valueOf(LocalDate.now())); // 오늘 날짜
+            // 💡 [초강력 안전장치 - 누락된 날짜 처리 완벽 복구]
+            // 기본값으로 오늘과 7일 뒤를 먼저 꽂아두어 데이터가 비어 가드가 깨지는 문제를 방지합니다.
+            rentalDto.setRentalDate(Date.valueOf(LocalDate.now()));
+            rentalDto.setReturnDate(Date.valueOf(LocalDate.now().plusDays(7)));
+            
+            // 사용자가 화면에서 날짜를 선택한 경우 안전하게 오버라이딩 처리
+            if (startDateStr != null && !startDateStr.trim().isEmpty() && !"null".equalsIgnoreCase(startDateStr)) {
+                rentalDto.setRentalDate(Date.valueOf(startDateStr.trim()));
+            }
+            if (endDateStr != null && !endDateStr.trim().isEmpty() && !"null".equalsIgnoreCase(endDateStr)) {
+                rentalDto.setReturnDate(Date.valueOf(endDateStr.trim()));
             }
             
-            if (endDateStr != null && !endDateStr.isEmpty()) {
-                rentalDto.setReturnDate(Date.valueOf(endDateStr));
+         // 💡 [등급별 동적 결재 프로세스 - 기안자 자동 승인 및 넥스트 단계 점프 설계]
+            int empLevel = loginEmp.getEmpLevel(); 
+            
+            if (empLevel == 5) {
+                // 5단계(최고 등급 김대표) 임직원 기안 시 즉시 최종 승인 및 대여중 종결
+                rentalDto.setStatus("대여중");          
+                rentalDto.setApprovalStep(6);         // 최종 마감 단계(6) 세팅
+                rentalDto.setSign5(loginEmp.getEmpName()); 
+                rentalDto.setSign5Date(Date.valueOf(LocalDate.now())); 
             } else {
-                rentalDto.setReturnDate(Date.valueOf(LocalDate.now().plusDays(7))); // 기본 7일 뒤 반납
+                // 1~4단계 일반 임직원 기안 시
+                rentalDto.setStatus("승인대기");
+                
+                // 💡 [핵심 교정 1]: 본인 단계에서 승인 버튼을 또 누르지 않도록, 결재 단계를 다음 상급자 레벨(+1)로 자동 점프시킵니다!
+                rentalDto.setApprovalStep(empLevel + 1); 
+                
+                // 💡 [핵심 교정 2]: 기안자 본인의 결재 칸(SIGN)에는 신청과 동시에 '담당 서명 및 결재 완료 처리'를 미리 대입합니다.
+                if (empLevel == 1) {
+                    rentalDto.setSign1(loginEmp.getEmpName());
+                    rentalDto.setSign1Date(Date.valueOf(LocalDate.now()));
+                } else if (empLevel == 2) {
+                    rentalDto.setSign2(loginEmp.getEmpName());
+                    rentalDto.setSign2Date(Date.valueOf(LocalDate.now()));
+                } else if (empLevel == 3) {
+                    rentalDto.setSign3(loginEmp.getEmpName());
+                    rentalDto.setSign3Date(Date.valueOf(LocalDate.now()));
+                } else if (empLevel == 4) {
+                    rentalDto.setSign4(loginEmp.getEmpName());
+                    rentalDto.setSign4Date(Date.valueOf(LocalDate.now()));
+                }
             }
             
             // 6. DB 반영을 위해 RentalDAO 호출 
-            // (insertRental 메서드 실행 시 RENTAL_HISTORY에 INSERT가 일어납니다)
             RentalDAO rentalDao = new RentalDAO();
             boolean isSuccess = rentalDao.insertRental(rentalDto); 
             
             if (isSuccess) {
-                // 7. 성공 시 메시지 출력 후 통합 기안 문서함 목록조회 서블릿으로 이동시킵니다.
-                out.println("<script>");
-                out.println("alert('비품 대여 신청이 완료되었습니다.');");
-                out.println("location.href='documentList.do';"); // 전사 목록을 가져오는 리스트 서블릿 주소
-                out.println("</script>");
+                // 7. 성공 시 리스트로 복귀 (?tab=equipment 로 프론트 탭 제어 연동)
+                out.println("<script>alert('비품 대여 신청이 완료되었습니다.');location.href='documentList.do?tab=equipment';</script>");
             } else {
                 throw new Exception("RENTAL_HISTORY 테이블 데이터 삽입 트랜잭션 오류");
             }
             
         } catch (Exception e) {
             e.printStackTrace();
-            out.println("<script>");
-            out.println("alert('대여 신청 처리 중 시스템 오류가 발생했습니다.');");
-            out.println("history.back();");
-            out.println("</script>");
+            out.println("<script>alert('대여 신청 처리 중 시스템 오류가 발생했습니다.');history.back();</script>");
         } finally {
             out.close();
         }
