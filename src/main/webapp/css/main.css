@@ -1,5 +1,14 @@
 @charset "UTF-8";
 
+/* ==========================================
+   [1. 기본 리셋 및 전역 스타일]
+   ========================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 /* 전체 배경 및 폰트 설정 */
 body {
     font-family: 'Pretendard', sans-serif;
@@ -8,7 +17,9 @@ body {
     color: #334155;
 }
 
-/* 헤더: 신뢰감을 주는 다크 네이비 */
+/* ==========================================
+   [2. 헤더 스타일 - 상단 100% 고정]
+   ========================================== */
 .header {
     background-color: #0f172a;
     height: 65px;
@@ -61,9 +72,34 @@ body {
 
 .nav-btn.logout { background: #be123c; color: #fff !important; margin-left: 10px; }
 .nav-btn.logout:hover { background: #e11d48; }
+/* ==========================================
+   [3. 마이페이지 본문 스타일 - 중앙 정렬]
+   ========================================== */
+:root {
+    --card-bg: #ffffff;
+    --primary: #34495e;
+    --accent: #3498db;
+    --border-color: #e9ecef;
+}
+
+/* 테이블 스타일 */
+.section-title {
+    font-size: 18px; 
+    font-weight: bold; 
+    color: var(--primary); 
+    margin: 30px 0 15px; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+}
 
 /* 컨테이너 및 카드 */
-.dashboard-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+.dashboard-container { 
+	width: 110%;
+	max-width: 1100px; 
+	margin: 40px auto; 
+	padding: 0 20px; 
+}
 
 .info-card {
     background: #ffffff; padding: 30px; border-radius: 12px;
@@ -79,31 +115,126 @@ body {
 .leave-count .current { font-size: 32px; font-weight: 800; color: #0ea5e9; } /* 하늘색 강조 */
 .leave-count .divider { font-size: 18px; color: #e2e8f0; margin: 0 5px; }
 .leave-count .total { font-size: 18px; color: #94a3b8; }
+/*여기까지 잔여연차 현황*/
+/* ==========================================
+   [3. 내 회의실 예약 현황 ~  ]
+   ========================================== */
+:root {
+    --card-bg: #ffffff;
+    --primary: #34495e;
+    --accent: #3498db;
+    --border-color: #e9ecef;
+}
 
-/* 테이블 스타일 */
+.container {
+    width: 100%;
+    max-width: 1100px;
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    margin: 40px auto; /* 여기서 중앙 정렬 */
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 25px;
+    border-bottom: 2px solid var(--primary);
+    margin-bottom: 40px;
+}
+
+.page-header h2 { 
+	font-size: 26px; 
+	font-weight: bold; 
+	color: var(--primary); 
+}
+
+.btn-group { display: flex; gap: 10px; }
+.btn-pw, .btn-main {
+    padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 6px; text-decoration: none; transition: 0.2s;
+}
+.btn-pw { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+.btn-pw:hover { background: #f1f2f6; }
+.btn-main { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
+.btn-main:hover { background: #2c3e50; }
+
 .section-title {
-    font-size: 18px; font-weight: 700; margin: 40px 0 15px; color: #1e293b;
-    display: flex; align-items: center;
+    font-size: 18px; 
+    font-weight: bold; 
+    color: var(--primary); 
+    margin: 30px 0 15px; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
 }
-.section-title::before {
-    content: ''; width: 4px; height: 18px; background: #6366f1;
-    margin-right: 10px; border-radius: 2px;
+.section-title::before { 
+	content: ''; 
+	width: 4px; 
+	height: 16px; 
+	background-color: var(--accent); 
+	border-radius: 2px; 
 }
 
-.table-wrapper {
-    background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
-    overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+.table-wrapper { 
+	width: 100%; 
+	overflow-x: auto; 
+	border: 1px solid var(--border-color); 
+	border-radius: 8px; 
+	margin-bottom: 40px; 
 }
-table { width: 100%; border-collapse: collapse; }
-th { background: #f8fafc; padding: 16px; color: #475569; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
-td { padding: 16px; border-bottom: 1px solid #f1f5f9; text-align: center; font-size: 14px; }
+table { 
+	width: 100%; 
+	border-collapse: collapse; 
+	text-align: center; 
+	font-size: 14px; }
+th { 
+	background: #f8f9fa; 
+	padding: 14px; 
+	border-bottom: 1px solid var(--border-color); 
+	color: #4f5d73; 
+}
+td { 
+	padding: 15px; 
+	border-bottom: 1px solid var(--border-color); 
+	color: #4c566a; 
+}
+tbody tr:hover { background: #fcfdfe; }
 
 /* 상태 배지 색상 최적화 */
-.status-badge { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; }
-.status-blue { background: #e0e7ff; color: #4338ca; }
-.status-gray { background: #f1f5f9; color: #64748b; }
-.status-red { background: #ffe4e6; color: #be123c; }
+.status-badge { 
+	display: inline-flex; 
+	padding: 4px 12px; 
+	font-size: 12px; 
+	font-weight: bold; 
+	border-radius: 30px; 
+	color: #fff !important; 
+}
+.bg-primary { background-color: #3498db !important; }
+.bg-secondary { background-color: #95a5a6 !important; }
+.bg-warning { background-color: #f39c12 !important; }
+.bg-success { background-color: #2ecc71 !important; }
+.bg-danger { background-color: #e74c3c !important; }
 
-.btn-action { border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-.btn-cancel { background: #fff; color: #be123c; border: 1px solid #ffe4e6; }
-.btn-cancel:hover { background: #be123c; color: #fff; }
+
+.btn-action {
+	display: inline-flex; 
+	padding: 4px 12px; 
+	font-size: 12px; 
+	font-weight: bold; 
+	border-radius: 30px; 
+	color: #e74c3c;
+	border: 1px solid #e74c3c; 
+	cursor: pointer;
+}
+
+/* 예약 취소 버튼 스타일 (소프트 레드) */
+.btn-cancel {
+    background-color: #fde8e8;
+    color: #e74c3c;
+}
+
+.btn-cancel:hover {
+    background-color: #ffcccc;
+}

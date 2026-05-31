@@ -10,43 +10,69 @@
 <%@ page import="com.groupware.dto.LeaveHistoryDTO"%>
 
 <%
+//로그인 체크 세션없으면 로그인페이지로 이동
 EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
 if (loginEmp == null) {
 	response.sendRedirect("index.jsp");
 	return;
 }
+//데이터 가져오기
 List<ReservationDTO> reserveList = (List<ReservationDTO>) request.getAttribute("reserveList");
-/* List<RentalHistoryDTO> myList = (List<RentalHistoryDTO>) request.getAttribute("myList");
-List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("leaveList"); */ // ★ 컨트롤러에서 보내준 데이터
+List<RentalHistoryDTO> myList = (List<RentalHistoryDTO>) request.getAttribute("myList");
+List<LeaveHistoryDTO> myLeaveList = (List<LeaveHistoryDTO>) request.getAttribute("leaveList"); 
+
 %>
+
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <title>사내 시스템 - 마이페이지</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/myPage.css">
 
 <script>
-    /* function processReturn(rentalNo) {
-        if (confirm("해당 비품을 반납 처리하시겠습니까?")) {
-            location.href = 'returnProcess.do?rentalNo=' + rentalNo + '&from=mypage';
-        }
-    } */
-    function cancelReserve(resNo) {
-        if (confirm("정말 이 예약을 취소하시겠습니까?")) {
-            location.href = "cancelReserve.do?resNo=" + resNo + '&from=mypage';
-        }
-    }
+    function returnProcess(rentalNo) { 
+    	if (confirm("해당 반납 처리하시겠습니까?")) location.href = 'returnProcess.do?rentalNo=' + rentalNo + '&from=main'; }
+    function cancelReserve(resNo) { 
+    	if (confirm("정말 이 예약을 취소하시겠습니까?")) location.href = "cancelReserve.do?resNo=" + resNo + '&from=main'; }
 </script>
 </head>
 <body>
+	
+	 <div class="header">
+        <div class="header-inner">
+            <a href="main.jsp" class="logo-area">
+                <span class="logo-group">Group</span><span class="logo-ware">Ware</span>
+            </a>
+            
+            <div class="nav-buttons">
+                <span class="user-profile-info">
+                    <% if ("Y".equals(loginEmp.getManager())) { %>
+                        <span class="admin-tag">ADMIN</span>
+                    <% } %>
+                    <b><%=loginEmp.getEmpName()%></b>님
+                </span>
 
+                <% if ("Y".equals(loginEmp.getManager())) { %>
+                    <a href="adminEqList.do" class="nav-btn admin-special">재고 관리</a>
+                    <a href="admin.do" class="nav-btn admin-special">사원 관리</a>
+                <% } %>
+
+                <a href="officeMap.jsp" class="nav-btn">오피스 예약</a>
+                <a href="leaveForm.do" class="nav-btn">휴가 신청</a>
+                <a href="equipmentList.do" class="nav-btn">비품 대여 신청</a>
+                <a href="documentList.do" class="nav-btn">기안 문서함</a>
+                <a href="myPage.do" class="nav-btn">마이페이지</a>
+                <a href="logout.do" class="nav-btn logout">로그아웃</a>
+            </div>
+        </div>
+    </div>
 	<div class="container">
 		<div class="page-header">
 			<h2>마이페이지</h2>
 			<div class="btn-group">
-				<a href="changePw.jsp" class="btn-pw">비밀번호 변경</a> <a href="main.jsp"
-					class="btn-main">시스템 메인으로</a>
+				<a href="changePw.jsp" class="btn-pw">비밀번호 변경</a>
 			</div>
 		</div>
 
@@ -65,9 +91,7 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 					</tr>
 				</thead>
 				<tbody>
-					<%
-					if (reserveList == null || reserveList.isEmpty()) {
-					%>
+					<% if (reserveList == null || reserveList.isEmpty()) { %>
 					<tr>
 						<td colspan="7" style="padding: 40px; color: #6c757d;">예약 내역이
 							없습니다.</td>
@@ -116,9 +140,7 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
  							%>
 						</td>
 					</tr>
-					<%
-					}
-					}
+					<%}}
 					%>
 				</tbody>
 			</table>
@@ -137,53 +159,33 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 						<th>비고</th>
 					</tr>
 				</thead>
-				<%-- <tbody>
-					<%
-					if (myList == null || myList.isEmpty()) {
-					%>
-					<tr>
-						<td colspan="6" style="padding: 40px; color: #6c757d;">비품 대여
-							기안 내역이 없습니다.</td>
-					</tr>
-					<%
-					} else {
-					for (RentalHistoryDTO item : myList) {
-						String status = item.getStatus();
-						String badgeClass = "bg-secondary";
-
-						if ("승인대기".equals(status))
-							badgeClass = "bg-warning";
-						else if ("대여중".equals(status))
-							badgeClass = "bg-success";
-						else if ("반려됨".equals(status))
-							badgeClass = "bg-danger";
-						else if ("미반납".equals(status))
-							badgeClass = "bg-danger";
-					%>
-					<tr>
-						<td style="color: #6c757d;"><%=item.getRentalNo()%></td>
-						<td style="text-align: left; padding-left: 20px;"><%=item.getTitle() != null ? item.getTitle() : "제목 없음"%></td>
-						<td style="font-weight: 600; color: #343a40;"><%=item.getEqName()%></td>
-						<td><%=item.getRentalDate()%> ~ <%=item.getReturnDate()%></td>
-						<td><span class="status-badge <%=badgeClass%>"><%=status%></span></td>
-						<td>
-							<%
-							if ("대여중".equals(status) || "미반납".equals(status)) {
-							%>
-							<button class="btn-action btn-return"
-								onclick="processReturn('<%=item.getRentalNo()%>')">반납
-								처리</button> <%
- 							} else {
- 							%> <span style="color: #ced4da;">-</span> <%
- 							}
- 							%>
-						</td>
-					</tr>
-					<%
-					}
-					}
-					%>
-				</tbody> --%>
+				<tbody>
+    			<% if (myList == null || myList.isEmpty()) { %>
+        			<tr><td colspan="6" style="padding: 40px; color: #6c757d;">비품 대여 내역이 없습니다.</td></tr>
+    			<% } else {
+        			for (RentalHistoryDTO item : myList) {
+            			// 상태에 따른 배지 클래스 로직
+            			String status = item.getStatus();
+            			String badgeClass = "bg-secondary";
+            			if ("승인대기".equals(status)) badgeClass = "bg-warning";
+            			else if ("대여중".equals(status)) badgeClass = "bg-success";
+            			else if ("반려됨".equals(status) || "미반납".equals(status)) badgeClass = "bg-danger";
+    			%>
+    			<tr>
+        			<td><%=item.getRentalNo()%></td>
+        			<td><%=item.getTitle() != null ? item.getTitle() : "제목 없음"%></td>
+        			<td><%=item.getEqName()%></td>
+        			<td><%=item.getRentalDate()%> ~ <%=item.getReturnDate()%></td>
+        			<td><span class="status-badge <%=badgeClass%>"><%=status%></span></td>
+        			<td>
+            			<% if ("대여중".equals(status) || "미반납".equals(status)) { %>
+                			<button class="btn-action btn-cancel" 
+                			onclick="returnProcess('<%=item.getRentalNo()%>')">반납 처리</button>
+            			<% } else { %> - <% } %>
+        			</td>
+    			</tr>
+    				<% } } %>
+				</tbody>
 			</table>
 		</div> 
 		<!-- 3. 내 휴가 신청 현황 (새로 추가) -->
@@ -199,22 +201,16 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 						<th>결재 상태</th>
 					</tr>
 				</thead>
-				<%-- <tbody>
-					<%
-					if (leaveList == null || leaveList.isEmpty()) {
-					%>
+				<tbody>
+					<% if (myLeaveList == null || myLeaveList.isEmpty()) { %>
 					<tr>
 						<td colspan="5" style="padding: 40px; color: #6c757d;">신청한 휴가
 							내역이 없습니다.</td>
 					</tr>
-					<%
-					} else {
-					for (LeaveHistoryDTO leave : leaveList) {
+					<% } else { for (LeaveHistoryDTO leave : myLeaveList) {
 						String badgeClass = "bg-warning";
-						if ("승인완료".equals(leave.getStatus()))
-							badgeClass = "bg-success";
-						else if ("반려됨".equals(leave.getStatus()))
-							badgeClass = "bg-danger";
+						if ("승인완료".equals(leave.getStatus())) badgeClass = "bg-success";
+						else if ("반려됨".equals(leave.getStatus())) badgeClass = "bg-danger";
 					%>
 					<tr>
 						<td style="color: #6c757d;"><%=leave.getLeaveNo()%></td>
@@ -223,14 +219,10 @@ List<LeaveHistoryDTO> leaveList = (List<LeaveHistoryDTO>) request.getAttribute("
 						<td style="text-align: left; padding-left: 20px;"><%=leave.getReason()%></td>
 						<td><span class="status-badge <%=badgeClass%>"><%=leave.getStatus()%></span></td>
 					</tr>
-					<%
-					}
-					}
-					%>
-				</tbody> --%>
+					<% } } %>
+				</tbody> 
 			</table>
 		</div> 
-	</div>
 	</div>
 
 

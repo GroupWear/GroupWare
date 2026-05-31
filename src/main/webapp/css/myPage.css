@@ -1,207 +1,189 @@
 @charset "UTF-8";
 
 /* ==========================================
-   [마이페이지 전용 모던 웹 디자인 시스템]
-   - 기존 JSP 태그 구조 및 클래스명 완벽 매핑
-   - 기업형 그룹웨어 메인페이지 테마 반영
+   [1. 기본 리셋 및 전역 스타일]
    ========================================== */
-
-:root {
-    --bg-color: #f8f9fa;
-    --card-bg: #ffffff;
-    --text-main: #2c3e50;
-    --text-sub: #6c757d;
-    --primary: #34495e;
-    --primary-hover: #2c3e50;
-    --accent: #3498db;
-    --border-color: #e9ecef;
-    
-    /* 배지 컬러 가이드 */
-    --badge-primary: #3498db;   /* 예약완료 / 블루 */
-    --badge-secondary: #95a5a6; /* 이용종료 / 그레이 */
-    --badge-warning: #f39c12;   /* 승인대기 / 오렌지 */
-    --badge-success: #2ecc71;   /* 대여중, 승인완료 / 그린 */
-    --badge-danger: #e74c3c;    /* 취소됨, 반려됨, 미반납 / 레드 */
-}
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
 }
 
+/* 전체 배경 및 폰트 설정 */
 body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    padding: 40px 20px;
-    display: flex;
-    justify-content: center;
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f4f7fa;
+    margin: 0; padding: 0;
+    color: #334155;
 }
 
-/* 전체 감싸는 레이아웃 컨테이너 */
+/* ==========================================
+   [2. 헤더 스타일 - 상단 100% 고정]
+   ========================================== */
+.header {
+    background-color: #0f172a;
+    height: 65px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: sticky; top: 0; z-index: 1000;
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto; height: 100%;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px;
+}
+
+/* 로고 스타일 (원본 재현) */
+.logo-area { text-decoration: none; display: flex; align-items: center; font-size: 24px; }
+.logo-group { color: #ffffff; font-weight: 800; }
+.logo-ware { color: #e2b857; font-weight: 300; margin-left: 1px; }
+
+/* 네비게이션 영역 */
+.nav-buttons { display: flex; align-items: center; gap: 8px; }
+.user-profile-info { margin-right: 15px; font-size: 14px; color: #94a3b8; }
+
+/* 관리자 뱃지 */
+.admin-tag {
+    background: rgba(226, 184, 87, 0.15);
+    color: #e2b857;
+    border: 1px solid #e2b857;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 800; margin-right: 6px;
+}
+
+/* 공통 버튼 스타일 */
+.nav-btn {
+    padding: 8px 14px; color: #cbd5e1; text-decoration: none;
+    border-radius: 6px; font-weight: 600; font-size: 13px; transition: 0.3s;
+}
+.nav-btn:hover { color: #ffffff; background: rgba(255,255,255,0.08); }
+
+/* ★ 관리자 전용 메뉴 특별 스타일 (골드 보더 + 발광 효과) */
+.nav-btn.admin-special {
+    color: #e2b857 !important;
+    border: 1px solid rgba(226, 184, 87, 0.5);
+    background: rgba(226, 184, 87, 0.05);
+}
+.nav-btn.admin-special:hover {
+    background: rgba(226, 184, 87, 0.2);
+    box-shadow: 0 0 10px rgba(226, 184, 87, 0.3);
+}
+
+.nav-btn.logout { background: #be123c; color: #fff !important; margin-left: 10px; }
+.nav-btn.logout:hover { background: #e11d48; }
+
+/* ==========================================
+   [3. 마이페이지 본문 스타일 - 중앙 정렬]
+   ========================================== */
+:root {
+    --card-bg: #ffffff;
+    --primary: #34495e;
+    --accent: #3498db;
+    --border-color: #e9ecef;
+}
+
 .container {
-    width: 100%;
-    max-width: 1100px; /* 테이블 가독성을 위해 넓은 대시보드 폭 유지 */
+    width: 90%;
+    max-width: 1100px;
     background: var(--card-bg);
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    margin: 40px auto; /* 여기서 중앙 정렬 */
 }
 
-/* 상단 타이틀 및 버튼 배치 영역 */
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-bottom: 25px;
-    border-bottom: 2px solid #34495e;
+    border-bottom: 2px solid var(--primary);
     margin-bottom: 40px;
 }
 
-.page-header h2 {
-    font-size: 26px;
-    font-weight: bold;
-    color: var(--primary);
-    letter-spacing: -1px;
+.page-header h2 { 
+	font-size: 26px; 
+	font-weight: bold; 
+	color: var(--primary); 
 }
 
-/* 상단 우측 버튼 그룹 */
-.btn-group {
-    display: flex;
-    gap: 10px;
-}
-
+.btn-group { display: flex; gap: 10px; }
 .btn-pw, .btn-main {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: all 0.2s ease;
+    padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 6px; text-decoration: none; transition: 0.2s;
 }
+.btn-pw { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+.btn-pw:hover { background: #f1f2f6; }
+.btn-main { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
+.btn-main:hover { background: #2c3e50; }
 
-/* 비밀번호 변경 버튼 (메인컬러 라인 조합) */
-.btn-pw {
-    background-color: #ffffff;
-    color: var(--primary);
-    border: 1px solid var(--primary);
-}
-
-.btn-pw:hover {
-    background-color: #f1f2f6;
-}
-
-/* 시스템 메인으로 버튼 (짙은 메인 테마 컬러) */
-.btn-main {
-    background-color: var(--primary);
-    color: #ffffff;
-    border: 1px solid var(--primary);
-}
-
-.btn-main:hover {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
-}
-
-/* 각 테이블 세션 대제목 스타일 */
 .section-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--primary);
-    margin-top: 20px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
+    font-size: 18px; 
+    font-weight: bold; 
+    color: var(--primary); 
+    margin: 30px 0 15px; 
+    display: flex; 
+    align-items: center; 
     gap: 8px;
 }
-
-.section-title::before {
-    content: '';
-    display: inline-block;
-    width: 4px;
-    height: 16px;
-    background-color: var(--accent);
-    border-radius: 2px;
+.section-title::before { 
+	content: ''; 
+	width: 4px; 
+	height: 16px; 
+	background-color: var(--accent); 
+	border-radius: 2px; 
 }
 
-/* 반응형 및 스크롤을 위한 테이블 랩퍼 */
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    margin-bottom: 45px; /* 세션 간 간격 확보 */
+.table-wrapper { 
+	width: 100%; 
+	overflow-x: auto; 
+	border: 1px solid var(--border-color); 
+	border-radius: 8px; 
+	margin-bottom: 40px; 
 }
-
-/* 공통 테이블 기본 디자인 */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-    font-size: 14px;
+table { 
+	width: 100%; 
+	border-collapse: collapse; 
+	text-align: center; 
+	font-size: 14px; }
+th { 
+	background: #f8f9fa; 
+	padding: 14px; 
+	border-bottom: 1px solid var(--border-color); 
+	color: #4f5d73; 
 }
-
-th {
-    background-color: #f8f9fa;
-    color: #4f5d73;
-    font-weight: bold;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 13px;
-    letter-spacing: -0.3px;
+td { 
+	padding: 15px; 
+	border-bottom: 1px solid var(--border-color); 
+	color: #4c566a; 
 }
+tbody tr:hover { background: #fcfdfe; }
 
-td {
-    padding: 15px 16px;
-    border-bottom: 1px solid var(--border-color);
-    color: #4c566a;
-    vertical-align: middle;
+/* 상태 배지 색상 최적화 */
+.status-badge { 
+	display: inline-flex; 
+	padding: 4px 12px; 
+	font-size: 12px; 
+	font-weight: bold; 
+	border-radius: 30px; 
+	color: #fff !important; 
 }
+.bg-primary { background-color: #3498db !important; }
+.bg-secondary { background-color: #95a5a6 !important; }
+.bg-warning { background-color: #f39c12 !important; }
+.bg-success { background-color: #2ecc71 !important; }
+.bg-danger { background-color: #e74c3c !important; }
 
-/* 마우스 호버 효과 */
-tbody tr:hover {
-    background-color: #fcfdfe;
-}
 
-/* 테이블의 마지막 행은 보더 지우기 */
-tbody tr:last-child td {
-    border-bottom: none;
-}
-
-/* 상태 표시 배지 디자인 (둥근 알약 스타일) */
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 12px;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 30px;
-    color: #ffffff !important;
-    min-width: 70px;
-}
-
-/* 상태별 클래스 동적 바인딩 색상 정의 */
-.bg-primary { background-color: var(--badge-primary) !important; }
-.bg-secondary { background-color: var(--badge-secondary) !important; }
-.bg-warning { background-color: var(--badge-warning) !important; }
-.bg-success { background-color: var(--badge-success) !important; }
-.bg-danger { background-color: var(--badge-danger) !important; }
-
-/* 리스트 로우 액션 버튼 (예약취소 / 반납처리) */
 .btn-action {
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-    border: none;
-    transition: background 0.2s;
+	display: inline-flex; 
+	padding: 4px 12px; 
+	font-size: 12px; 
+	font-weight: bold; 
+	border-radius: 30px; 
+	color: #e74c3c;
+	border: 1px solid #e74c3c; 
+	cursor: pointer;
 }
 
 /* 예약 취소 버튼 스타일 (소프트 레드) */
@@ -211,15 +193,5 @@ tbody tr:last-child td {
 }
 
 .btn-cancel:hover {
-    background-color: #fceded;
-}
-
-/* 비품 반납 처리 버튼 스타일 (소프트 블루) */
-.btn-return {
-    background-color: #e1f5fe;
-    color: #0288d1;
-}
-
-.btn-return:hover {
-    background-color: #b3e5fc;
+    background-color: #ffcccc;
 }

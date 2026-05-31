@@ -235,8 +235,10 @@ public class RentalDAO {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-
-        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
+        
+        //h.REASON 추가
+        //마이페이지에 비품대여뜹니당
+        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.REASON, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
                 + "CASE WHEN h.STATUS = '대여중' AND h.RETURN_DATE < TRUNC(SYSDATE) THEN '미반납' ELSE h.STATUS END AS STATUS, "
                 + "h.APPROVAL_STEP, h.SIGN1, h.SIGN1_DATE, h.SIGN2, h.SIGN2_DATE, h.SIGN3, h.SIGN3_DATE, "
                 + "h.SIGN4, h.SIGN4_DATE, h.SIGN5, h.SIGN5_DATE, h.REQ_COUNT, e.EQ_NAME "

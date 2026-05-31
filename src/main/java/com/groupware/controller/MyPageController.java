@@ -34,9 +34,9 @@ public class MyPageController extends HttpServlet {
         }
 
         // 1. 내 비품 대여 내역
-//        RentalDAO rentalDao = new RentalDAO();
-//        List<RentalHistoryDTO> myList = rentalDao.getMyRentalList(loginEmp.getEmpNo()); 
-//        request.setAttribute("myList", myList);
+        RentalDAO rentalDao = new RentalDAO();
+        List<RentalHistoryDTO> myList = rentalDao.getMyRentalList(loginEmp.getEmpNo()); 
+        request.setAttribute("myList", myList);
 
         // 2. 내 회의실 예약 내역
         ReservationDAO reserveDao = new ReservationDAO();
@@ -44,9 +44,9 @@ public class MyPageController extends HttpServlet {
         request.setAttribute("reserveList", reserveList);
 
         // ★ 3. 내 휴가 신청 내역 추가 
-//        LeaveDAO leaveDao = new LeaveDAO();
-//        List<LeaveHistoryDTO> leaveList = leaveDao.getMyLeaveList(loginEmp.getEmpNo());
-//        request.setAttribute("leaveList", leaveList);
+        LeaveDAO leaveDao = new LeaveDAO();
+        List<LeaveHistoryDTO> leaveList = leaveDao.getMyLeaveList(loginEmp.getEmpNo());
+        request.setAttribute("leaveList", leaveList);
 
         request.getRequestDispatcher("myPage.jsp").forward(request, response);
     }
