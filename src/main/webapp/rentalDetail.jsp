@@ -55,82 +55,64 @@
             </div>
         </div>
 
-          <!-- 📌 핵심 구현 1: 기안자 레벨 기준 고정 결재선 (반려 레이아웃 및 띄어쓰기 보정형) -->
-        <div class="approval-container">
-            <% 
-                // 이 '문서를 신청한 기안자'의 직급 레벨을 기준점으로 삼습니다.
-                int creatorLevel = detail.getEmpLevel(); 
-                
-                // 현재 로그인한 관리자의 레벨 (실시간 결재 대기 강조용)
-                int currentLoginLevel = loginEmp.getEmpLevel();
-                // 문서의 현재 결재 승인 단계 위치 (1~5)
-                int docProgressStep = detail.getApprovalStep();
-
-                for (int i = 1; i <= 5; i++) { 
-                    String signName = null;
-                    java.sql.Date signDate = null;
-                    
-                    if (i == 1) { signName = detail.getSign1(); signDate = detail.getSign1Date(); }
-                    else if (i == 2) { signName = detail.getSign2(); signDate = detail.getSign2Date(); }
-                    else if (i == 3) { signName = detail.getSign3(); signDate = detail.getSign3Date(); }
-                    else if (i == 4) { signName = detail.getSign4(); signDate = detail.getSign4Date(); }
-                    else if (i == 5) { signName = detail.getSign5(); signDate = detail.getSign5Date(); }
-
-                    // 💡 [규칙 1]: 기안자(신청자)의 직급보다 낮은 하급자 결재란은 화면에서 제외합니다.
-                    if (i < creatorLevel) {
-                        continue; 
-                    }
-
-                    // 💡 [규칙 2]: 기안자 본인의 결재 시작 단계는 '담당'으로 고정, 상급자 단계는 'X차 결재란' 표시
-                    String stepTitle = (i == creatorLevel) ? "담 당" : i + "차 결재란";
-                    
-                    // 💡 [UI 디테일 추가]: 실시간 결재 승인 도장 차례 강조 제어
-                    boolean isMyTurn = ("승인대기".equals(detail.getStatus()) && i == docProgressStep && i == currentLoginLevel);
-                    
-                    String boxStyle = "";
-                    if (isMyTurn) {
-                        boxStyle = "border: 2px solid #6366f1; transform: scale(1.03); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);";
-                    }
-                    
-                    String stepStyle = (i == creatorLevel) ? "background: #f1f5f9; color: #334155; font-weight:700;" : "";
-                    if (isMyTurn) {
-                        stepStyle = "background: #6366f1; color: #ffffff; font-weight:700;";
-                    }
-
-                    // 📌 [신규 보정 1]: 서명 텍스트에 '반려'가 포함되어 있는지 실시간 체크
-                    boolean isRejectedStamp = (signName != null && signName.contains("반려"));
-                    
-                    // 📌 [신규 보정 2]: '홍글로(반려)' 구조를 파싱하여 '홍글로 (반려)' 형태로 공백 1칸 강제 주입
-                    String displaySignName = "";
-                    if (signName != null) {
-                        if (isRejectedStamp) {
-                            String pureName = signName.replaceAll("\\(반려\\)", "").trim();
-                            displaySignName = pureName + " (반려)"; // 이름과 괄호 사이 공백 1칸 적용
-                        } else {
-                            displaySignName = signName;
-                        }
-                    }
-                    
-                    // 📌 [신규 보정 3]: '반려' 상태가 아닐 때만 signed 클래스를 붙여 빨간색 (인) 도장을 활성화합니다.
-                    String stampClass = "";
-                    if (signName != null && !isRejectedStamp) {
-                        stampClass = "signed";
-                    }
-            %>
-                <div class="stamp-box" style="<%= boxStyle %>">
-                    <div class="stamp-step" style="<%= stepStyle %>"><%= stepTitle %></div>
-                    <!-- stampClass 분기를 통해 반려 문서의 (인) 표시를 완벽히 격리 억제합니다. -->
-                    <div class="stamp-name <%= stampClass %>" style="<%= isRejectedStamp ? "color: #ef4444;" : "" %>">
-                        <%= displaySignName %>
-                    </div>
-                    <div class="stamp-date">
-                        <%= signDate != null ? signDate.toString() : "-" %>
-                    </div>
-                </div>
-            <% 
-                } 
-            %>
-        </div>
+         <!-- 📌 핵심 구현 1: 기안자 레벨 기준 고정 결재선 (인라인 스타일 버그 박멸형) -->
+		<div class="approval-container">
+		    <% 
+		        int creatorLevel = detail.getEmpLevel(); 
+		        int currentLoginLevel = loginEmp.getEmpLevel();
+		        int docProgressStep = detail.getApprovalStep();
+		
+		        for (int i = 1; i <= 5; i++) { 
+		            String signName = null;
+		            java.sql.Date signDate = null;
+		            
+		            if (i == 1) { signName = detail.getSign1(); signDate = detail.getSign1Date(); }
+		            else if (i == 2) { signName = detail.getSign2(); signDate = detail.getSign2Date(); }
+		            else if (i == 3) { signName = detail.getSign3(); signDate = detail.getSign3Date(); }
+		            else if (i == 4) { signName = detail.getSign4(); signDate = detail.getSign4Date(); }
+		            else if (i == 5) { signName = detail.getSign5(); signDate = detail.getSign5Date(); }
+		
+		            if (i < creatorLevel) {
+		                continue; 
+		            }
+		
+		            String stepTitle = (i == creatorLevel) ? "담 당" : i + "차 결재란";
+		            
+		            // 💡 [클래스 제어로 변경]: 결재 차례일 때 클래스명을 변수에 담습니다.
+		            boolean isMyTurn = ("승인대기".equals(detail.getStatus()) && i == docProgressStep && i == currentLoginLevel);
+		            String activeClass = isMyTurn ? "active-turn" : "";
+		
+		            boolean isRejectedStamp = (signName != null && signName.contains("반려"));
+		            
+		            String displaySignName = "";
+		            if (signName != null) {
+		                if (isRejectedStamp) {
+		                    String pureName = signName.replaceAll("\\(반려\\)", "").trim();
+		                    displaySignName = pureName + " (반려)"; 
+		                } else {
+		                    displaySignName = signName;
+		                }
+		            }
+		            
+		            String stampClass = "";
+		            if (signName != null && !isRejectedStamp) {
+		                stampClass = "signed";
+		            }
+		    %>
+		        <!-- 💡 깨짐을 유발하던 인라인 style을 전부 제거하고 activeClass를 주입합니다 -->
+		        <div class="stamp-box <%= activeClass %>">
+		            <div class="stamp-step"><%= stepTitle %></div>
+		            <div class="stamp-name <%= stampClass %>" style="<%= isRejectedStamp ? "color: #ef4444;" : "" %>">
+		                <%= displaySignName %>
+		            </div>
+		            <div class="stamp-date">
+		                <%= signDate != null ? signDate.toString() : "-" %>
+		            </div>
+		        </div>
+		    <% 
+		        } 
+		    %>
+		</div>
 
         <!-- 📌 핵심 구현 2: 신청서 상세 공문 내용 테이블 -->
         <table class="info-table">

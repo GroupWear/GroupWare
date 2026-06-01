@@ -42,7 +42,14 @@ public class RentInsertController extends HttpServlet {
         try {
             // 3. rentForm.jsp에서 전달한 파라미터 수령
             int eqNo = Integer.parseInt(request.getParameter("eqNo"));
-            int rentCount = Integer.parseInt(request.getParameter("rentCount"));
+            
+            // 💡 [초강력 안전장치]: 화면에서 rentCount 파라미터가 유실되거나 null로 들어오는 버그를 방어합니다.
+            String rentCountParam = request.getParameter("rentCount");
+            int rentCount = 1; // ❌ 기존 강제 변환 파싱 코드를 지우고 기본값 1로 기본 가드 세팅
+            
+            if (rentCountParam != null && !rentCountParam.trim().isEmpty() && !"null".equalsIgnoreCase(rentCountParam)) {
+                rentCount = Integer.parseInt(rentCountParam.trim());
+            }
             
             String startDateStr = request.getParameter("rentalDate");
             String endDateStr = request.getParameter("returnDate");
@@ -70,11 +77,11 @@ public class RentInsertController extends HttpServlet {
             rentalDto.setContent(content);                           // 대여 사유
             
             // 💡 [초강력 안전장치 - 누락된 날짜 처리 완벽 복구]
-            // 기본값으로 오늘과 7일 뒤를 먼저 꽂아두어 데이터가 비어 가드가 깨지는 문제를 방지합니다.
+            // 혹시 프론트엔드 단에서 날짜 유효성 가드가 깨지더라도 DB 에러가 나지 않도록 오늘 날짜 베이스라인 선행 대입
             rentalDto.setRentalDate(Date.valueOf(LocalDate.now()));
             rentalDto.setReturnDate(Date.valueOf(LocalDate.now().plusDays(7)));
             
-            // 사용자가 화면에서 날짜를 선택한 경우 안전하게 오버라이딩 처리
+            // 사용자가 화면에서 날짜를 정상 선택한 경우 오버라이딩 처리
             if (startDateStr != null && !startDateStr.trim().isEmpty() && !"null".equalsIgnoreCase(startDateStr)) {
                 rentalDto.setRentalDate(Date.valueOf(startDateStr.trim()));
             }
@@ -82,7 +89,7 @@ public class RentInsertController extends HttpServlet {
                 rentalDto.setReturnDate(Date.valueOf(endDateStr.trim()));
             }
             
-         // 💡 [등급별 동적 결재 프로세스 - 기안자 자동 승인 및 넥스트 단계 점프 설계]
+            // 💡 [등급별 동적 결재 프로세스 - 기안자 자동 승인 및 넥스트 단계 점프 설계]
             int empLevel = loginEmp.getEmpLevel(); 
             
             if (empLevel == 5) {
@@ -117,8 +124,12 @@ public class RentInsertController extends HttpServlet {
             // 6. DB 반영을 위해 RentalDAO 호출 
             RentalDAO rentalDao = new RentalDAO();
             boolean isSuccess = rentalDao.insertRental(rentalDto); 
-            
+
             if (isSuccess) {
+                // ❌ [이중 차감 방기]: RentalDAO.insertRental 내부에서 오라클 트랜잭션(Commit)과 함께 
+                // 재고 차감까지 한 번에 묶어서 완벽 제어하므로 아래 코드는 삭제하거나 주석 처리해야 합니다!
+                // eqDao.decreaseEquipmentStock(eqNo, rentCount); 
+                
                 // 7. 성공 시 리스트로 복귀 (?tab=equipment 로 프론트 탭 제어 연동)
                 out.println("<script>alert('비품 대여 신청이 완료되었습니다.');location.href='documentList.do?tab=equipment';</script>");
             } else {
