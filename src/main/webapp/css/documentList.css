@@ -1,117 +1,187 @@
 @charset "UTF-8";
 
-
 /* ==========================================
-   1. 통합 문서함 메인 구조 정의 (최적의 와이드 규격 1400px 밸런싱)
+   1. 통합 문서함 메인 구조 정의 (상단 수직 처짐 미세 보정)
    ========================================== */
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f4f7fa;
+    margin: 0; padding: 0;
+    color: #334155;
+    min-width: 1200px !important; 
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+}
+
 .dashboard-container {
     width: 100%;
-    max-width: 1400px;         /* 💡 너무 과하게 커지는 것을 막고 딱 보기 좋은 최대 가로폭으로 제한 */
-    margin: 0 auto 50px auto;  /* 💡 화면 중앙 정렬 및 하단 여백 구성 */
-    padding: 30px 20px 0 20px; /* 양옆 슬림한 기본 안전 여백 부여 */
+    max-width: 1400px;         
+    /* 💡 [여백 균형 복구]: 고정 헤더바(65px) 밑에 딱 숨통을 틔워줄 10px 여백만 하향 패치 */
+    margin: 75px auto 40px auto !important;  
+    /* 💡 내부 상단 탑 마진을 20px로 부드럽게 완충 */
+    padding: 20px 20px 0 20px !important; 
     box-sizing: border-box;
 }
 
 .headertitle {
     width: 100%;
-    padding: 0 10px;           /* 제목이 좌우 정렬선과 이쁘게 떨어지도록 미세 여백 조정 */
+    padding: 0 10px;           
     box-sizing: border-box;
 }
 
 .headertitle h2 {
     margin: 0 !important;
-    font-size: 26px !important; /* 💡 22px에서 32px로 완벽히 독점 확대 */
-    font-weight: 800 !important;
+    font-size: 26px !important; /* 글자 크기 본연의 당당한 800 볼드로 원상 복구 */
+    font-weight: 700 !important;
     color: #0f172a !important;
 }
 
 /* ==========================================
-   2. 기안 문서함용 탭 메뉴 및 버튼 스타일 완벽 복구
+   2. 상단 네비게이션 헤더 (비품 목록 페이지와 100% 완전 일치형)
+   ========================================== */
+.header {
+    background-color: #0f172a; 
+    height: 65px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    
+    /* 💡 스크롤을 내려도 화면 최상단에 완전히 칼로 박아 고정 */
+    position: fixed !important; 
+    top: 0 !important; 
+    left: 0 !important;
+    z-index: 1000 !important; /* 검색바(999)보다 무조건 최상위 레이어 독점 */
+    
+    width: 100% !important;
+    min-width: 1200px !important; /* 💡 바디/본문 최소 너비와 완벽 동기화 */
+    box-sizing: border-box !important;
+}
+
+.header-inner {
+    max-width: 1200px;
+    width: 100% !important;
+    min-width: 1200px !important; 
+    margin: 0 auto !important; 
+    height: 100% !important;
+    display: flex !important; 
+    justify-content: space-between !important; 
+    align-items: center !important;
+    padding: 0 20px !important;
+    box-sizing: border-box !important;
+}
+
+/* 로고 스타일 */
+.logo-area { text-decoration: none; display: flex; align-items: center; font-size: 24px; flex-shrink: 0 !important; }
+.logo-group { color: #ffffff; font-weight: 800; }
+.logo-ware { color: #e2b857; font-weight: 300; margin-left: 1px; }
+
+/* 네비게이션 버튼 및 알맹이 찌부 방지 가드 */
+.nav-buttons { 
+    display: flex !important; 
+    align-items: center !important; 
+    gap: 6px !important; 
+    flex-wrap: nowrap !important; /* 💡 메뉴 버튼 절대 아래로 안 떨어짐 */
+    flex-shrink: 0 !important;
+}
+.user-profile-info { margin-right: 10px; font-size: 14px; color: #94a3b8; flex-shrink: 0 !important; }
+
+.admin-tag {
+    background: rgba(226, 184, 87, 0.15);
+    color: #e2b857;
+    border: 1px solid #e2b857;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 800; margin-right: 4px;
+    flex-shrink: 0 !important;
+}
+
+.nav-btn {
+    padding: 8px 12px !important; color: #cbd5e1; text-decoration: none;
+    border-radius: 6px; font-weight: 600; font-size: 13px; transition: 0.3s;
+    white-space: nowrap !important; /* 💡 글자가 가로로 온전히 서도록 강제 보존 */
+    flex-shrink: 0 !important;      /* 💡 브라우저 압착 무력화 */
+}
+.nav-btn:hover { color: #ffffff; background: rgba(255,255,255,0.08); }
+
+.nav-btn.admin-special {
+    color: #e2b857 !important;
+    border: 1px solid rgba(226, 184, 87, 0.5) !important;
+    background: rgba(226, 184, 87, 0.05) !important;
+}
+.nav-btn.admin-special:hover {
+    background: rgba(226, 184, 87, 0.2) !important;
+    box-shadow: 0 0 10px rgba(226, 184, 87, 0.3) !important;
+}
+
+.nav-btn.logout { background: #be123c; color: #fff !important; margin-left: 6px; }
+.nav-btn.logout:hover { background: #e11d48; }
+
+/* ==========================================
+   2. 기안 문서함용 탭 메뉴 스타일 (미세 숨통 여백 부여)
    ========================================== */
 .tab-menu-container {
     display: flex;
-    gap: 8px;                  /* 버튼 간의 간격 좁혀서 안정감 부여 */
-    margin: 25px 0 15px 0;      /* 검색바와의 위아래 간격 배치 조율 */
+    gap: 8px;                  
+    /* 💡 탭 버튼이 대형 제목 글씨에 짓눌리지 않도록 상단 여백 15px로 안정 보정 */
+    margin: 15px 0 8px 0 !important;      
     border-bottom: 2px solid #e2e8f0;
     padding: 0 10px;           
     width: 100%;
     box-sizing: border-box;
 }
 
-/* 📌 [선택자 강력 타겟팅 가드]: 
-   .tab-btn 클래스뿐만 아니라 탭 컨테이너 내부에 들어있는 모든 button 태그를 추적해 디자인을 강제 이식합니다. */
 .tab-menu-container button, 
 .tab-btn {
-    padding: 10px 20px !important; /* 컴팩트하면서도 볼륨감 있는 크기 고정 */
+    padding: 10px 20px !important; /* 탭 버튼 크기 원래대로 볼륨감 복원 */
     font-size: 14px !important;
-    font-weight: 700 !important;   /* 폰트를 굵게 하여 가독성 확보 */
-    color: #64748b !important;     /* 기본 비활성화 회색 글씨 */
-    background: #f1f5f9 !important; /* 버튼 배경을 깔끔한 연회색으로 채움 */
+    font-weight: 700 !important;   
+    color: #64748b !important;     
+    background: #f1f5f9 !important; 
     border: 1px solid #e2e8f0 !important;
-    border-bottom: none !important; /* 언더라인 바와 자연스럽게 연결되도록 하단선 제거 */
-    border-top-left-radius: 6px !important;  /* 상단 모서리 둥글게 깎음 */
+    border-bottom: none !important; 
+    border-top-left-radius: 6px !important;  
     border-top-right-radius: 6px !important;
     cursor: pointer;
     position: relative;
-    bottom: -2px;                  /* 밑줄과 딱 맞물리도록 마진 오프셋 조정 */
-    transition: none !important;   /* 탭 전환 시 깜빡임 방지 */
+    bottom: -2px;                  
+    transition: none !important;   
 }
 
-/* 탭 버튼 마우스 호버(Hover) 피드백 효과 */
-.tab-menu-container button:hover,
-.tab-btn:hover {
-    color: #6366f1 !important;
-    background: #f8fafc !important;
-}
-
-/* 📌 [활성화 탭 스타일]: 현재 선택되어 켜져 있는 탭의 스타일 독점 제어 */
-.tab-menu-container button.active, 
-.tab-btn.active {
-    color: #6366f1 !important;     /* 브랜드 인디고 포인트 컬러 */
-    background: #ffffff !important; /* 활성화된 탭은 본판과 일치하도록 흰색 배경 처리 */
+.tab-menu-container button:hover, .tab-btn:hover { color: #6366f1 !important; background: #f8fafc !important; }
+.tab-menu-container button.active, .tab-btn.active {
+    color: #6366f1 !important;     
+    background: #ffffff !important; 
     border-color: #e2e8f0 !important;
-    border-bottom: 3px solid #6366f1 !important; /* 하단 탭 시그니처 언더라인 바 강제 활성화 */
+    border-bottom: 3px solid #6366f1 !important; 
     font-weight: 800 !important;
 }
 
 /* ==========================================
-   3. 📌 [최종 완결]: 통합 검색바 스크롤 추적 및 상단 비침 원천 차단 마스킹
+   3. 통합 검색바 수직 핏 동기화 및 상단 비침 원천 차단 마스킹
    ========================================== */
-body, html, .dashboard-container, .table-wrapper {
-    overflow: visible !important; 
-}
-
 .search-bar-container {
-    width: 100%;
-    padding: 15px 10px;        
-    margin: 0;
-    box-sizing: border-box;
+    max-width: 1400px !important;
+    width: 100% !important;
+    min-width: 1200px !important; 
     
-    position: -webkit-sticky;  
+    /* 💡 하얀색 검색바가 너무 얇아 가벼워 보이지 않도록 상하 패딩 정밀 밸런싱 */
+    padding: 12px 0 16px 0 !important;       
+    margin: 0 auto !important; 
+    box-sizing: border-box !important;
+    
     position: sticky !important; 
-    top: 75px !important;      /* 헤더바 밑 15px 여백 유지 */
+    top: 65px !important; /* 고정된 네비바 선 밀착 상태는 스크롤을 위해 철저 보존 */
     z-index: 999 !important;   
     background-color: #f4f7fa !important; 
 }
 
-/* 📌 [초강력 마스킹 가드]: 검색바와 상단 헤더바 사이의 15px 빈 공간을 
-   배경색과 동일한 불투명 레이어로 채워 테이블 글씨가 위로 삐져나와 보이는 현상을 원천 방어합니다. */
+/* 📌 늘어난 오프셋에 맞춰 가림막 마스크 영역 상단 높이 리밸런싱 */
 .search-bar-container::before {
     content: "" !important;
     position: absolute !important;
-    top: -20px !important;     /* 검색바 위쪽 빈 공간을 완전히 덮어씌움 */
+    top: -12px !important;     
     left: 0 !important;
     width: 100% !important;
-    height: 25px !important;    /* 여백 두께만큼 불투명 가림막 형성 */
-    background-color: #f4f7fa !important; /* 화면 배경 회색(#f4f7fa)과 100% 일치시켜 완벽히 숨김 */
+    height: 100px !important;   
+    background-color: #f4f7fa !important; 
     z-index: -1 !important;
-}
-
-.tab-content {
-    display: none;
-    width: 100%;
-    padding: 0 10px !important; /* 💡 테이블 양옆이 박스 라인과 예쁘게 맞아떨어지도록 정밀 정렬 */
-    box-sizing: border-box;
 }
 
 .search-form {
@@ -121,8 +191,12 @@ body, html, .dashboard-container, .table-wrapper {
     padding: 12px;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important; 
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06) !important; 
     align-items: center;
+    
+    /* 💡 내부 하얀색 패널이 늘어난 부모 크기에 맞춰 좌우 벽면 끝까지 유연하게 확장 */
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 .search-select {
@@ -137,6 +211,7 @@ body, html, .dashboard-container, .table-wrapper {
     outline: none;
     background-color: #fff;
     cursor: pointer;
+    flex-shrink: 0 !important;
 }
 
 .search-input {
@@ -151,10 +226,7 @@ body, html, .dashboard-container, .table-wrapper {
     outline: none;
     transition: border-color 0.2s;
 }
-
-.search-input:focus {
-    border-color: #6366f1;
-}
+.search-input:focus { border-color: #6366f1; }
 
 .btn-search {
     width: 100px;
@@ -169,64 +241,142 @@ body, html, .dashboard-container, .table-wrapper {
     cursor: pointer;
     white-space: nowrap;
     transition: background-color 0.2s;
+    flex-shrink: 0 !important;
+}
+.btn-search:hover { background-color: #4f46e5; }
+
+/* ==========================================
+   4. 📌 [테이블 본체 스킨 스타일]: 내부 배경 순백색 고정
+   ========================================== */
+.tab-content table th {
+    background-color: #f8fafc !important; /* 헤더는 구분 공간을 위해 단정한 연회색 유지 */
+    color: #334155 !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #cbd5e1 !important;
 }
 
-.btn-search:hover {
-    background-color: #4f46e5;
+/* 💡 [핵심 교정]: 테이블 내부 모든 데이터 칸의 배경색을 투명이나 회색 대신 순백색으로 강제 고정 */
+.tab-content table td {
+    background-color: #ffffff !important; /* 🌟 [완벽 변경]: 내부 배경을 완전한 흰색으로 지정 */
+    border-bottom: 1px solid #e2e8f0 !important; /* 행과 행 사이를 구분하는 슬림한 경계선 */
+    color: #475569 !important;
+}
+
+/* 💡 마우스 커서를 올렸을 때(Hover) 행 전체가 부드러운 회색조로 피드백되도록 유지 
+      (흰색 배경 위에서 마우스 위치를 아주 선명하게 잡아줍니다) */
+.tab-content table tbody tr:hover td {
+    background-color: #f8fafc !important; /* 호버 시에만 살짝 연회색 피드백 */
+    transition: background-color 0.15s ease-in-out;
+}
+
+/* 데이터가 비어있을 때 나오는 행도 완벽하게 흰색 배경 가드 적용 */
+.tab-content table td.empty-data {
+    background-color: #ffffff !important;
+    color: #94a3b8 !important;
+    padding: 40px 0 !important;
+    font-weight: 600;
 }
 
 /* ==========================================
-   4. 📌 [신규 추가]: 실시간 글자 검색 하이라이트 및 펄스 애니메이션
+   5. 📌 [정밀 고정 비율 분배]: 창 크기와 무관하게 칸 너비 강제 고정
+   ========================================== */
+/* 총 6개 컬럼 기준 합계 100% 완벽 비율 잠금 가드 */
+.tab-content table tr th:nth-child(1), .tab-content table tr td:nth-child(1) { width: 10% !important; } /* 번호 */
+.tab-content table tr th:nth-child(2), .tab-content table tr td:nth-child(2) { width: 33% !important; } /* 기안 제목 */
+.tab-content table tr th:nth-child(3), .tab-content table tr td:nth-child(3) { width: 14% !important; } /* 기안자 */
+.tab-content table tr th:nth-child(4), .tab-content table tr td:nth-child(4) { width: 10% !important; } /* 대여 수량 */
+.tab-content table tr th:nth-child(5), .tab-content table tr td:nth-child(5) { width: 21% !important; } /* 대여 기간 */
+.tab-content table tr th:nth-child(6), .tab-content table tr td:nth-child(6) { width: 12% !important; } /* 결재 상태 */
+
+/* ==========================================
+   6. 검색 하이라이트, 제목 링크 및 수량/배지 가독성 스타일
    ========================================== */
 .mark-highlight {
-    background-color: #fef08a !important; /* 파스텔톤 노란색 형광펜 */
+    background-color: #fef08a !important; 
     color: #000000 !important;
     font-weight: bold !important;
     padding: 2px 4px !important;
     border-radius: 4px !important;
     box-shadow: 0 0 4px rgba(234, 179, 8, 0.4) !important;
     display: inline-block !important;
-    
-    /* 📌 [레이아웃 묻힘 방지 최종 가드]
-       테이블 레이어 뒤로 형광펜 색상이 파묻히는 현상을 방지하기 위해 
-       물리적인 3D 레이어 우선순위를 최상위로 끌어올립니다. */
     position: relative;
     z-index: 10;
-    
     animation: pulse 0.8s infinite alternate ease-in-out !important; 
 }
 
-@keyframes pulse {
+/* ==========================================
+   📌 [시정 조치]: 결재 바랍니다 문구 가독성 300% 폭발 가드
+   ========================================== */
+.approval-blink {
+    /* 1. 💡 [색상 강렬화]: 연한 빨간색을 피하고 칠리 레드(#dc2626) 컬러로 텍스트를 선명하게 변경 */
+    color: #dc2626 !important; 
+    
+    /* 2. 💡 [두께 및 레이아웃]: 텍스트 두께를 한 단계 더 두껍게 락을 걸고 중앙 정렬선 일치 */
+    font-weight: 800 !important;
+    font-size: 11px !important;
+    letter-spacing: 0.3px !important;
+    text-align: center !important;
+    display: inline-block !important;
+    
+    /* 3. 💡 [입체감 백그라운드 래핑]: 글자만 덜렁 있으면 흐려 보이므로, 
+          글자 뒤에 화사한 파스텔톤 초소형 핑크 배지를 얹어 시선을 강제로 집중시킵니다. */
+    border: 1px solid #fecaca !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+    margin-top: 5px !important;
+    box-shadow: 0 1px 2px rgba(220, 38, 38, 0.08);
+
+    /* 4. 💡 [애니메이션 성능 향상]: 하드웨어 가속을 켜서 부드럽게 숨쉬듯 깜빡이도록 보정 */
+    will-change: transform, opacity;
+    animation: pulseBlink 0.9s infinite alternate ease-in-out !important; 
+}
+
+/* 🎯 [애니메이션 리팩토링]: 크기만 키우면 글자가 흐려질 수 있으므로, 
+      크기 확장(scale)과 불투명도(opacity)를 동시에 주어 세련되게 깜빡이도록 직조했습니다. */
+@keyframes pulseBlink {
     from {
-        transform: scale(1);
+        transform: scale(0.98);
+        opacity: 0.75;
+        box-shadow: 0 1px 2px rgba(220, 38, 38, 0.05);
     }
     to {
-        transform: scale(1.04); /* 부드럽게 숨쉬듯 깜빡이는 스케일 조절 효과 */
+        transform: scale(1.02);
+        opacity: 1;
+        box-shadow: 0 2px 6px rgba(220, 38, 38, 0.15); /* 강조 시 그림자 확산 */
     }
 }
 
-/* ==========================================
-   6. 📌 [최종 교정]: 기안 제목 내부 실제 데이터 행(td) 정중앙 완전 정렬
-   ========================================== */
-/* 💡 테이블의 2번째 칸인 실제 기안 제목 목록 데이터들을 강제로 정가운데 정렬합니다. */
-.tab-content table td:nth-child(2) {
-    text-align: center !important; /* 💡 [완벽 보정]: 왼쪽 정렬을 완전히 부수고 정중앙으로 밀어 넣습니다. */
-    padding-left: 12px !important;  /* 기존에 들어가 있던 왼쪽 여백(20px)을 회수하고 균등 분배합니다. */
-    font-weight: 500;              /* 글씨 두께감은 선명하게 유지 */
-}
-
-/* 💡 만약 사용자가 작성한 상세 '대여 사유' 컬럼이 테이블에 포함되어 있다면 
-   그 부분도 함께 정중앙으로 맞물리도록 정렬 가드를 추가합니다. */
-.tab-content table td a, 
-.tab-content table td b {
+/* 기안 제목 스타일 링크 구조 보존 */
+.tab-content table td a.title-link {
     text-align: center !important;
-    display: block !important;     /* 글자 정렬선이 깨지지 않도록 영역을 정렬 중심축으로 고정 */
+    display: inline-block !important;     
+    color: #6366f1; 
+    text-decoration: none; 
+    font-weight: 600;
 }
 
-/* ==========================================
-   7. 📌 [줄바꿈 박멸]: 대여 수량 컬럼 한 줄 출력 및 띄어쓰기 가드
-   ========================================== */
-.tab-content table td:nth-child(4) {
-    white-space: nowrap !important; /* 💡 [핵심]: 공간이 좁아도 절대 밑으로 글자가 안 떨어지게 가로 본능 유지 */
-    letter-spacing: 0.5px;          /* 숫자와 글자 가독성을 위한 미세 자간 조정 */
+/* 대여 수량 컬럼 구조 가이드 */
+.td-qty .qty-wrap {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
 }
+.td-qty .qty-wrap b {
+    display: inline !important;
+    float: none !important;
+}
+
+/* 결재 상태 배지 디자인 공통 스킨 정의 */
+.status-badge {
+    display: inline-block !important;
+    padding: 4px 10px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-radius: 4px !important;
+    text-align: center !important;
+    min-width: 65px;
+}
+.status-blue { background-color: #e0e7ff !important; color: #4338ca !important; border: 1px solid #c7d2fe !important; }
+.status-red { background-color: #fee2e2 !important; color: #b91c1c !important; border: 1px solid #fecaca !important; }
+.status-gray { background-color: #f3f4f6 !important; color: #4b5563 !important; border: 1px solid #e5e7eb !important; }

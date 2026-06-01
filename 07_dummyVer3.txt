@@ -45,88 +45,158 @@ VALUES (SEQ_RESERVATION.NEXTVAL, 5, '503', TRUNC(SYSDATE), '11:00', '12:00', '�
 -- [시나리오 2] 비품 대여 데이터 (실제 비품 마스터 매핑 최종본 - 총 15건)
 -- ==========================================
 
--- ------------------------------------------
--- 파트 1. [승인대기] 진행 중인 핵심 테스트 기안 (최신글 15번~11번)
--- ------------------------------------------
--- 15번 기안자: 안총무 (레벨 1) -> 현재 2차 결재대기 (SIGN2~5 공백) / EQ_NO 21: 대여용 법인 카드 (공용)
-INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, REASON)
-VALUES (15, 17, 21, '대여용 법인 카드 (공용) 대여 신청', 1, TRUNC(SYSDATE+1), TRUNC(SYSDATE+2), '승인대기', 2, '안총무', TRUNC(SYSDATE), '정기 주주총회 및 이사회 연석 총회 진행 시 외부 초청 위원 다과비 결제 및 관련 인쇄 대리 정산을 위해 대여합니다.');
+-- ==========================================
+-- 📌 [재고 선점 가드]: 승인대기 기안 등록 즉시 비품 잔여 수량 차감 연동
+-- ==========================================
 
--- 14번 기안자: 정사원 (레벨 1) -> 현재 2차 결재대기 (SIGN2~5 공백) / EQ_NO 12: 샤오미 보조배터리 20000mAh
-INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, REASON)
-VALUES (14, 5, 12, '샤오미 보조배터리 20000mAh 대여 신청', 2, TRUNC(SYSDATE+1), TRUNC(SYSDATE+5), '승인대기', 2, '정사원', TRUNC(SYSDATE), '대외 협력사 릴레이 미팅 및 상시 출장 스케줄로 인한 모바일 디바이스 상시 충전 목적으로 신청합니다.');
+-- 15번 문서 연동 : 안총무 기안 / EQ_NO 21 (대여용 법인 카드) / REQ_COUNT 1개 선점 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 1 
+WHERE EQ_NO = 21;
 
--- [교정본 13번] 황인프(레벨 2)가 신청하여 담당(SIGN2) 서명이 들어가고 현재 3차 상급자 결재 대기 중인 상태
+-- 14번 문서 연동 : 정사원 기안 / EQ_NO 12 (샤오미 보조배터리) / REQ_COUNT 2개 선점 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 2 
+WHERE EQ_NO = 12;
+
+-- 13번 문서 연동 : 황인프 기안 / EQ_NO 8 (로지텍 MX 마우스) / REQ_COUNT 3개 선점 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 3 
+WHERE EQ_NO = 8;
+
+-- 12번 문서 연동 : 송사원 기안 / EQ_NO 15 (Galaxy Tab S9 FE) / REQ_COUNT 1개 선점 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 1 
+WHERE EQ_NO = 15;
+
+-- 11번 문서 연동 : 고마켓 기안 / EQ_NO 4 (Dell 32인치 4K 모니터) / REQ_COUNT 5개 선점 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 5 
+WHERE EQ_NO = 4;
+
+-- ------------------------------------------
+-- 파트 1 메인 기안 데이터 INSERT 구문 실행 (실시간 오늘 날짜 바인딩 패턴)
+-- ------------------------------------------
+-- 15번 기안자: 안총무 (레벨 1) -> 현재 2차 결재대기 
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, REASON)
+VALUES (15, 17, 21, '대여용 법인 카드 (공용) 대여 신청', 1, CURRENT_DATE + 1, CURRENT_DATE + 2, '승인대기', 2, '안총무', CURRENT_DATE, '정기 주주총회 및 이사회 연석 총회 진행 시 외부 초청 위원 다과비 결제 및 관련 인쇄 대리 정산을 위해 대여합니다.');
+
+-- 14번 기안자: 정사원 (레벨 1) -> 현재 2차 결재대기
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, REASON)
+VALUES (14, 5, 12, '샤오미 보조배터리 20000mAh 대여 신청', 2, CURRENT_DATE + 1, CURRENT_DATE + 5, '승인대기', 2, '정사원', CURRENT_DATE, '대외 협력사 릴레이 미팅 및 상시 출장 스케줄로 인한 모바일 디바이스 상시 충전 목적으로 신청합니다.');
+
+-- 13번 기안자: 황인프(레벨 2)가 신청하여 담당(SIGN2) 서명이 들어가고 현재 3차 상급자 결재 대기 중인 상태
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, REASON)
-VALUES (13, 16, 8, '로지텍 MX Master 3S 마우스 대여 신청', 3, TRUNC(SYSDATE+2), TRUNC(SYSDATE+90), '승인대기', 3, '황인프', TRUNC(SYSDATE), '인프라부서 신설 파트 사무 공간 조성에 따른 배정 인원 업무용 입력 장비 기본 수량 확보를 위해 대여를 요청합니다.');
+VALUES (13, 16, 8, '로지텍 MX Master 3S 마우스 대여 신청', 3, CURRENT_DATE + 2, CURRENT_DATE + 90, '승인대기', 3, '황인프', CURRENT_DATE, '인프라부서 신설 파트 사무 공간 조성에 따른 배정 인원 업무용 입력 장비 기본 수량 확보를 위해 대여를 요청합니다.');
 
--- 12번 기안자: 송사원 (레벨 1) -> 1차 자동 / 2차 최대리 승인 / 현재 3차 결재대기 / EQ_NO 15: Galaxy Tab S9 FE
+-- 12번 기안자: 송사원 (레벨 1) -> 1차 자동 / 2차 최대리 승인 / 현재 3차 결재대기
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, REASON)
-VALUES (12, 11, 15, 'Galaxy Tab S9 FE 대여 신청', 1, TRUNC(SYSDATE+3), TRUNC(SYSDATE+10), '승인대기', 3, '송사원', TRUNC(SYSDATE), '최대리', TRUNC(SYSDATE), '메타버스 가상 쇼룸 메인 프로젝트 프로토타입 3D 렌더링 화면 왜곡 현상 테스트 및 센서 추적 정밀 디버깅 목적으로 대여합니다.');
+VALUES (12, 11, 15, 'Galaxy Tab S9 FE 대여 신청', 1, CURRENT_DATE + 3, CURRENT_DATE + 10, '승인대기', 3, '송사원', CURRENT_DATE, '최대리', CURRENT_DATE, '메타버스 가상 쇼룸 메인 프로젝트 프로토타입 3D 렌더링 화면 왜곡 현상 테스트 및 센서 추적 정밀 디버깅 목적으로 대여합니다.');
 
--- 11번 📌 [5단계 대기 문서 - 최고 등급]: 1~4차 승인 완료 / 현재 최종 김대표 결재대기 / EQ_NO 4: Dell 32인치 4K 모니터
-INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE)
-VALUES (11, 10, 4, 'Dell 32인치 4K 모니터 대여 신청', 5, TRUNC(SYSDATE+1), TRUNC(SYSDATE+730), '승인대기', 5, '고마켓', TRUNC(SYSDATE), '고마켓', TRUNC(SYSDATE), '홍글로', TRUNC(SYSDATE), '윤재무', TRUNC(SYSDATE), '영업부 내근 처리 인원 증대 및 데이터 정산 속도 향상을 위한 고성능 업무용 PC 장비 다량 대여 요청의 건.');
+-- 11번 기안자: 고마켓 (레벨 1) -> 1~4차 승인 완료 / 현재 최종 김대표 결재대기 / 반납 예정일 2년 뒤 세팅
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, REASON)
+VALUES (11, 10, 4, 'Dell 32인치 4K 모니터 대여 신청', 5, DATEADD('DAY', 1, CURRENT_DATE), DATEADD('YEAR', 2, CURRENT_DATE), '승인대기', 5, '고마켓', CURRENT_DATE, '고마켓', CURRENT_DATE, '홍글로', CURRENT_DATE, '윤재무', CURRENT_DATE, '영업부 내근 처리 인원 증대 및 데이터 정산 속도 향상을 위한 고성능 업무용 PC 장비 다량 대여 요청의 건.');
 
+-- ==========================================
+-- 📌 [재고 선점 가드]: 최종 완료(대여중) 이력에 따른 비품 재고 실시간 차감
+-- ==========================================
+
+-- 10번 문서 연동 : 송사원 기안 / MacBook Pro 16형 (EQ_NO = 1) / REQ_COUNT 1개 실시간 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 1 
+WHERE EQ_NO = 1;
+
+-- 9번 문서 연동 : 조대리 기안 / GoPro Hero 12 (EQ_NO = 19) / REQ_COUNT 1개 실시간 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 1 
+WHERE EQ_NO = 19;
+
+-- 8번 문서 연동 : 윤재무 기안 / MacBook Pro 16형 (EQ_NO = 1) / REQ_COUNT 1개 실시간 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 1 
+WHERE EQ_NO = 1;
 
 -- ------------------------------------------
--- 파트 2. [대여중] 김대표 승인 완료되어 정상 사용 중 (10번~8번 / 재고 차감 반영 완료)
+-- 파트 2 메인 기안 데이터 INSERT 구문 실행
 -- ------------------------------------------
--- 10번 기안자: 송사원 (레벨 1) -> 1단계 담당이므로 SIGN1부터 시작하여 SIGN5까지 최종 완료
+-- 10번 기안자: 송사원 (레벨 1) -> 5일 전 신청하여 정상 대여 중 (반납 예정일은 360일 뒤)
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
-VALUES (10, 11, 1, 'MacBook Pro 16형 (M3) 대여 신청', 1, TRUNC(SYSDATE-5), TRUNC(SYSDATE+360), '대여중', 6, '송사원', TRUNC(SYSDATE-5), '최대리', TRUNC(SYSDATE-5), '박개발', TRUNC(SYSDATE-5), '유법무', TRUNC(SYSDATE-5), '김대표', TRUNC(SYSDATE-5), '개발팀 신규 배정 인원의 상시 코딩 테스트 및 통합 시스템 제어를 위한 기본 PC 장비를 대여 및 수령하고자 합니다.');
+VALUES (10, 11, 1, 'MacBook Pro 16형 (M3) 대여 신청', 1, DATEADD('DAY', -5, CURRENT_DATE), DATEADD('DAY', 360, CURRENT_DATE), '대여중', 6, '송사원', DATEADD('DAY', -5, CURRENT_DATE), '최대리', DATEADD('DAY', -5, CURRENT_DATE), '박개발', DATEADD('DAY', -5, CURRENT_DATE), '유법무', DATEADD('DAY', -5, CURRENT_DATE), '김대표', DATEADD('DAY', -5, CURRENT_DATE), '개발팀 신규 배정 인원의 상시 코딩 테스트 및 통합 시스템 제어를 위한 기본 PC 장비를 대여 및 수령하고자 합니다.');
 
--- 9번 기안자: 조대리 (레벨 2) -> 2단계 담당이므로 SIGN1(하급자)은 NULL 처리, SIGN2(담당)부터 SIGN5까지 완료
+-- 9번 기안자: 조대리 (레벨 2) -> 3일 전 신청하여 오늘 반납 예정인 상태
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
-VALUES (9, 7, 19, 'GoPro Hero 12 대여 신청', 1, TRUNC(SYSDATE-3), TRUNC(SYSDATE), '대여중', 6, '조대리', TRUNC(SYSDATE-3), '강기획', TRUNC(SYSDATE-3), '이인사', TRUNC(SYSDATE-3), '김대표', TRUNC(SYSDATE-3), '사내 미디어 센터 공식 유튜브 채널 업로드용 기획 부서 단합 대회 단체 인트로 시네마틱 영상 촬영 목적으로 장비를 신청합니다.');
+VALUES (9, 7, 19, 'GoPro Hero 12 대여 신청', 1, CURRENT_DATE - 3, CURRENT_DATE, '대여중', 6, '조대리', CURRENT_DATE - 3, '강기획', CURRENT_DATE - 3, '이인사', CURRENT_DATE - 3, '김대표', CURRENT_DATE - 3, '사내 미디어 센터 공식 유튜브 채널 업로드용 기획 부서 단합 대회 단체 인트로 시네마틱 영상 촬영 목적으로 장비를 신청합니다.');
 
--- 8번 기안자: 윤재무 (레벨 4) -> 4단계 담당이므로 SIGN1~3(하급자)은 NULL 처리, SIGN4(담당)와 SIGN5(최종)만 완료
+-- 8번 기안자: 윤재무 (레벨 4) -> 어제(1일 전) 신청하여 정상 대여 중 (반납 예정일은 14일 뒤)
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
-VALUES (8, 8, 1, 'MacBook Pro 16형 (M3) 대여 신청', 1, TRUNC(SYSDATE-1), TRUNC(SYSDATE+14), '대여중', 6, '윤재무', TRUNC(SYSDATE-1), '김대표', TRUNC(SYSDATE-1), '상반기 지사 회계 감사 투입 시 보안 취약점 외부 노출을 제어하고 대외비 정산 자료를 완전 격리 보존하기 위하여 대여를 요청합니다.');
+VALUES (8, 8, 1, 'MacBook Pro 16형 (M3) 대여 신청', 1, CURRENT_DATE - 1, CURRENT_DATE + 14, '대여중', 6, '윤재무', CURRENT_DATE - 1, '김대표', CURRENT_DATE - 1, '상반기 지사 회계 감사 투입 시 보안 취약점 외부 노출을 제어하고 대외비 정산 자료를 완전 격리 보존하기 위하여 대여를 요청합니다.');
+
+-- ==========================================
+-- 📌 [재고 선점 가드]: 최종 완료(연체 상태) 이력에 따른 비품 재고 실시간 차감
+-- ==========================================
+
+-- 7번 문서 연동 : 정사원 기안 / 샤오미 보조배터리 20000mAh (EQ_NO = 12) / REQ_COUNT 2개 실시간 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 2 
+WHERE EQ_NO = 12;
+
+-- 6번 문서 연동 : 권사업 기안 / HDMI to HDMI 케이블 (3m) (EQ_NO = 23) / REQ_COUNT 1개 실시간 차감
+UPDATE EQUIPMENT 
+SET REMAIN_COUNT = REMAIN_COUNT - 1 
+WHERE EQ_NO = 23;
 
 -- ------------------------------------------
--- 파트 3. [미반납] 대여 종료일 초과 연체 상태 (7번~6번 / 재고 차감 반영 완료)
+-- 파트 3 메인 기안 데이터 INSERT 구문 실행
 -- ------------------------------------------
--- 7번 기안자: 정사원 (레벨 1) -> 1단계 담당이므로 SIGN1부터 SIGN5까지 전 단계 승인 완료 후 연체
+-- 7번 기안자: 정사원 (레벨 1) -> 12일 전 신청, 2일 전에 반납 기한이 지나 완전히 연체된 상태
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
-VALUES (7, 5, 12, '샤오미 보조배터리 20000mAh 대여 신청', 2, TRUNC(SYSDATE-12), TRUNC(SYSDATE-2), '대여중', 6, '정사원', TRUNC(SYSDATE-12), '고마켓', TRUNC(SYSDATE-12), '홍글로', TRUNC(SYSDATE-12), '윤재무', TRUNC(SYSDATE-12), '김대표', TRUNC(SYSDATE-12), '외부 컨설팅 파트 전사적 종일 외근 및 현장 릴레이 미팅 스케줄로 모바일 기기 상시 전원 수급을 위해 신청합니다.');
+VALUES (7, 5, 12, '샤오미 보조배터리 20000mAh 대여 신청', 2, CURRENT_DATE - 12, CURRENT_DATE - 2, '대여중', 6, '정사원', CURRENT_DATE - 12, '고마켓', CURRENT_DATE - 12, '홍글로', CURRENT_DATE - 12, '윤재무', CURRENT_DATE - 12, '김대표', CURRENT_DATE - 12, '외부 컨설팅 파트 전사적 종일 외근 및 현장 릴레이 미팅 스케줄로 모바일 기기 상시 전원 수급을 위해 신청합니다.');
 
--- 6번 기안자: 권사업 (레벨 3) -> 3단계 담당이므로 SIGN1~2(하급자)는 NULL 처리, SIGN3(담당)부터 SIGN5까지 완료 후 연체
+-- 6번 기안자: 권사업 (레벨 3) -> 15일 전 신청, 5일 전에 반납 기한이 지나 완전히 연체된 상태
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
-VALUES (6, 15, 23, 'HDMI to HDMI 케이블 (3m) 대여 신청', 1, TRUNC(SYSDATE-15), TRUNC(SYSDATE-5), '대여중', 6, '권사업', TRUNC(SYSDATE-15), '이인사', TRUNC(SYSDATE-15), '김대표', TRUNC(SYSDATE-15), '외부 협력사 초청 중회의실 디스플레이 포트 출력 오류 대응 및 임시 프레젠테이션 선로 구성을 위해 긴급 대여합니다.');
+VALUES (6, 15, 23, 'HDMI to HDMI 케이블 (3m) 대여 신청', 1, CURRENT_DATE - 15, CURRENT_DATE - 5, '대여중', 6, '권사업', CURRENT_DATE - 15, '이인사', CURRENT_DATE - 15, '김대표', CURRENT_DATE - 15, '외부 협력사 초청 중회의실 디스플레이 포트 출력 오류 대응 및 임시 프레젠테이션 선로 구성을 위해 긴급 대여합니다.');
 
 -- ------------------------------------------
 -- 파트 4. [반납완료] 사용 완료 후 자산 복구 마감 (5번~3번)
 -- ------------------------------------------
--- 5번 기안자: 고마켓 (레벨 2) -> 2단계 담당(SIGN2)부터 시작하여 SIGN5까지 최종 완료 후 반납
-INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
-VALUES (5, 10, 35, '디지털 카메라 (Canon EOS R6) 대여 신청', 1, TRUNC(SYSDATE-20), TRUNC(SYSDATE-18), '반납완료', 6, '고마켓', TRUNC(SYSDATE-21), '홍글로', TRUNC(SYSDATE-21), '윤재무', TRUNC(SYSDATE-21), '김대표', TRUNC(SYSDATE-20), '전사 하반기 단합 행사 다큐멘터리 아카이빙 사진 촬영 및 인쇄용 프레스 킷 이미지 리소스 생성을 위한 장비 요청 건입니다.');
+-- ==========================================
+-- 📌 [장부 동기화 가드]: 반납완료 종결 문서는 비품 수량을 건드리지 않고 인서트합니다.
+-- ==========================================
 
--- 4번 기안자: 신영업 (레벨 2) -> 2단계 담당(SIGN2)부터 시작하여 SIGN5까지 최종 완료 후 반납
+-- 5번 기안자: 고마켓 (레벨 2) -> 21일 전 신청, 20일 전 대여 시작, 18일 전에 완납 마감된 상태
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
-VALUES (4, 13, 16, '대여용 빔프로젝터 (Epson) 대여 신청', 1, TRUNC(SYSDATE-15), TRUNC(SYSDATE-13), '반납완료', 6, '신영업', TRUNC(SYSDATE-16), '홍글로', TRUNC(SYSDATE-16), '이인사', TRUNC(SYSDATE-16), '김대표', TRUNC(SYSDATE-15), '대구 지사 대규모 특약점 대상 상생 협력 세미나 진행 및 신제품 홍보 슬라이드 다량 대면 투사를 위하여 단기 대여합니다.');
+VALUES (5, 10, 35, '디지털 카메라 (Canon EOS R6) 대여 신청', 1, CURRENT_DATE - 20, CURRENT_DATE - 18, '반납완료', 6, '고마켓', CURRENT_DATE - 21, '홍글로', CURRENT_DATE - 21, '윤재무', CURRENT_DATE - 21, '김대표', CURRENT_DATE - 20, '전사 하반기 단합 행사 다큐멘터리 아카이빙 사진 촬영 및 인쇄용 프레스 킷 이미지 리소스 생성을 위한 장비 요청 건입니다.');
 
--- 3번 기안자: 최대리 (레벨 2) -> 2단계 담당(SIGN2)부터 시작하여 SIGN5까지 최종 완료 후 반납
+-- 4번 기안자: 신영업 (레벨 2) -> 16일 전 신청, 15일 전 대여 시작, 13일 전에 완납 마감된 상태
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
-VALUES (3, 4, 15, 'Galaxy Tab S9 FE 대여 신청', 1, TRUNC(SYSDATE-10), TRUNC(SYSDATE-6), '반납완료', 6, '최대리', TRUNC(SYSDATE-11), '박개발', TRUNC(SYSDATE-11), '유법무', TRUNC(SYSDATE-11), '김대표', TRUNC(SYSDATE-10), '신규 디자인 컴포넌트 해상도 파편화 테스트 및 모바일 UI 반응형 레이아웃 정상 동작 확인을 위해 요청합니다.');
+VALUES (4, 13, 16, '대여용 빔프로젝터 (Epson) 대여 신청', 1, CURRENT_DATE - 15, CURRENT_DATE - 13, '반납완료', 6, '신영업', CURRENT_DATE - 16, '홍글로', CURRENT_DATE - 16, '이인사', CURRENT_DATE - 16, '김대표', CURRENT_DATE - 15, '대구 지사 대규모 특약점 대상 상생 협력 세미나 진행 및 신제품 홍보 슬라이드 다량 대면 투사를 위하여 단기 대여합니다.');
+
+-- 3번 기안자: 최대리 (레벨 2) -> 11일 전 신청, 10일 전 대여 시작, 6일 전에 완납 마감된 상태
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
+VALUES (3, 4, 15, 'Galaxy Tab S9 FE 대여 신청', 1, CURRENT_DATE - 10, CURRENT_DATE - 6, '반납완료', 6, '최대리', CURRENT_DATE - 11, '박개발', CURRENT_DATE - 11, '유법무', CURRENT_DATE - 11, '김대표', CURRENT_DATE - 10, '신규 디자인 컴포넌트 해상도 파편화 테스트 및 모바일 UI 반응형 레이아웃 정상 동작 확인을 위해 요청합니다.');
 
 -- ------------------------------------------
 -- 파트 5. [반려됨] 상급자 거절로 종결 처리된 기안 (2번~1번)
 -- ------------------------------------------
--- 2번 기안자: 고마켓 (레벨 2) -> SIGN2(담당 고마켓) 서명 후 3차 결재권자인 SIGN3(홍글로) 선에서 반려 종결
--- 💡 괄호 결함 방어용 오리지널 파싱 포맷인 "(반려)" 구조를 그대로 밀어 넣습니다. 자바가 1칸 공백 보정을 수행합니다.
+-- ==========================================
+-- 📌 [장부 동기화 완결]: 반려 문서는 재고를 건드리지 않고 인서트하며 시퀀스를 리셋합니다.
+-- ==========================================
+
+-- 2번 기안자: 고마켓 (레벨 2) -> 오늘 기안 및 반려 서명이 찍혀 종결된 마셜 스피커 기안
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, REASON)
-VALUES (2, 10, 30, '블루투스 스피커 (Marshall) 대여 신청', 2, TRUNC(SYSDATE+1), TRUNC(SYSDATE+30), '반려됨', 3, '고마켓', TRUNC(SYSDATE), '홍글로(반려)', TRUNC(SYSDATE), '마케팅부서 상반기 야외 게릴라 프로모션 이벤트 부스 인테리어 배경 음악 및 현장 가이드 사운드 실시간 야외 송출을 위해 신청합니다.');
+VALUES (2, 10, 30, '블루투스 스피커 (Marshall) 대여 신청', 2, CURRENT_DATE + 1, CURRENT_DATE + 30, '반려됨', 3, '고마켓', CURRENT_DATE, '홍글로(반려)', CURRENT_DATE, '마케팅부서 상반기 야외 게릴라 프로모션 이벤트 부스 인테리어 배경 음악 및 현장 가이드 사운드 실시간 야외 송출을 위해 신청합니다.');
 
--- 1번 기안자: 이인사 (레벨 4) -> SIGN4(담당 이인사) 서명 후 5차 최종 결재권자인 SIGN5(김대표) 선에서 반려 종결
+-- 1번 기안자: 이인사 (레벨 4) -> 오늘 기안 및 김대표 최종 반려 서명이 찍혀 종결된 Dell 모니터 기안
 INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REASON)
-VALUES (1, 2, 4, 'Dell 32인치 4K 모니터 대여 신청', 4, TRUNC(SYSDATE+3), TRUNC(SYSDATE+7), '반려됨', 5, '이인사', TRUNC(SYSDATE), '김대표(반려)', TRUNC(SYSDATE), '인사팀 면접 전형 전용 듀얼 모니터 대여 요청의 건.');
+VALUES (1, 2, 4, 'Dell 32인치 4K 모니터 대여 신청', 4, CURRENT_DATE + 3, CURRENT_DATE + 7, '반려됨', 5, '이인사', CURRENT_DATE, '김대표(반려)', CURRENT_DATE, '인사팀 면접 전형 전용 듀얼 모니터 대여 요청의 건.');
 
-
--- ------------------------------------------
+-- -----------------------------------------
 -- [안전 조치]: 중복 PK 방지용 시퀀스 재정렬 가드 작동
+-- 💡 더미 데이터의 최고 번호가 15번이므로, 다음 사용자가 신청서를 작성할 때 
+--    16번 번호표를 끊어 가도록 시퀀스 기준선을 칼같이 동기화합니다.
 -- ------------------------------------------
 ALTER SEQUENCE SEQ_RENTAL RESTART WITH 16;
+
 
 -- ==========================================
 -- [시나리오 3] 휴가 신청 데이터 (약 15건)
