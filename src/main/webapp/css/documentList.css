@@ -304,29 +304,28 @@ body {
     animation: pulse 0.8s infinite alternate ease-in-out !important; 
 }
 
-/* ==========================================
-   📌 [시정 조치]: 결재 바랍니다 문구 가독성 300% 폭발 가드
-   ========================================== */
+/* 📌 [시정 조치]: 결재 바랍니다 문구 가독성 300% 폭발 가드 */
 .approval-blink {
-    /* 1. 💡 [색상 강렬화]: 연한 빨간색을 피하고 칠리 레드(#dc2626) 컬러로 텍스트를 선명하게 변경 */
     color: #dc2626 !important; 
-    
-    /* 2. 💡 [두께 및 레이아웃]: 텍스트 두께를 한 단계 더 두껍게 락을 걸고 중앙 정렬선 일치 */
     font-weight: 800 !important;
     font-size: 11px !important;
     letter-spacing: 0.3px !important;
     text-align: center !important;
-    display: inline-block !important;
     
-    /* 3. 💡 [입체감 백그라운드 래핑]: 글자만 덜렁 있으면 흐려 보이므로, 
-          글자 뒤에 화사한 파스텔톤 초소형 핑크 배지를 얹어 시선을 강제로 집중시킵니다. */
+    /* 💡 [핵심 교정]: 전체화면에서도 옆 공간을 차지하지 못하도록 독립된 블록으로 쪼개고,
+          clear: both를 주어 앞선 배지(.status-badge) 무조건 아래로 강제 하강시킵니다. */
+    display: block !important; 
+    clear: both !important;
+    width: max-content !important;
+    
+    /* 💡 전체화면에서 중앙에 이쁘게 안착하도록 좌우 마진 자동 정렬 */
+    margin: 6px auto 0 auto !important; 
+    
     border: 1px solid #fecaca !important;
     padding: 3px 8px !important;
     border-radius: 4px !important;
-    margin-top: 5px !important;
     box-shadow: 0 1px 2px rgba(220, 38, 38, 0.08);
 
-    /* 4. 💡 [애니메이션 성능 향상]: 하드웨어 가속을 켜서 부드럽게 숨쉬듯 깜빡이도록 보정 */
     will-change: transform, opacity;
     animation: pulseBlink 0.9s infinite alternate ease-in-out !important; 
 }

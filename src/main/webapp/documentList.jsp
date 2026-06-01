@@ -160,47 +160,85 @@
                         </tr>
                     </thead>
 		            <tbody>
-				    <% if (eqList == null || eqList.isEmpty()) { %>
-				        <tr><td colspan="6" class="empty-data">신청된 비품 대여 기안 내역이 없습니다.</td></tr>
-				    <% } else { 
-				        for (RentalHistoryDTO eq : eqList) { 
-				            String statusClass = "status-blue";
-				            if ("반려됨".equals(eq.getStatus())) statusClass = "status-red";
-				            else if ("반납완료".equals(eq.getStatus()) || "이용 종료".equals(eq.getStatus())) statusClass = "status-gray";
-				            
-				            boolean isMyApprovalTurn = "승인대기".equals(eq.getStatus()) && (eq.getApprovalStep() == loginEmp.getEmpLevel());
-				    %>
-				        <tr data-doc-id="rent_<%= eq.getRentalNo() %>">
-				            <td><%= eq.getRentalNo() %></td>
-				            
-				            <!-- 💡 인라인 left 스타일을 제거하여 아래 CSS 정가운데 정렬과 통일감을 줍니다 -->
-				            <td class="td-title">
-				                <a href="rentalDetail.do?rentalNo=<%= eq.getRentalNo() %>" class="title-link">
-				                    <%= eq.getTitle() != null ? eq.getTitle() : "제목 없음" %>
-				                </a>
-				            </td>
-				            
-				            <td><b><%= eq.getEmpName() != null ? eq.getEmpName() : "미상" %></b></td>
-				            
-				            <!-- 📌 수량 칸: 글자와 EA가 한 몸처럼 움직이도록 구조 개선 -->
-				            <td class="td-qty">
-				                <span class="qty-wrap"><b><%= eq.getReqCount() %></b>&nbsp;EA</span>
-				            </td>
-				            
-				            <td><%= eq.getRentalDate() %> ~ <%= eq.getReturnDate() %></td>
-				            
-				            <td style="vertical-align: middle; padding: 10px 0;">
-				                <span class="status-badge <%= statusClass %>" style="margin-bottom: 4px;"><%= eq.getStatus() %></span>
-				                
-				                <% if (isMyApprovalTurn) { %>
-				                    <div class="approval-blink" style="font-size: 11px; color: #ef4444; font-weight: 800; margin-top: 3px;">
-				                        결재 바랍니다
-				                    </div>
-				                <% } %>
-				            </td>
-				        </tr>
-				    <% } } %>
-				</tbody>
+					    <% 
+					        if (eqList == null || eqList.isEmpty()) { 
+					    %>
+					        <tr><td colspan="6" class="empty-data">신청된 비품 대여 기안 내역이 없습니다.</td></tr>
+					    <% 
+					        } else { 
+					            boolean hasVisibleData = false; // 직급 필터링 후 내 화면에 표시될 데이터가 1개라도 있는지 체크하는 플래그
+					            
+					            // 💡 [내 직급 레벨 수령]
+					            int myLevel = loginEmp.getEmpLevel(); 
+					            
+					            for (RentalHistoryDTO eq : eqList) { 
+					                // 💡 [기안자 직급 레벨 수령]: DTO 내부의 empLevel 변수와 매핑됩니다.
+					                int targetLevel = eq.getEmpLevel(); 
+					
+					                // 💡 [핵심 권한 체크 가드 조건문]
+					                // 1. 내가 최고관리자이거나 ("Y")
+					                // 2. 내가 이 기안의 작성자 본인이거나 (eq.getEmpNo() 사번 비교)
+					                // 3. 내 직급 레벨이 기안자 직급 레벨보다 크거나 같을(myLevel >= targetLevel) 때만 노출
+					                if ("Y".equals(loginEmp.getManager()) || 
+					                    loginEmp.getEmpNo() == eq.getEmpNo() || 
+					                    myLevel >= targetLevel) {
+					                    
+					                    hasVisibleData = true; // 조건에 맞아 화면에 노출된 데이터가 존재함을 기록
+					                    
+					                    // 배지 스타일 매핑 로직
+					                    String statusClass = "status-blue";
+					                    if ("반려됨".equals(eq.getStatus())) statusClass = "status-red";
+					                    else if ("반납완료".equals(eq.getStatus()) || "이용 종료".equals(eq.getStatus())) statusClass = "status-gray";
+					                    
+					                    // 현재 내 결재 차례인지 여부 판별
+					                    boolean isMyApprovalTurn = "승인대기".equals(eq.getStatus()) && (eq.getApprovalStep() == loginEmp.getEmpLevel());
+					    %>
+					        <tr data-doc-id="rent_<%= eq.getRentalNo() %>">
+					            <td><%= eq.getRentalNo() %></td>
+					            
+					            <td class="td-title">
+					                <a href="rentalDetail.do?rentalNo=<%= eq.getRentalNo() %>" class="title-link">
+					                    <%= eq.getTitle() != null ? eq.getTitle() : "제목 없음" %>
+					                </a>
+					            </td>
+					            
+					            <!-- 💡 DTO 규격에 맞춰 이름과 직급 레벨(LV)을 안전하게 결합 출력합니다 -->
+					            <td>
+					                <b><%= eq.getEmpName() != null ? eq.getEmpName() : "미상" %></b>
+					                <span style="font-size: 11px; color: #64748b; font-weight: 500; margin-left: 2px;">
+					                    (Lv.<%= eq.getEmpLevel() %>)
+					                </span>
+					            </td>
+					            
+					            <td class="td-qty">
+					                <span class="qty-wrap"><b><%= eq.getReqCount() %></b>&nbsp;EA</span>
+					            </td>
+					            
+					            <td><%= eq.getRentalDate() %> ~ <%= eq.getReturnDate() %></td>
+					            
+					            <td style="vertical-align: middle; padding: 10px 0;">
+					                <span class="status-badge <%= statusClass %>" style="margin-bottom: 4px;"><%= eq.getStatus() %></span>
+					                
+					                <% if (isMyApprovalTurn) { %>
+					                    <div class="approval-blink" style="font-size: 11px; color: #ef4444; font-weight: 800; margin-top: 3px;">
+					                        결재 바랍니다
+					                    </div>
+					                <% } %>
+					            </td>
+					        </tr>
+					    <% 
+					                } // 💡 권한 가드 IF문 종료
+					            } // 💡 FOR 반복문 종료 
+					            
+					            // 💡 [예외 차단 가드]: 내 직급이 낮아 상급자들의 기안이 전부 필터링되어 리스트가 텅 비었을 때
+					            if (!hasVisibleData) {
+					    %>
+					        <tr><td colspan="6" class="empty-data">조회 가능한 기안 내역이 없습니다.</td></tr>
+					    <% 
+					            }
+					        } 
+					    %>
+				    </tbody>
 		        </table>
 		    </div>
 		</div>
