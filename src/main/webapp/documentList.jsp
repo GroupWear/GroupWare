@@ -160,47 +160,47 @@
                         </tr>
                     </thead>
 		            <tbody>
-		            <% if (eqList == null || eqList.isEmpty()) { %>
-		                <tr><td colspan="6" class="empty-data">신청된 비품 대여 기안 내역이 없습니다.</td></tr> <!-- 💡 colspan 7에서 6으로 수정 -->
-		            <% } else { 
-		                for (RentalHistoryDTO eq : eqList) { 
-		                    String statusClass = "status-blue";
-		                    if ("반려됨".equals(eq.getStatus())) statusClass = "status-red";
-		                    else if ("반납완료".equals(eq.getStatus()) || "이용 종료".equals(eq.getStatus())) statusClass = "status-gray";
-		                    
-		                    // 해당 문서가 승인대기 중이고, 현재 문서의 결재 단계가 로그인 유저의 직급 등급 레벨과 일치할 때
-		                    boolean isMyApprovalTurn = "승인대기".equals(eq.getStatus()) && (eq.getApprovalStep() == loginEmp.getEmpLevel());
-		            %>
-		                <!-- 👍 수정 후: data-doc-id 속성에 고유 렌탈 번호를 바인딩해 줍니다 -->
-						<tr data-doc-id="rent_<%= eq.getRentalNo() %>">
-						    <td><%= eq.getRentalNo() %></td>
-		                    <td style="text-align: left; padding-left: 15px;">
-		                        <a href="rentalDetail.do?rentalNo=<%= eq.getRentalNo() %>" 
-		                           style="color: #6366f1; text-decoration: none; font-weight: 600;">
-		                            <%= eq.getTitle() != null ? eq.getTitle() : "제목 없음" %>
-		                        </a>
-		                    </td>
-		                    <td><b><%= eq.getEmpName() != null ? eq.getEmpName() : "미상" %></b></td>
-		                    
-		                  <!-- 📌 [블록 성질 해제 가드]: b 태그의 display를 inline으로 강제 변환하여 옆으로 한 줄 출력을 보장합니다. -->
-							<td style="white-space: nowrap !important; text-align: center !important;">
-							    <b style="display: inline !important; float: none !important;"><%= eq.getReqCount() %></b>&nbsp;EA
-							</td>
-		                    <td><%= eq.getRentalDate() %> ~ <%= eq.getReturnDate() %></td>
-		                    
-		                    <!-- 결재 상태 칸 (빨간 글씨 + 깜빡이 애니메이션 유지) -->
-		                    <td style="vertical-align: middle; padding: 10px 0;">
-		                        <span class="status-badge <%= statusClass %>" style="margin-bottom: 4px;"><%= eq.getStatus() %></span>
-		                        
-		                        <% if (isMyApprovalTurn) { %>
-		                            <div class="approval-blink" style="font-size: 11px; color: #ef4444; font-weight: 800; margin-top: 3px;">
-		                                결재 바랍니다
-		                            </div>
-		                        <% } %>
-		                    </td>
-		                </tr>
-		            <% } } %>
-		            </tbody>
+				    <% if (eqList == null || eqList.isEmpty()) { %>
+				        <tr><td colspan="6" class="empty-data">신청된 비품 대여 기안 내역이 없습니다.</td></tr>
+				    <% } else { 
+				        for (RentalHistoryDTO eq : eqList) { 
+				            String statusClass = "status-blue";
+				            if ("반려됨".equals(eq.getStatus())) statusClass = "status-red";
+				            else if ("반납완료".equals(eq.getStatus()) || "이용 종료".equals(eq.getStatus())) statusClass = "status-gray";
+				            
+				            boolean isMyApprovalTurn = "승인대기".equals(eq.getStatus()) && (eq.getApprovalStep() == loginEmp.getEmpLevel());
+				    %>
+				        <tr data-doc-id="rent_<%= eq.getRentalNo() %>">
+				            <td><%= eq.getRentalNo() %></td>
+				            
+				            <!-- 💡 인라인 left 스타일을 제거하여 아래 CSS 정가운데 정렬과 통일감을 줍니다 -->
+				            <td class="td-title">
+				                <a href="rentalDetail.do?rentalNo=<%= eq.getRentalNo() %>" class="title-link">
+				                    <%= eq.getTitle() != null ? eq.getTitle() : "제목 없음" %>
+				                </a>
+				            </td>
+				            
+				            <td><b><%= eq.getEmpName() != null ? eq.getEmpName() : "미상" %></b></td>
+				            
+				            <!-- 📌 수량 칸: 글자와 EA가 한 몸처럼 움직이도록 구조 개선 -->
+				            <td class="td-qty">
+				                <span class="qty-wrap"><b><%= eq.getReqCount() %></b>&nbsp;EA</span>
+				            </td>
+				            
+				            <td><%= eq.getRentalDate() %> ~ <%= eq.getReturnDate() %></td>
+				            
+				            <td style="vertical-align: middle; padding: 10px 0;">
+				                <span class="status-badge <%= statusClass %>" style="margin-bottom: 4px;"><%= eq.getStatus() %></span>
+				                
+				                <% if (isMyApprovalTurn) { %>
+				                    <div class="approval-blink" style="font-size: 11px; color: #ef4444; font-weight: 800; margin-top: 3px;">
+				                        결재 바랍니다
+				                    </div>
+				                <% } %>
+				            </td>
+				        </tr>
+				    <% } } %>
+				</tbody>
 		        </table>
 		    </div>
 		</div>

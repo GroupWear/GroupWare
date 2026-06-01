@@ -1,17 +1,182 @@
 @charset "UTF-8";
-.detail-container { max-width: 850px; margin: 40px auto; padding: 35px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); font-family: 'Pretendard', sans-serif; }
+
+/* ==========================================
+   1. 기본 배경 및 대시보드 구조 정의 (전체 시스템 최소 가로폭 1200px 철벽 동기화)
+   ========================================== */
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f4f7fa;
+    margin: 0; padding: 0;
+    color: #334155;
+    
+    /* 💡 [창 조절 방어 1순위]: 목록 화면들과 동일하게 1200px 락을 걸어 
+          창을 극단적으로 줄여도 본문이 구겨지지 않고 가로 스크롤바를 안정적으로 생성합니다. */
+    min-width: 1200px !important; 
+    overflow-x: auto !important;
+}
+
+.detail-container { 
+    max-width: 850px; 
+    
+    /* 💡 [상단 헤더 고정 방어 마진]: 리스트 화면의 헤더 고정(65px)에 매칭하여 
+          상세 내용 컨테이너가 네비바 밑으로 기어들어가 덮이지 않도록 상단 여백을 확보합니다. */
+    margin: 105px auto 50px auto !important; /* ❌ 기존 40px auto 에서 정밀 수정 */
+    
+    padding: 35px; 
+    background: #ffffff; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06); 
+    box-sizing: border-box !important;
+}
+
 .detail-header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; border-bottom: 2px solid #6366f1; padding-bottom: 15px; }
 .detail-title { font-size: 26px; font-weight: 800; color: #1e293b; margin: 0; }
 
-/* 5단계 결재선 스타일 */
-.approval-container { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 35px; }
-.stamp-box { width: 100px; border: 1px solid #cbd5e1; text-align: center; border-radius: 6px; overflow: hidden; background: #ffffff; }
-.stamp-step { background: #f1f5f9; padding: 6px 0; font-size: 12px; font-weight: 700; color: #475569; border-bottom: 1px solid #cbd5e1; }
-.stamp-name { padding: 18px 0; font-size: 15px; font-weight: 800; color: #0f172a; min-height: 22px; }
-.stamp-name.signed { color: #4f46e5; position: relative; }
-/* 승인 도장 효과 연출 */
-.stamp-name.signed::after { content: '(인)'; font-size: 11px; color: #ef4444; margin-left: 3px; vertical-align: super; }
-.stamp-date { font-size: 11px; color: #64748b; padding-bottom: 6px; background: #fafafa; border-top: 1px dashed #e2e8f0; }
+/* ==========================================
+   2. 상단 네비게이션 헤더바 스킨 동기화 (main.css 스펙 이식)
+   ========================================== */
+/* 💡 상세 페이지 상단에도 리스트 화면과 완전히 똑같은 짙은 다크 네이비 고정 헤더바가 표출되도록 선언합니다. */
+.header {
+    background-color: #0f172a; 
+    height: 65px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: fixed !important; 
+    top: 0 !important; 
+    left: 0 !important;
+    z-index: 1000 !important; 
+    width: 100% !important;
+    min-width: 1200px !important; 
+    box-sizing: border-box !important;
+}
+
+.header-inner {
+    max-width: 1200px;
+    width: 100% !important;
+    min-width: 1200px !important; 
+    margin: 0 auto !important; 
+    height: 100% !important;
+    display: flex !important; 
+    justify-content: space-between !important; 
+    align-items: center !important;
+    padding: 0 20px !important;
+    box-sizing: border-box !important;
+}
+
+/* 네비바 부속 요소 압착 방지 세팅 */
+.logo-area { text-decoration: none; display: flex; align-items: center; font-size: 24px; flex-shrink: 0 !important; }
+.logo-group { color: #ffffff; font-weight: 800; }
+.logo-ware { color: #e2b857; font-weight: 300; margin-left: 1px; }
+.nav-buttons { display: flex !important; align-items: center !important; gap: 6px !important; flex-wrap: nowrap !important; flex-shrink: 0 !important; }
+.user-profile-info { margin-right: 10px; font-size: 14px; color: #94a3b8; flex-shrink: 0 !important; }
+.admin-tag { background: rgba(226, 184, 87, 0.15); color: #e2b857; border: 1px solid #e2b857; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; margin-right: 4px; flex-shrink: 0 !important; }
+.nav-btn { padding: 8px 12px !important; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 13px; transition: 0.3s; white-space: nowrap !important; flex-shrink: 0 !important; }
+.nav-btn:hover { color: #ffffff; background: rgba(255,255,255,0.08); }
+.nav-btn.admin-special { color: #e2b857 !important; border: 1px solid rgba(226, 184, 87, 0.5) !important; background: rgba(226, 184, 87, 0.05) !important; }
+.nav-btn.admin-special:hover { background: rgba(226, 184, 87, 0.2) !important; box-shadow: 0 0 10px rgba(226, 184, 87, 0.3) !important; }
+.nav-btn.logout { background: #be123c; color: #fff !important; margin-left: 6px; }
+.nav-btn.logout:hover { background: #e11d48; }
+
+/* ==========================================
+   5. 📌 5단계 결재선 디자인 (날짜 칸 깨짐 완벽 박멸 레이아웃 보존)
+   ========================================== */
+.approval-container { 
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 12px; 
+    margin-bottom: 35px; 
+}
+
+.stamp-box { 
+    display: flex !important;          
+    flex-direction: column !important;  
+    width: 100px !important; 
+    min-width: 100px !important;
+    max-width: 100px !important;
+    border: 1px solid #cbd5e1 !important; 
+    text-align: center !important; 
+    border-radius: 6px !important; 
+    background: #ffffff !important; 
+    box-sizing: border-box !important;
+    overflow: hidden !important;       
+}
+
+.stamp-box.active-turn {
+    border: 2px solid #6366f1 !important; 
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.stamp-step { 
+    display: block !important;
+    width: 100% !important;
+    background: #f1f5f9 !important; 
+    padding: 6px 0 !important; 
+    font-size: 12px !important; 
+    font-weight: 700 !important; 
+    color: #475569 !important;
+    border-bottom: 1px solid #cbd5e1 !important; 
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.stamp-box.active-turn .stamp-step {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+}
+
+.stamp-name { 
+    display: block !important;
+    width: 100% !important;
+    padding: 18px 0 !important; 
+    font-size: 14px !important; 
+    font-weight: 800 !important; 
+    color: #0f172a !important; 
+    min-height: 22px !important; 
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    text-align: center !important;
+    flex-grow: 1 !important;           
+}
+
+.stamp-name.signed { 
+    color: #4f46e5 !important; 
+    position: relative !important; 
+}
+
+.stamp-name.signed::after { 
+    content: '(인)' !important; 
+    font-size: 11px !important; 
+    color: #ef4444 !important; 
+    margin-left: 3px !important; 
+    vertical-align: middle !important; 
+    font-weight: bold !important;
+    display: inline-block !important;
+}
+
+/* 🔴 [신규 추가]: 반려 상태일 때 사람 이름 및 반려 텍스트 빨간색 강력 강조 가드 
+   JSP에서 클래스명을 다이렉트로 매핑하거나 글자에 '반려'가 있을 때 인라인 컬러를 완전히 부수고 강제 적용합니다. */
+.stamp-name.rejected,
+.stamp-name[style*="color: rgb(239, 68, 68)"],
+.stamp-name[style*="color: #ef4444"] {
+    color: #ef4444 !important;       /* 💡 이름 전체를 선명한 빨간색으로 변경 */
+    font-weight: 800 !important;       /* 글씨 두께감을 주어 시인성 확보 */
+}
+
+.stamp-date { 
+    display: block !important;
+    width: 100% !important;
+    font-size: 11px !important; 
+    color: #64748b !important; 
+    padding: 6px 0 !important; 
+    background: #fafafa !important; 
+    border-top: 1px dashed #e2e8f0 !important; 
+    margin: 0 !important;              
+    box-sizing: border-box !important;
+    text-align: center !important;
+}
+
+/* ========================================== */
 
 /* 문서 상세 테이블 스타일 */
 .info-table { width: 100%; border-collapse: collapse; margin-bottom: 35px; table-layout: fixed; }
@@ -20,17 +185,25 @@
 .emphasize-text { color: #6366f1; font-weight: 700; }
 
 /* 결재 상태 배지 */
-.status-badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; }
-.status-wait { background: #e0e7ff; color: #4f46e5; }
-.status-active { background: #dcfce7; color: #16a34a; }
-.status-reject { background: #fee2e2; color: #dc2626; }
-.status-finish { background: #f1f5f9; color: #475569; }
+.status-badge { 
+    padding: 6px 14px !important; 
+    border-radius: 20px !important; 
+    font-size: 13px !important; 
+    font-weight: 800 !important; 
+    display: inline-block !important; 
+    text-align: center !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+}
+.status-wait { background: #e0e7ff !important; color: #4f46e5 !important; border: 1px solid #c7d2fe !important; }
+.status-active { background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0 !important; }
+.status-reject { background: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #fecaca !important; }
+.status-finish { background: #f1f5f9 !important; color: #475569 !important; border: 1px solid #e5e7eb !important; }
 
 /* 하단 제어 버튼 조작 컴포넌트 가로 한 줄 배치 잠금 */
 .btn-group { 
     display: flex; 
     justify-content: center; 
-    align-items: center; /* 💡 가로 높이 정렬선 일치 */
+    align-items: center; 
     gap: 15px; 
     border-top: 1px solid #e2e8f0; 
     padding-top: 25px; 
