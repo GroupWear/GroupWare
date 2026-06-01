@@ -7,10 +7,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/findPw.css">
 </head>
 <body class="auth-body">
-
     <div class="auth-container">
         <h2 class="auth-title">보안 인증 (비밀번호 변경)</h2>
-        
         <form action="changePw.do" method="post">
             <div class="form-group">
                 <label>현재 비밀번호</label>

@@ -18,90 +18,73 @@ import com.groupware.util.CryptoUtil;
 public class ChangePwController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    // GET 요청 시 비밀번호 변경 페이지(JSP)를 보여줍니다.
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         request.getRequestDispatcher("changePw.jsp").forward(request, response);
     }
-
+    // POST 요청 시(폼 제출 시) 실제 비밀번호 변경 로직을 처리합니다.
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        
+    	
+    	// 한글 깨짐 방지를 위해 인코딩을 설정합니다.
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
         
-        // LoginController에서 저장한 "loginEmp" 객체로 세션 검증
+        // 현재 로그인한 사용자의 정보를 세션에서 가져옵니다.
         EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
+        // 비밀번호 찾기 후 넘어오는 경우(비로그인 상태)를 위해 파라미터도 확인합니다.
+        String empNoParam = request.getParameter("empNo"); 
         
-        if (loginEmp == null) {
-            out.println("<script>alert('로그인이 필요합니다.'); location.href='index.jsp';</script>");
+        int empNo = 0;
+        boolean isLoginMode = false; // 로그인 상태인지 구분하는 플래그
+        
+        if (loginEmp != null) {
+            empNo = loginEmp.getEmpNo();
+            isLoginMode = true; // 로그인 상태
+        } else if (empNoParam != null) {
+            empNo = Integer.parseInt(empNoParam);
+        } else {
+            out.println("<script>alert('접근 권한이 없습니다.'); location.href='index.jsp';</script>");
             return;
         }
-        
-        int empNo = loginEmp.getEmpNo();
-        String currentPw = request.getParameter("currentPw").trim();
+
         String newPw = request.getParameter("newPw").trim();
         String newPwConfirm = request.getParameter("newPwConfirm").trim();
-        
 
-       
-        //Int -> String 사번 Int형에서 String으로 변환 LHS
-        String empNO_String = String.valueOf(empNo);
-        //DB에 있는 PW 복호화 작업을 통해 사용자가 입력한 pw 일치 여부 확인
-        EmployeeDAO dao = new EmployeeDAO();
-        EmployeeDTO dto = dao.getEmployeeByNo(empNO_String);
-//      System.out.println("데이터 TEST : "+dto.getEmpPw());
-        
-        //현재 데이터 상에 있는 PW 복호화 작업 및 사용자가 입력한 pw 일치하는지 확인
-        String decryptedPassword = CryptoUtil.decrypt(dto.getEmpPw().trim()).trim();
-        String encrypted_present_Password = CryptoUtil.encrypt(currentPw).trim();
-//        System.out.println("복호화 비번 : "+decryptedPassword);
-//        System.out.println("현재  비번 : "+encrypted_present_Password);
-//        System.out.println("현재  비번 : "+dto.getEmpPw().trim());
-//      System.out.println("비번 일치여부 : "+currentPw.equals(decryptedPassword));
-
-
-         
-        // 새 비밀번호 일치 확인
-        if (!currentPw.equals(decryptedPassword)) {
-        	out.println("<script>alert('현재 비밀번호가 일치하지 않습니다.'); history.back();</script>");
-        	return;
-        }
-        
-        // 새 비밀번호 일치 확인
         if (!newPw.equals(newPwConfirm)) {
-        	out.println("<script>alert('새 비밀번호가 일치하지 않습니다.'); history.back();</script>");
+            out.println("<script>alert('새 비밀번호가 일치하지 않습니다.'); history.back();</script>");
             return;
         }
-
 
         try {
             EmployeeDAO empDAO = new EmployeeDAO();
             
-          //현재 데이터 상에 있는 PW 복호화 작업 및 사용자가 입력한 pw 일치하는지 확인
+            // [마이페이지 모드일 때만 현재 비밀번호 검증]
+            if (isLoginMode) {
+                String currentPw = request.getParameter("currentPw").trim();
+                EmployeeDTO dto = empDAO.getEmployeeByNo(String.valueOf(empNo));
+                String decryptedPassword = CryptoUtil.decrypt(dto.getEmpPw().trim()).trim();
+                
+                if (!currentPw.equals(decryptedPassword)) {
+                    out.println("<script>alert('현재 비밀번호가 일치하지 않습니다.'); history.back();</script>");
+                    return;
+                }
+            }
+
+            // DB 업데이트
             String encryptedPassword = CryptoUtil.encrypt(newPw);
-            
-            // [수정 및 검증] 기존 원본 구조를 유지하며 자바 로직과 스크립트 분리
-            if (empDAO.updatePasswordWithVerify(empNo, encrypted_present_Password, encryptedPassword)) {
-                
-                /* * ★ 핵심 수정 구역 ★
-                 * 자바에서 무효화 처리를 먼저 명확히 실행한 후, 
-                 * out.println 스크립트를 통해 index.jsp로 완전히 리다이렉트 시킵니다.
-                 */
-                session.invalidate(); // 1. 서버 세션 완전 삭제 (자바 코드 실행)
-                
-                out.println("<script>");
-                out.println("alert('비밀번호 변경 완료. 다시 로그인해주세요.');");
-                out.println("location.href='index.jsp';"); // 2. 로그인 페이지로 강제 이동
-                out.println("</script>");
-                
+            if (empDAO.updatePassword(empNo, encryptedPassword)) {
+                session.invalidate(); 
+                out.println("<script>alert('비밀번호가 변경되었습니다. 다시 로그인해주세요.'); location.href='index.jsp';</script>");
             } else {
-                out.println("<script>alert('현재 비밀번호가 틀렸습니다.'); history.back();</script>");
+                out.println("<script>alert('비밀번호 변경에 실패했습니다.'); history.back();</script>");
             }
         } catch (Exception e) {
-            out.println("<script>alert('서버 오류가 발생했습니다.'); history.back();</script>");
             e.printStackTrace();
+            out.println("<script>alert('서버 오류가 발생했습니다.'); history.back();</script>");
         } finally {
             out.close();
         }
