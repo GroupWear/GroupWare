@@ -212,12 +212,20 @@
                             
                             <%-- 결재 배지 열 --%>
                             <td>
-                                <span class="status-badge <%= statusClass %>" style="display: inline-block;"><%= displayStatusText %></span>
-                                <% if (isMyApprovalTurn) { %>
-                                    <div class="approval-blink">
-                                        결재 바랍니다
-                                    </div>
-                                <% } %>
+                                <div style="display: flex; 
+                                flex-direction: column; 
+                                align-items: center; 
+                                justify-content: center; 
+                                gap: 5px; min-height: 42px;">
+                                    
+                                    <span class="status-badge <%= statusClass %>" style="display: inline-block; margin: 0;"><%= displayStatusText %></span>
+                                    
+                                    <% if (isMyApprovalTurn) { %>
+                                        <div class="approval-blink" style="margin: 0 !important; display: inline-block !important;">
+                                            결재 바랍니다
+                                        </div>
+                               		<% } %>
+                                </div>
                             </td>
                         </tr>
                     <% 

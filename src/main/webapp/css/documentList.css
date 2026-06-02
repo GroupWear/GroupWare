@@ -20,39 +20,38 @@ body {
     border: 1px solid #e2e8f0 !important;
     border-radius: 8px !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
-    overflow: hidden !important;
+    overflow-x: auto !important; 
+    overflow-y: hidden !important;
     margin-top: 15px !important;
-    padding: 0 !important;
     width: 100% !important;
-    box-sizing: border-box !important;
 }
 
-/* 테이블 기본 뼈대 교정 */
+/* 💡 [테이블 뼈대 교정]: fixed에서 auto로 변경하여 텍스트 길이에 맞춰 너비 조절 */
 .table-wrapper table {
     width: 100% !important;
     border-collapse: collapse !important;
     margin: 0 !important;
+    table-layout: auto !important; 
 }
 
-/* 💡 [재고관리 th 싱크]: 헤더 배경색을 밝은 회색으로 변경하고 선 정리 */
+/* 헤더 스타일 */
 .table-wrapper table th {
     background-color: #f8fafc !important;
-    color: #475569 !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
     padding: 14px 12px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
     border-bottom: 1px solid #e2e8f0 !important;
-    text-align: center;
 }
 
-/* 💡 [재고관리 td 싱크]: 셀 패딩을 넓혀 시각적 쾌적함 부여 및 은은한 하단 경계선 */
+/* 💡 핵심 수정: 고정 패딩을 줄이고 최소 높이를 설정하여 배지 유무에 따라 유동적으로 반응 */
 .table-wrapper table td {
-    padding: 14px 12px !important;
+    padding: 10px 12px !important;       
     font-size: 14px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
     color: #334155 !important;
     border-bottom: 1px solid #f1f5f9 !important;
-    text-align: center;
-    vertical-align: middle !important;
+    line-height: 1.2 !important;        /* 텍스트 줄 높이 타이트하게 조정 */
 }
 
 /* 💡 [마우스 호버]: 재고관리 페이지처럼 마우스 올렸을 때 로우 전체 하이라이트 */
@@ -198,16 +197,13 @@ body {
 /* ==========================================
    6. [정밀 고정 비율 분배 - 탭별 완전 분리]
    ========================================== */
-/* 💡 [비품 대여 테이블 전용 비율 - 총 6칸] */
 .eq-table tr th:nth-child(1), .eq-table tr td:nth-child(1) { width: 10% !important; } 
-.eq-table tr th:nth-child(2), .eq-table tr td:nth-child(2) { width: 33% !important; } 
+.eq-table tr th:nth-child(2), .eq-table tr td:nth-child(2) { width: auto !important; min-width: 33% !important; } 
 .eq-table tr th:nth-child(3), .eq-table tr td:nth-child(3) { width: 14% !important; } 
 .eq-table tr th:nth-child(4), .eq-table tr td:nth-child(4) { width: 10% !important; } 
 .eq-table tr th:nth-child(5), .eq-table tr td:nth-child(5) { width: 21% !important; } 
 .eq-table tr th:nth-child(6), .eq-table tr td:nth-child(6) { width: 12% !important; } 
 
-/* 💡 [휴가 신청 테이블 전용 비율 - 총 5칸 개별 맞춤] 
-   - 4번째 칸(휴가 사유)에 40%라는 넓고 쾌적한 고정 공간을 안전하게 부여합니다. */
 #tab-leave table tr th:nth-child(1), #tab-leave table tr td:nth-child(1) { width: 10% !important; } 
 #tab-leave table tr th:nth-child(2), #tab-leave table tr td:nth-child(2) { width: 25% !important; } 
 #tab-leave table tr th:nth-child(3), #tab-leave table tr td:nth-child(3) { width: 10% !important; } 
@@ -231,22 +227,25 @@ body {
     animation: pulse 0.8s infinite alternate ease-in-out !important; 
 }
 
+/* 💡 [결재 바랍니다] 배지가 있는 행은 이 클래스에 의해 자연스럽게 높이가 확장됨 */
 .approval-blink {
-    color: #dc2626 !important; 
+    color: #dc2626 !important;
+    background-color: #ffffff !important;
     font-weight: 800 !important;
     font-size: 11px !important;
-    letter-spacing: 0.3px !important;
-    text-align: center !important;
-    display: block !important; 
-    clear: both !important;
+    display: block !important;          /* 블록으로 변경하여 배지 높이만큼 행을 밀어냄 */
     width: max-content !important;
-    margin: 6px auto 0 auto !important; 
+    margin: 4px auto 0 auto !important; /* 배지 위쪽 간격만 살짝 추가 */
     border: 1px solid #fecaca !important;
-    padding: 3px 8px !important;
+    padding: 2px 6px !important;
     border-radius: 4px !important;
-    box-shadow: 0 1px 2px rgba(220, 38, 38, 0.08);
-    will-change: transform, opacity;
     animation: pulseBlink 0.9s infinite alternate ease-in-out !important; 
+}
+
+/* '승인대기' 상태 배지 뒤에 '결재 바랍니다'가 나올 때 자연스럽게 아래로 떨어뜨려 주는 가상 안전장치 */
+.table-wrapper table td .status-badge + .approval-blink {
+    display: block !important;
+    margin: 4px auto 0 auto !important;
 }
 
 @keyframes pulseBlink {
@@ -262,25 +261,34 @@ body {
     }
 }
 
-/* 💡 [평소 상태]: 테이블 수직 정렬이 정상 작동하는 inline 속성 및 기본 보라색 설정 */
-.tab-content table td a.title-link {
-    text-align: left !important; 
-    display: inline !important;       
-    width: auto !important;           
-    color: #6366f1 !important; 
-    font-weight: 600 !important;
-    text-decoration: none !important; /* 평소에는 밑줄 없음 */
-    
-    /* 🛠️ 밑줄과 말줄임을 완벽하게 차단하는 속성 */
-    white-space: nowrap !important;       
-    overflow: visible !important;         
-    text-overflow: clip !important;       
+/* ==========================================
+   7. 검색 하이라이트, 제목 링크 및 수량/배지 가독성 스타일
+   ========================================== */
+
+/* 💡 [1단계: 부모 td 셀 교정] 
+   기안제목이 들어가는 td 셀 내부의 모든 정렬 기준을 가로/세로 정중앙으로 통일합니다. */
+.table-wrapper table td.td-title,
+#tab-leave table tr td:nth-child(4) {
+    display: table-cell !important;      /* 테이블 기본 성질 고정 */
+    vertical-align: middle !important;   /* 수직(상하) 중앙 정렬 */
+    text-align: center !important;       /* 💡 [추가] 가로(좌우) 중앙 정렬 */
+    padding: 0 !important;               /* 불균형한 여백 원천 차단 */
 }
 
-/* 🛠️ [마우스 올렸을 때 - 호버 효과 추가]: 제공해주신 코드와 완전히 같은 효과 적용 */
+/* [기안 제목 스타일] - 박스 정렬 버리고 텍스트 정렬로 변경 */
+.tab-content table td a.title-link {
+    display: inline !important;           /* 박스 강제성을 버림 */
+    color: #6366f1 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;       /* 가로 정렬 방해 방지 */
+    line-height: 1.5 !important;          /* 배지 때문에 늘어난 칸 높이에 맞춰 자연스럽게 반응 */
+}
+
+/* 🛠️ [마우스 올렸을 때 - 호버 효과 추가] */
 .tab-content table td a.title-link:hover {
-    color: #0284c7 !important;           /* 마우스 올리면 하늘색 변환 */
-    text-decoration: underline !important; /* 마우스 올리면 밑줄 생성 */
+    color: #0284c7 !important;           
+    text-decoration: underline !important; 
 }
 
 .td-qty .qty-wrap {
@@ -294,14 +302,13 @@ body {
     float: none !important;
 }
 
+/* [상태 배지] */
 .status-badge {
     display: inline-block !important;
-    padding: 4px 10px !important;
+    padding: 2px 8px !important;
     font-size: 12px !important;
     font-weight: 700 !important;
     border-radius: 4px !important;
-    text-align: center !important;
-    min-width: 65px;
 }
 .status-blue { background-color: #e0e7ff !important; color: #4338ca !important; border: 1px solid #c7d2fe !important; }
 .status-red { background-color: #fee2e2 !important; color: #b91c1c !important; border: 1px solid #fecaca !important; }
