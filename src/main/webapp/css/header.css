@@ -19,6 +19,7 @@ body {
     background-color: #f4f7fa;
     margin: 0; padding: 0;
     color: #334155;
+    min-width: 1200px; /* 브라우저 축소 시 최소 해상도 방어선 */
 }
 
 /* ==========================================
@@ -29,6 +30,7 @@ body {
     height: 65px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     position: sticky; top: 0; z-index: 1000;
+    min-width: 1200px;
 }
 
 .header-inner {
