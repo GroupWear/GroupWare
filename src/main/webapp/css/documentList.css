@@ -1,4 +1,74 @@
 @charset "UTF-8";
+
+/* ==========================================
+   0. 전체 레이아웃 및 카드 통일 (스크린샷 기반 추가)
+   ========================================== */
+body {
+    background-color: #f4f7fa !important;
+}
+
+/* 대시보드 컨테이너 내부 여백 조절로 정렬 맞춤 */
+.dashboard-container {
+    max-width: 1160px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+}
+
+/* 재고 관리 페이지처럼 테이블을 깔끔한 흰색 카드로 감싸는 스타일 */
+.table-wrapper {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+    overflow: hidden !important;
+    margin-top: 15px !important;
+    padding: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 테이블 기본 뼈대 교정 */
+.table-wrapper table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+}
+
+/* 💡 [재고관리 th 싱크]: 헤더 배경색을 밝은 회색으로 변경하고 선 정리 */
+.table-wrapper table th {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 14px 12px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    text-align: center;
+}
+
+/* 💡 [재고관리 td 싱크]: 셀 패딩을 넓혀 시각적 쾌적함 부여 및 은은한 하단 경계선 */
+.table-wrapper table td {
+    padding: 14px 12px !important;
+    font-size: 14px !important;
+    color: #334155 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+/* 💡 [마우스 호버]: 재고관리 페이지처럼 마우스 올렸을 때 로우 전체 하이라이트 */
+.table-wrapper table tbody tr:hover {
+    background-color: #fcfcfd !important;
+}
+
+/* 데이터가 없을 때의 카드 내부 레이아웃 */
+.empty-data {
+    padding: 40px 0 !important;
+    color: #94a3b8 !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+}
+
+
 /* ==========================================
    3. 기안 문서함용 탭 메뉴 스타일
    ========================================== */

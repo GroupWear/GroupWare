@@ -32,13 +32,15 @@
 
 <jsp:include page="header.jsp" />
 
-    <div class="dashboard-container" style="padding-top: 80px;"> 
-    	<div class="headertitle" style="margin-bottom: 20px;">
+    <%-- 🛠️ [교정 1] 컨테이너가 좌우로 꽉 차도록 max-width 마진 제한을 해제하고 전체 정렬 싱크를 맞춤 --%>
+    <div class="dashboard-container" style="padding-top: 20px; max-width: 100%; width: 100%; box-sizing: border-box;"> 
+        
+        <div class="headertitle" style="margin-bottom: 15px;">
             <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #1e293b;">통합 기안 문서함</h2>
         </div>
-	</div>
         
-         <div class="search-bar-container" style="position: static; padding: 0 0 20px 0;">
+        <%-- 검색바 영역 --%>
+        <div class="search-bar-container" style="width: 100%; max-width: 100%; box-sizing: border-box;">
             <div class="search-form">
                 <select id="searchType" class="search-select" onchange="toggleSearchInput()">
                     <option value="all">전체 검색</option>
@@ -63,21 +65,24 @@
             </div>
         </div>
         
-        <div class="tab-menu-container">
+        <%-- 탭 메뉴 영역 --%>
+        <div class="tab-menu-container" style="width: 100%; max-width: 100%;">
             <button class="tab-btn <%= !isEqTab ? "active" : "" %>" onclick="switchTab(event, 'tab-leave')">휴가 신청 기안</button>
             <button class="tab-btn <%= isEqTab ? "active" : "" %>" onclick="switchTab(event, 'tab-equipment')">비품 대여 신청 기안</button>
         </div>
 
-         <div id="tab-leave" class="tab-content <%= !isEqTab ? "active" : "" %>" style="display: <%= !isEqTab ? "block" : "none" %>;">
-            <div class="table-wrapper">
-                <table style="min-width: 900px; table-layout: fixed; width: 100%;">
+        <%-- 탭 1: 휴가 신청 기안 콘텐츠 --%>
+        <div id="tab-leave" class="tab-content <%= !isEqTab ? "active" : "" %>" style="display: <%= !isEqTab ? "block" : "none" %>; width: 100%;">
+            <%-- 🛠️ [교정 2] 테이블 래퍼 카드가 웅크러들지 않고 100% 확장되도록 width 인라인 강제 지정 --%>
+            <div class="table-wrapper" style="width: 100% !important; max-width: 100% !important; box-sizing: border-box; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th style="width: 10%;">문서 번호</th> 
+                            <th style="width: 12%;">문서 번호</th> 
                             <th style="width: 25%;">휴가 기간</th>
-                            <th style="width: 10%;">사용 일수</th> 
-                            <th style="width: 40%;">휴가 사유</th> 
-                            <th style="width: 15%;">결재 상태</th> 
+                            <th style="width: 12%;">사용 일수</th> 
+                            <th style="width: 39%;">휴가 사유</th> 
+                            <th style="width: 12%;">결재 상태</th> 
                         </tr>
                     </thead>
                     <tbody>
@@ -93,22 +98,17 @@
                             <td><%= leave.getStartDate() %> ~ <%= leave.getEndDate() %></td>
                             <td><b><%= leave.getUseDays() %>일</b></td>
                             
-                          <!-- 🛠️ 줄바꿈/말줄임/테두리 없음 및 수직 정중앙 정렬 완벽 유지 -->
-						<td style="text-align: left; padding: 14px 20px; vertical-align: middle !important; 
-						           white-space: nowrap !important; overflow: visible !important; text-decoration: none !important;
-						           border: none !important; border-bottom: none !important; box-shadow: none !important;">
-						    
-						    <a href="javascript:void(0);" 
-						       onclick="goToDetail('leave', '<%= leave.getLeaveNo() %>')"
-						       class="title-link" 
-						       
-						       /* 🛠️ [요청 반영]: 마우스 올렸을 때 밑줄 생김 + 하늘색 변환 / 마우스 뗐을 때 원상 복구 */
-						       onmouseover="this.style.textDecoration='underline'; this.style.color='#0284c7';"
-						       onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';">
-						        <%= leave.getReason() != null ? leave.getReason() : "사유 없음" %>
-						    </a>
-						    
-						</td>
+                            <%-- 🛠️ [교정 3] 휴가 사유 칸이 좁아 터지지 않게 말줄임 속성을 풀고 여백을 최적화 --%>
+                            <td style="text-align: left; padding: 14px 20px; white-space: normal; word-break: break-all;">
+                                <a href="javascript:void(0);" 
+                                   onclick="goToDetail('leave', '<%= leave.getLeaveNo() %>')"
+                                   class="title-link" 
+                                   style="color: #6366f1; font-weight: 600; text-decoration: none; cursor: pointer; display: block; width: 100%;"
+                                   onmouseover="this.style.textDecoration='underline'; this.style.color='#0284c7';"
+                                   onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';">
+                                     <%= leave.getReason() != null ? leave.getReason() : "사유 없음" %>
+                                </a>
+                            </td>
                             
                             <td><span class="status-badge <%= statusClass %>"><%= leave.getStatus() %></span></td>
                         </tr>
@@ -118,160 +118,147 @@
             </div>
         </div>
 
-         <div id="tab-equipment" class="tab-content" style="display: none;">
-            <div class="table-wrapper" style="width: 100%; max-width: none;">
-                <table class="eq-table" style="width: 100%; table-layout: fixed;">
+        <%-- 탭 2: 비품 대여 신청 기안 콘텐츠 --%>
+        <div id="tab-equipment" class="tab-content" style="display: none; width: 100%;">
+            <%-- 🛠️ [교정 4] 비품 탭 테이블 래퍼 카드 역시 동일하게 가로 폭 100% 수평 동기화 --%>
+            <div class="table-wrapper" style="width: 100% !important; max-width: 100% !important; box-sizing: border-box; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                <table class="eq-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th style="width: 10%; text-align: center;">기안 번호</th>
-                            <th style="width: 35%; text-align: center;">기안 제목</th>
-                            <th style="width: 15%; text-align: center;">기안자</th> 
-                            <th style="width: 10%; text-align: center;">대여 수량</th>
-                            <th style="width: 15%; text-align: center;">대여 기간</th>
-                            <th style="width: 15%; text-align: center;">결재 상태</th>
+                            <th style="width: 12%;">기안 번호</th>
+                            <th style="width: 34%;">기안 제목</th>
+                            <th style="width: 15%;">기안자</th> 
+                            <th style="width: 12%;">대여 수량</th>
+                            <th style="width: 15%;">대여 기간</th>
+                            <th style="width: 12%;">결재 상태</th>
                         </tr>
                     </thead>
                     <tbody>
-					    <% 
-					        if (eqList == null || eqList.isEmpty()) { 
-					    %>
-					        <tr><td colspan="6" class="empty-data">신청된 비품 대여 기안 내역이 없습니다.</td></tr>
-					    <% 
-					        } else { 
-					            boolean hasVisibleData = false; 
-					            int myLevel = loginEmp.getEmpLevel(); 
-					            boolean isAdmin = "Y".equals(loginEmp.getManager());
-					            
-					            for (RentalHistoryDTO eq : eqList) { 
-					                int targetLevel = eq.getEmpLevel(); 
-					                boolean isRetiredCreator = (targetLevel == 0);
-					                boolean isMyDoc = (loginEmp.getEmpNo() == eq.getEmpNo());
-					                String currentStatus = eq.getStatus();
-					                
-					                // [화면단 상태 보정]: 퇴사자인데 아직 '승인대기' 상태라면 '반려됨'으로 미리 인지
-					                if (isRetiredCreator && "승인대기".equals(currentStatus)) {
-					                    currentStatus = "반려됨";
-					                }
-					                
-					                // [접근 권한 보안 필터 적용]
-					                boolean isPermitted = false;
-					                
-					                if (isRetiredCreator) {
-					                    // 1. 퇴사자의 모든 기안은 오직 최고 관리자만 열람 가능
-					                    if (isAdmin) {
-					                        isPermitted = true;
-					                    }
-					                } else if ("반려됨".equals(currentStatus)) {
-					                    // 2. 반려된 기안은 기안자 본인 및 최고 관리자만 열람 가능
-					                    if (isMyDoc || isAdmin) {
-					                        isPermitted = true;
-					                    }
-					                } else {
-					                    // 3. 정상 상태의 일반 기안은 기존 직급/본인/관리자 룰 적용
-					                    if (isAdmin || isMyDoc || myLevel >= targetLevel) {
-					                        isPermitted = true;
-					                    }
-					                }
-					                
-					                // 권한이 없는 문서는 화면에 그리지 않고 스킵합니다.
-					                if (!isPermitted) {
-					                    continue;
-					                }
-					                
-					                hasVisibleData = true; 
-					                
-					                // 1. 보정된 상태(currentStatus)를 기준으로 배지 스타일 클래스 매핑
-					                String statusClass = "status-blue";
-					                String displayStatusText = currentStatus; 
-					                
-					                if ("반려됨".equals(currentStatus)) { 
-					                    statusClass = "status-red";
-					                } else if ("반납완료".equals(currentStatus) || "이용 종료".equals(currentStatus)) { 
-					                    statusClass = "status-gray";
-					                }
-					                
-					                // 2. 결재 알림창 노출 여부 제어
-					                boolean isMyApprovalTurn = "승인대기".equals(currentStatus) && (eq.getApprovalStep() == loginEmp.getEmpLevel());
-					                
-					                // [이름 표기 로직 수정]: 퇴사자여도 원래 이름이 나오도록 유지합니다.
-					                String displayName = eq.getEmpName() != null ? eq.getEmpName() : "미상";
-					    %>
-					        <tr data-doc-id="rent_<%= eq.getRentalNo() %>">
-					            <td><%= eq.getRentalNo() %></td>
-					            
-					            <td class="td-title" style="text-align: center; padding: 14px 15px; vertical-align: middle !important;">
-								    <a href="rentalDetail.do?rentalNo=<%= eq.getRentalNo() %>" 
-								       class="title-link" 
-								       
-								       /* 🛠️ display: inline 복구로 상하 치우침을 잡고, 마우스 효과는 원본 그대로 유지 */
-								       style="color: #6366f1; font-weight: 600; text-decoration: none; cursor: pointer; display: inline !important;"
-								       onmouseover="this.style.textDecoration='underline'; this.style.color='#0284c7';"
-								       onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';">
-								        <%= eq.getTitle() != null ? eq.getTitle() : "제목 없음" %>
-								    </a>
-								</td>
-					            
-					            <td>
-					                <% if (isRetiredCreator) { %>
-					                    <b style="color: #64748b;"><%= displayName %></b>
-					                    <span style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-left: 2px;">(퇴사자)</span>
-					                <% } else { %>
-					                    <b><%= displayName %></b>
-					                    <span style="font-size: 11px; color: #64748b; font-weight: 500; margin-left: 2px;">
-					                        (Lv.<%= targetLevel %>)
-					                    </span>
-					                <% } %>
-					            </td>
-					            
-					            <td class="td-qty">
-					                <span class="qty-wrap"><b><%= eq.getReqCount() %></b>&nbsp;EA</span>
-					            </td>
-					            
-					            <td><%= eq.getRentalDate() %> ~ <%= eq.getReturnDate() %></td>
-					            
-					            <td style="vertical-align: middle; padding: 10px 0;">
-					                <span class="status-badge <%= statusClass %>" style="margin-bottom: 4px;"><%= displayStatusText %></span>
-					                <% if (isMyApprovalTurn) { %>
-					                    <div class="approval-blink" style="font-size: 11px; color: #ef4444; font-weight: 800; margin-top: 3px;">
-					                        결재 바랍니다
-					                    </div>
-					                <% } %>
-					            </td>
-					        </tr>
-					    <% 
-					            } // 💡 for(eqList) 루프를 닫는 괄호
-					            
-					            // 💡 만약 권한 필터링 때문에 화면에 출력된 줄(Row)이 단 하나도 없다면 예외 안내 문구를 띄웁니다.
-					            if (!hasVisibleData) {
-					    %>
-					        <tr><td colspan="6" class="empty-data">조회 가능한 기안 내역이 없습니다.</td></tr>
-					    <% 
-					            }
-					        } // 💡 에러 원인이었던 else(eqList가 비어있지 않을 때) 블록을 정상적으로 닫는 괄호
-					    %>
-					</tbody>
+                    <% 
+                        if (eqList == null || eqList.isEmpty()) { 
+                    %>
+                        <tr><td colspan="6" class="empty-data">신청된 비품 대여 기안 내역이 없습니다.</td></tr>
+                    <% 
+                        } else { 
+                            boolean hasVisibleData = false; 
+                            int myLevel = loginEmp.getEmpLevel(); 
+                            boolean isAdmin = "Y".equals(loginEmp.getManager());
+                            
+                            for (RentalHistoryDTO eq : eqList) { 
+                                int targetLevel = eq.getEmpLevel(); 
+                                boolean isRetiredCreator = (targetLevel == 0);
+                                boolean isMyDoc = (loginEmp.getEmpNo() == eq.getEmpNo());
+                                String currentStatus = eq.getStatus();
+                                
+                                if (isRetiredCreator && "승인대기".equals(currentStatus)) {
+                                    currentStatus = "반려됨";
+                                }
+                                
+                                boolean isPermitted = false;
+                                if (isRetiredCreator) {
+                                    if (isAdmin) isPermitted = true;
+                                } else if ("반려됨".equals(currentStatus)) {
+                                    if (isMyDoc || isAdmin) isPermitted = true;
+                                } else {
+                                    if (isAdmin || isMyDoc || myLevel >= targetLevel) isPermitted = true;
+                                }
+                                
+                                if (!isPermitted) continue;
+                                
+                                hasVisibleData = true; 
+                                String statusClass = "status-blue";
+                                String displayStatusText = currentStatus; 
+                                
+                                if ("반려됨".equals(currentStatus)) { 
+                                    statusClass = "status-red";
+                                } else if ("반납완료".equals(currentStatus) || "이용 종료".equals(currentStatus)) { 
+                                    statusClass = "status-gray";
+                                }
+                                
+                                boolean isMyApprovalTurn = "승인대기".equals(currentStatus) && (eq.getApprovalStep() == loginEmp.getEmpLevel());
+                                String displayName = eq.getEmpName() != null ? eq.getEmpName() : "미상";
+                    %>
+                        <tr data-doc-id="rent_<%= eq.getRentalNo() %>">
+                            <td><%= eq.getRentalNo() %></td>
+                            
+                            <%-- 기안 제목 줄임 및 잘림 방지 스타일 보정 --%>
+                            <td class="td-title" style="text-align: left; padding: 14px 20px; white-space: normal; word-break: break-all;">
+                                <a href="rentalDetail.do?rentalNo=<%= eq.getRentalNo() %>" 
+                                   class="title-link" 
+                                   style="color: #6366f1; font-weight: 600; text-decoration: none; cursor: pointer; display: block; width: 100%;"
+                                   onmouseover="this.style.textDecoration='underline'; this.style.color='#0284c7';"
+                                   onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';">
+                                     <%= eq.getTitle() != null ? eq.getTitle() : "제목 없음" %>
+                                </a>
+                            </td>
+                            
+                            <td>
+                                <% if (isRetiredCreator) { %>
+                                    <b style="color: #64748b;"><%= displayName %></b>
+                                    <span style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-left: 2px;">(퇴사자)</span>
+                                <% } else { %>
+                                    <b><%= displayName %></b>
+                                    <span style="font-size: 11px; color: #64748b; font-weight: 500; margin-left: 2px;">
+                                        (Lv.<%= targetLevel %>)
+                                    </span>
+                                <% } %>
+                            </td>
+                            
+                            <td class="td-qty">
+                                <span class="qty-wrap"><b><%= eq.getReqCount() %></b>&nbsp;EA</span>
+                             </td>
+                            
+                            <td><%= eq.getRentalDate() %> ~ <%= eq.getReturnDate() %></td>
+                            
+                            <%-- 결재 배지 열 --%>
+                            <td>
+                                <span class="status-badge <%= statusClass %>" style="display: inline-block;"><%= displayStatusText %></span>
+                                <% if (isMyApprovalTurn) { %>
+                                    <div class="approval-blink">
+                                        결재 바랍니다
+                                    </div>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% 
+                            } // for(eqList) 루프 닫기
+                            
+                            if (!hasVisibleData) {
+                    %>
+                        <tr><td colspan="6" class="empty-data">조회 가능한 기안 내역이 없습니다.</td></tr>
+                    <% 
+                            }
+                        } // else 블록 닫기
+                    %>
+                    </tbody>
                 </table>
             </div>
         </div>
+    </div>
         
-        <style>
-        .approval-blink {
-            animation: alert-flash 0.8s infinite alternate ease-in-out;
-        }
-        
-        @keyframes alert-flash {
-            from {
-                opacity: 0.3;
-                transform: scale(0.98);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        </style>
+    <style>
+    /* 블링크 애니메이션 */
+    .approval-blink {
+        font-size: 11px !important;
+        color: #ef4444 !important;
+        font-weight: 800 !important;
+        margin-top: 5px !important;
+        animation: alert-flash 0.8s infinite alternate ease-in-out;
+    }
+    @keyframes alert-flash {
+        from { opacity: 0.3; transform: scale(0.98); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    /* 테이블 내부 텍스트 링크 가독성 증대 기본 스타일 세팅 */
+    .table-wrapper table tbody tr td a.title-link {
+        display: block !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    </style>
 
     <script>
+    /* [기존 필터링/스크롤/탭 스크립트 로직 완벽히 유지됨 - 수정 없음] */
     let currentMatchIndex = -1;
     let matchRows = []; 
     let lastKeyword = ""; 
@@ -404,13 +391,11 @@
         }
     }
     
-    // 📌 [다형성 분기 엔진 엔진 교정]: 타입 판별 후 서블릿 바인딩 주소를 명확하게 파싱합니다.
     function goToDetail(type, no) {
         if (!no) {
             alert("유효하지 않은 문서 번호입니다.");
             return;
         }
-        
         if (type === 'leave') {
             location.href = "leaveDetail.do?leaveNo=" + no;
         } else if (type === 'rental') {
@@ -424,7 +409,6 @@
         
         if (tabParam === 'equipment' || window.location.hash === '#equipment') {
             switchTab(null, 'tab-equipment');
-            
             const eqTabBtn = document.querySelector('.tab-btn[onclick*="tab-equipment"]');
             if (eqTabBtn) eqTabBtn.classList.add('active');
         }
