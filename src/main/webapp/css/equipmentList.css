@@ -1,98 +1,7 @@
 @charset "UTF-8";
 
 /* ==========================================
-   1. 기본 폰트 및 배경 설정 (main.css 통일)
-   ========================================== */
-body {
-    font-family: 'Pretendard', sans-serif;
-    background-color: #f4f7fa;
-    margin: 0; padding: 0;
-    color: #334155;
-    
-    /* 📌 헤더 내부 고정 폭과 일치시켜 스크롤 시 화면 전체가 균형 있게 움직이도록 설정 */
-    min-width: 1150px; 
-    overflow-x: auto;
-}
-
-/* ==========================================
-   2. 상단 네비게이션 헤더 (main.css 완전 일치 + 가로폭 고정)
-   ========================================== */
-.header {
-    background-color: #0f172a; /* 신뢰감을 주는 다크 네이비 */
-    height: 65px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    position: sticky; 
-    top: 0; 
-    z-index: 1000; /* 최상단 레이어 위치 고정 */
-    
-    /* 📌 창 크기를 줄여도 상단 바 크기가 줄어들지 않도록 고정 */
-    width: 100%;
-    min-width: 1000px; 
-}
-
-.header-inner {
-    /* 기존 max-width를 1200px로 유지하되, 내부 콘텐츠들이 찌그러지지 않도록 최소 가로 폭을 확보합니다. */
-    max-width: 1200px;
-    
-    /* 📌 창을 아무리 줄여도 내부 요소들이 최소 1100px의 가로폭을 유지하므로 서로 붙거나 겹치지 않습니다. */
-    min-width: 1100px; 
-    
-    margin: 0 auto; 
-    height: 100%;
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-    padding: 0 20px;
-    box-sizing: border-box;
-}
-
-/* 로고 스타일 */
-.logo-area { text-decoration: none; display: flex; align-items: center; font-size: 24px; }
-.logo-group { color: #ffffff; font-weight: 800; }
-.logo-ware { color: #e2b857; font-weight: 300; margin-left: 1px; }
-
-/* 네비게이션 회원 정보 및 버튼 영역 */
-.nav-buttons { 
-    display: flex; 
-    align-items: center; 
-    gap: 8px; 
-    white-space: nowrap; /* 📌 창이 작아져도 버튼 메뉴들이 절대 줄바꿈되지 않음 */
-}
-.user-profile-info { margin-right: 15px; font-size: 14px; color: #94a3b8; }
-
-/* 관리자 전용 ADMIN 뱃지 */
-.admin-tag {
-    background: rgba(226, 184, 87, 0.15);
-    color: #e2b857;
-    border: 1px solid #e2b857;
-    padding: 2px 8px; border-radius: 4px;
-    font-size: 11px; font-weight: 800; margin-right: 6px;
-}
-
-/* 일반 네비 버튼 */
-.nav-btn {
-    padding: 8px 14px; color: #cbd5e1; text-decoration: none;
-    border-radius: 6px; font-weight: 600; font-size: 13px; transition: 0.3s;
-}
-.nav-btn:hover { color: #ffffff; background: rgba(255,255,255,0.08); }
-
-/* 관리자 전용 메뉴 특별 스타일 (골드 보더 + 발광 효과) */
-.nav-btn.admin-special {
-    color: #e2b857 !important;
-    border: 1px solid rgba(226, 184, 87, 0.5);
-    background: rgba(226, 184, 87, 0.05);
-}
-.nav-btn.admin-special:hover {
-    background: rgba(226, 184, 87, 0.2);
-    box-shadow: 0 0 10px rgba(226, 184, 87, 0.3);
-}
-
-/* 로그아웃 버튼 */
-.nav-btn.logout { background: #be123c; color: #fff !important; margin-left: 10px; }
-.nav-btn.logout:hover { background: #e11d48; }
-
-/* ==========================================
-   3. 실시간 고정형 검색 바 (Search Bar) 디자인 
+   1. 실시간 고정형 검색 바 (Search Bar) 디자인 
    ========================================== */
 .search-bar-container {
     max-width: 1200px;
@@ -167,7 +76,7 @@ body {
 }
 
 /* ==========================================
-   4. 비품 목록 테이블 디자인 영역 (대시보드 통일)
+   2. 비품 목록 테이블 디자인 영역 (대시보드 통일)
    ========================================== */
 .table-container {
     max-width: 1200px;
@@ -229,7 +138,7 @@ body {
 }
 
 /* ==========================================
-   5. 대여 신청 / 재고 소진 버튼 스타일
+   3. 대여 신청 / 재고 소진 버튼 스타일
    ========================================== */
 .btn-rent {
     width: 100px;
@@ -264,7 +173,7 @@ body {
 }
 
 /* ==========================================
-   6. 검색 결과 텍스트 마킹 효과 (애니메이션 최적화)
+   4. 검색 결과 텍스트 마킹 효과 (애니메이션 최적화)
    ========================================== */
 .mark-highlight {
     background-color: #fef08a; /* 눈이 편안한 파스텔톤 노란색 */
