@@ -265,42 +265,24 @@ body {
 .btn-search:hover { background-color: #4f46e5; }
 
 /* ==========================================
-   5. [테이블 본체 스킨 스타일]
+   6. [정밀 고정 비율 분배 - 탭별 완전 분리]
    ========================================== */
-.tab-content table th {
-    background-color: #f8fafc !important; 
-    color: #334155 !important;
-    font-weight: 700 !important;
-    border-bottom: 2px solid #cbd5e1 !important;
-}
+/* 💡 [비품 대여 테이블 전용 비율 - 총 6칸] */
+.eq-table tr th:nth-child(1), .eq-table tr td:nth-child(1) { width: 10% !important; } 
+.eq-table tr th:nth-child(2), .eq-table tr td:nth-child(2) { width: 33% !important; } 
+.eq-table tr th:nth-child(3), .eq-table tr td:nth-child(3) { width: 14% !important; } 
+.eq-table tr th:nth-child(4), .eq-table tr td:nth-child(4) { width: 10% !important; } 
+.eq-table tr th:nth-child(5), .eq-table tr td:nth-child(5) { width: 21% !important; } 
+.eq-table tr th:nth-child(6), .eq-table tr td:nth-child(6) { width: 12% !important; } 
 
-.tab-content table td {
-    background-color: #ffffff !important; 
-    border-bottom: 1px solid #e2e8f0 !important; 
-    color: #475569 !important;
-}
+/* 💡 [휴가 신청 테이블 전용 비율 - 총 5칸 개별 맞춤] 
+   - 4번째 칸(휴가 사유)에 40%라는 넓고 쾌적한 고정 공간을 안전하게 부여합니다. */
+#tab-leave table tr th:nth-child(1), #tab-leave table tr td:nth-child(1) { width: 10% !important; } 
+#tab-leave table tr th:nth-child(2), #tab-leave table tr td:nth-child(2) { width: 25% !important; } 
+#tab-leave table tr th:nth-child(3), #tab-leave table tr td:nth-child(3) { width: 10% !important; } 
+#tab-leave table tr th:nth-child(4), #tab-leave table tr td:nth-child(4) { width: 40% !important; } 
+#tab-leave table tr th:nth-child(5), #tab-leave table tr td:nth-child(5) { width: 15% !important; } 
 
-.tab-content table tbody tr:hover td {
-    background-color: #f8fafc !important; 
-    transition: background-color 0.15s ease-in-out;
-}
-
-.tab-content table td.empty-data {
-    background-color: #ffffff !important;
-    color: #94a3b8 !important;
-    padding: 40px 0 !important;
-    font-weight: 600;
-}
-
-/* ==========================================
-   6. [정밀 고정 비율 분배]
-   ========================================== */
-.tab-content table tr th:nth-child(1), .tab-content table tr td:nth-child(1) { width: 10% !important; } 
-.tab-content table tr th:nth-child(2), .tab-content table tr td:nth-child(2) { width: 33% !important; } 
-.tab-content table tr th:nth-child(3), .tab-content table tr td:nth-child(3) { width: 14% !important; } 
-.tab-content table tr th:nth-child(4), .tab-content table tr td:nth-child(4) { width: 10% !important; } 
-.tab-content table tr th:nth-child(5), .tab-content table tr td:nth-child(5) { width: 21% !important; } 
-.tab-content table tr th:nth-child(6), .tab-content table tr td:nth-child(6) { width: 12% !important; } 
 
 /* ==========================================
    7. 검색 하이라이트, 제목 링크 및 수량/배지 가독성 스타일
@@ -349,12 +331,25 @@ body {
     }
 }
 
+/* 💡 [평소 상태]: 테이블 수직 정렬이 정상 작동하는 inline 속성 및 기본 보라색 설정 */
 .tab-content table td a.title-link {
-    text-align: center !important;
-    display: inline-block !important;     
-    color: #6366f1; 
-    text-decoration: none; 
-    font-weight: 600;
+    text-align: left !important; 
+    display: inline !important;       
+    width: auto !important;           
+    color: #6366f1 !important; 
+    font-weight: 600 !important;
+    text-decoration: none !important; /* 평소에는 밑줄 없음 */
+    
+    /* 🛠️ 밑줄과 말줄임을 완벽하게 차단하는 속성 */
+    white-space: nowrap !important;       
+    overflow: visible !important;         
+    text-overflow: clip !important;       
+}
+
+/* 🛠️ [마우스 올렸을 때 - 호버 효과 추가]: 제공해주신 코드와 완전히 같은 효과 적용 */
+.tab-content table td a.title-link:hover {
+    color: #0284c7 !important;           /* 마우스 올리면 하늘색 변환 */
+    text-decoration: underline !important; /* 마우스 올리면 밑줄 생성 */
 }
 
 .td-qty .qty-wrap {
