@@ -150,7 +150,8 @@
     }
 </script>
 <div class="container">
-	<%-- <div class="header">
+	<!-- 1. 상단 네비게이션 헤더 (최상단 고정 고유 레이어) -->
+    <div class="header">
         <div class="header-inner">
             <a href="main.jsp" class="logo-area">
                 <span class="logo-group">Group</span><span class="logo-ware">Ware</span>
@@ -177,14 +178,10 @@
                 <a href="logout.do" class="nav-btn logout">로그아웃</a>
             </div>
         </div>
-    </div> --%>
+    </div>
     <div class="page-header">
         <h2>공용 비품 마스터 데이터 관리</h2>
-        <a href="main.jsp" class="btn-back">시스템 메인으로</a>
-    </div>
-    
-	  
-    
+    </div> 
     <div class="insert-box">
         <h3>신규 비품 등록</h3>
         <form action="insertEq.do" method="post" style="display: flex; gap: 10px; flex: 1;">
