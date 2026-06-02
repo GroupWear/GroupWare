@@ -40,7 +40,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="EUC-KR">
+<meta charset="UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/header.css?v=1.5">
 <title>Insert title here</title>
 </head>
