@@ -1,0 +1,74 @@
+1. 백업 테이블만 비우기
+   -- 휴가 백업 데이터 삭제
+   DELETE FROM LEAVE_HISTORY_BACKUP;
+   
+   -- 대여 백업 데이터 삭제
+   DELETE FROM RENTAL_HISTORY_BACKUP;
+   
+   -- 시퀀스(ID번호)까지 1번부터 다시 시작하게 하고 싶다면
+   ALTER TABLE LEAVE_HISTORY_BACKUP ALTER COLUMN BACKUP_ID RESTART WITH 1;
+   ALTER TABLE RENTAL_HISTORY_BACKUP ALTER COLUMN BACKUP_ID RESTART WITH 1;
+
+  2. 트리거 설정까지 새로 하기
+  만약 Java 코드를 수정했거나 테이블 구조를 바꿨다면, 08_trigger.txt 파일을 다시 실행하는 것이 가장 확실합니다.
+   * 08_trigger.txt 상단에 DROP TABLE IF EXISTS ...가 포함되어 있기 때문에, 실행하는 순간 기존 테이블이 삭제되고
+     깨끗한 새 테이블이 만들어집니다.
+확인: 
+SELECT * FROM LEAVE_HISTORY_BACKUP;
+SELECT * FROM RENTAL_HISTORY_BACKUP;
+  3. 비우고 나서 바로 테스트하는 루틴
+
+   1. 백업 비우기: 위의 DELETE 문 실행
+   2. 원본에 데이터 넣기: 09_triggerTest.txt의 1번(INSERT) 쿼리 실행
+   3. 확인: SELECT * FROM LEAVE_HISTORY_BACKUP;
+   4. 원본 데이터 수정: 09_triggerTest.txt의 3번(UPDATE) 쿼리 실행
+   5. 확인: SELECT * FROM LEAVE_HISTORY_BACKUP; (총 2줄이 보이면 성공!)
+
+  주의사항: 09_triggerTest.txt를 실행할 때 LEAVE_NO = 999 같은 테스트용 번호를 사용하는데, 이 번호가 원본 테이블에
+  이미 있으면 에러가 날 수 있으니 테스트 전후로 09_triggerTest.txt 상단에 있는 DELETE 문으로 원본의 테스트 데이터도
+  같이 지워주는 것이 좋습니다.
+--------------------------------------------------------------------
+
+-- 0. 기존 임시 테스트 데이터 초기화 (기본키 중복 에러 방지)
+DELETE FROM LEAVE_HISTORY WHERE LEAVE_NO = 999;
+
+-- 1. 원본 테이블에 INSERT 실행
+INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP) 
+VALUES (999, 1, '2026-06-01', '2026-06-03', 3, '트리거 웹 환경 연동 테스트', '승인대기', 1);
+
+-- 2. 백업 테이블 조회 (ACTION_TYPE이 'INSERT'인 행이 1개 조회되어야 성공)
+SELECT * FROM LEAVE_HISTORY_BACKUP WHERE LEAVE_NO = 999;
+
+-- 3. 원본 테이블 데이터 UPDATE 실행 (결재 상태 변경)
+UPDATE LEAVE_HISTORY 
+SET STATUS = '승인완료', APPROVAL_STEP = 5 
+WHERE LEAVE_NO = 999;
+
+-- 4. 백업 테이블 최종 조회 (INSERT 1줄, UPDATE 1줄 총 2줄이 조회되어야 최종 성공)
+SELECT * FROM LEAVE_HISTORY_BACKUP WHERE LEAVE_NO = 999 ORDER BY BACKUP_ID ASC;
+
+-- 5. 테스트 완료 후 원본 테이블의 임시 데이터 삭제
+DELETE FROM LEAVE_HISTORY WHERE LEAVE_NO = 999;
+
+---------------------------------------------------------------------
+
+-- 0. 기존 임시 테스트 데이터 초기화 (기본키 중복 에러 방지)
+DELETE FROM RENTAL_HISTORY WHERE RENTAL_NO = 999;
+
+-- 1. 원본 테이블에 INSERT 실행
+INSERT INTO RENTAL_HISTORY (RENTAL_NO, EMP_NO, EQ_NO, TITLE, REQ_COUNT, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, REASON) 
+VALUES (999, 1, 1, '비품 대여 연동 테스트', 1, '2026-06-01', '2026-06-05', '승인대기', 1, '테스트용 신청 사유입니다.');
+
+-- 2. 백업 테이블 조회 (ACTION_TYPE이 'INSERT'인 행이 1개 조회되어야 성공)
+SELECT * FROM RENTAL_HISTORY_BACKUP WHERE RENTAL_NO = 999;
+
+-- 3. 원본 테이블 데이터 UPDATE 실행 (상태 변경)
+UPDATE RENTAL_HISTORY 
+SET STATUS = '반려됨', APPROVAL_STEP = 0 
+WHERE RENTAL_NO = 999;
+
+-- 4. 백업 테이블 최종 조회 (INSERT 1줄, UPDATE 1줄 총 2줄이 조회되어야 최종 성공)
+SELECT * FROM RENTAL_HISTORY_BACKUP WHERE RENTAL_NO = 999 ORDER BY BACKUP_ID ASC;
+
+-- 5. 테스트 완료 후 원본 테이블의 임시 데이터 삭제
+DELETE FROM RENTAL_HISTORY WHERE RENTAL_NO = 999;
