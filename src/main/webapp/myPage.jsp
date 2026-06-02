@@ -40,34 +40,7 @@ List<LeaveHistoryDTO> myLeaveList = (List<LeaveHistoryDTO>) request.getAttribute
 </head>
 <body>
 	
-	 <div class="header">
-        <div class="header-inner">
-            <a href="main.jsp" class="logo-area">
-                <span class="logo-group">Group</span><span class="logo-ware">Ware</span>
-            </a>
-            
-            <div class="nav-buttons">
-                <span class="user-profile-info">
-                    <% if ("Y".equals(loginEmp.getManager())) { %>
-                        <span class="admin-tag">ADMIN</span>
-                    <% } %>
-                    <b><%=loginEmp.getEmpName()%></b>님
-                </span>
-
-                <% if ("Y".equals(loginEmp.getManager())) { %>
-                    <a href="adminEqList.do" class="nav-btn admin-special">재고 관리</a>
-                    <a href="admin.do" class="nav-btn admin-special">사원 관리</a>
-                <% } %>
-
-                <a href="officeMap.jsp" class="nav-btn">오피스 예약</a>
-                <a href="leaveForm.do" class="nav-btn">휴가 신청</a>
-                <a href="equipmentList.do" class="nav-btn">비품 대여 신청</a>
-                <a href="documentList.do" class="nav-btn">기안 문서함</a>
-                <a href="myPage.do" class="nav-btn">마이페이지</a>
-                <a href="logout.do" class="nav-btn logout">로그아웃</a>
-            </div>
-        </div>
-    </div>
+	 <jsp:include page="header.jsp" />
 	<div class="container">
 		<div class="page-header">
 			<h2>마이페이지</h2>
