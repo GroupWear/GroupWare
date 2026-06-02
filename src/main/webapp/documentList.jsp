@@ -30,38 +30,13 @@
 </head>
 <body>
 
-    <div class="header">
-        <div class="header-inner">
-            <a href="main.jsp" class="logo-area">
-                <span class="logo-group">Group</span><span class="logo-ware">Ware</span>
-            </a>
-            
-            <div class="nav-buttons">
-                <span class="user-profile-info">
-                    <% if ("Y".equals(loginEmp.getManager())) { %>
-                        <span class="admin-tag">ADMIN</span>
-                    <% } %>
-                    <b><%=loginEmp.getEmpName()%></b>님
-                </span>
+<jsp:include page="header.jsp" />
 
-                <% if ("Y".equals(loginEmp.getManager())) { %>
-                    <a href="adminEqList.do" class="nav-btn admin-special">재고 관리</a>
-                    <a href="admin.do" class="nav-btn admin-special">사원 관리</a>
-                <% } %>
-
-                <a href="officeMap.jsp" class="nav-btn">오피스 예약</a>
-                <a href="leaveForm.do" class="nav-btn">휴가 신청</a>
-                <a href="equipmentList.do" class="nav-btn">비품 대여 신청</a>
-                <a href="documentList.do" class="nav-btn">기안 문서함</a>
-                <a href="myPage.do" class="nav-btn">마이페이지</a>
-                <a href="logout.do" class="nav-btn logout">로그아웃</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="dashboard-container" style="padding-top: 80px;"> <div class="headertitle" style="margin-bottom: 20px;">
+    <div class="dashboard-container" style="padding-top: 80px;"> 
+    	<div class="headertitle" style="margin-bottom: 20px;">
             <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #1e293b;">통합 기안 문서함</h2>
         </div>
+	</div>
         
          <div class="search-bar-container" style="position: static; padding: 0 0 20px 0;">
             <div class="search-form">
