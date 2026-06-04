@@ -16,11 +16,11 @@ if (roomInfo == null) {
 }
 %>
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>사내 시스템 - 예약 신청</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/common.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사내 시스템 - 회의실 예약 신청</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reserve.css">
 
 <script>
@@ -38,7 +38,7 @@ if (roomInfo == null) {
     }
 
     function startTimer(startStr, endStr) {
-        let timeLeft = 300; // 5분 (테스트용 10초로 변경 가능)
+        let timeLeft = 300; 
         const timerBox = document.getElementById("timerBox");
         const timeDisplay = document.getElementById("timeDisplay");
         const submitBtn = document.getElementById("submitBtn");
@@ -48,7 +48,7 @@ if (roomInfo == null) {
         holdTimeText.innerText = "[" + startStr + " ~ " + endStr + "]";
 
         timerBox.style.display = "block"; 
-        submitBtn.disabled = false; // 이때만 예약 확정 버튼이 활성화됨
+        submitBtn.disabled = false; 
         holdBtn.style.display = "none"; 
 
         document.querySelectorAll('.time-btn').forEach(btn => btn.disabled = true);
@@ -73,7 +73,6 @@ if (roomInfo == null) {
         const resDateInput = document.getElementById("resDate");
         const holdBtn = document.getElementById("holdBtn");
         
-        // ★ 오늘 날짜 구해서 달력(min)에 세팅하기 (과거 날짜 원천 차단)
         const today = new Date();
         const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
         resDateInput.setAttribute("min", todayStr);
@@ -106,7 +105,6 @@ if (roomInfo == null) {
         });
 
         holdBtn.addEventListener('click', function() {
-            // ★ JS 이중 차단: HTML을 조작해서 누르더라도 여기서 튕겨냄
             <% boolean isRoomEnableJs = "Y".equals(roomInfo.getEnable()); %>
             <% if (!isRoomEnableJs) { %>
                 alert("현재 점검 중으로 예약이 불가능한 회의실입니다.");
@@ -153,7 +151,6 @@ if (roomInfo == null) {
             const selectedDate = this.value;
             if (!selectedDate) return;
             
-            // 날짜 수동 입력 변경 시 과거 날짜인지 한 번 더 검증
             if (selectedDate < todayStr) {
                 alert("과거 날짜는 예약할 수 없습니다.");
                 this.value = "";
@@ -174,7 +171,6 @@ if (roomInfo == null) {
                     document.getElementById("holdBtn").style.display = "block";
                     document.getElementById("resNo").value = "";
 
-                    // 현재 시간 구하기 (오늘 날짜를 선택했을 때만 비교하기 위해)
                     const now = new Date();
                     const isToday = (selectedDate === todayStr); 
                     const currentHour = now.getHours();
@@ -183,11 +179,9 @@ if (roomInfo == null) {
                         const btnTime = btn.getAttribute('data-time');
                         const btnHour = parseInt(btnTime.split(':')[0]);
 
-                        // 1. 이미 다른 사람이 예약한 시간 비활성화
                         if (reservedTimes.includes(btnTime)) {
                             btn.disabled = true;
                         }
-                        // 2. 오늘 날짜이면서, 현재 시간보다 과거인 버튼 비활성화
                         else if (isToday && btnHour <= currentHour) {
                             btn.disabled = true;
                         }
@@ -200,119 +194,93 @@ if (roomInfo == null) {
     function validateForm() {
         if (!document.getElementById("resNo").value) { alert("예약 시간을 먼저 지정해 주세요."); return false; }
         if (!document.getElementById("purpose").value.trim()) { alert("사용 목적을 기재해 주세요."); return false; }
-        return true;
+        return confirm("입력하신 내용으로 회의실 예약을 확정하시겠습니까?");
     }
 </script>
 </head>
 <body>
 
-	<div class="reserve-container">
-		<h2>
-			회의실 예약 신청
-			<%
-			if ("Y".equals(loginEmp.getManager())) {
-			%>
-			<button type="button" class="btn-modify"
-				onclick="location.href='roomUpdate.do?roomId=<%=roomInfo.getRoomId()%>'">
-				정보 수정</button>
-			<%
-			}
-			%>
-		</h2>
-		<%
-		// 방 예약 가능 여부를 변수로 저장
-		boolean isRoomEnable = "Y".equals(roomInfo.getEnable());
-		%>
+<jsp:include page="header.jsp" />
 
-		<div class="info-box">
-			<h3>
-				<%=roomInfo.getRoomName()%>
-				<%
-				if (isRoomEnable) {
-				%>
-				<span class="status-badge bg-success"
-					style="font-size: 12px; margin-left: 8px;">예약 가능</span>
-				<%
-				} else {
-				%>
-				<span class="status-badge bg-danger"
-					style="font-size: 12px; margin-left: 8px;">점검 중 (예약 불가)</span>
-				<%
-				}
-				%>
-			</h3>
-			<p>
-				수용 인원: <%=roomInfo.getCapacity()%>명 | 빔프로젝터: <%=roomInfo.getHasBeam()%>
-            </p>
-			<p><%=roomInfo.getDescription()%></p>
-		</div>
+<div class="form-container">
+    <h2>
+        📋 회의실 예약 신청
+        <% if ("Y".equals(loginEmp.getManager())) { %>
+            <button type="button" class="btn-modify"
+                onclick="location.href='roomUpdate.do?roomId=<%=roomInfo.getRoomId()%>'">
+                정보 수정
+            </button>
+        <% } %>
+    </h2>
 
-		<div class="timer-box" id="timerBox">
-			<span id="holdTimeText"
-				style="color: #495057; font-size: 14px; font-weight: bold;"></span><br>
-			해당 시간대 확보 완료. 남은 시간 내에 확정해 주세요. <span class="timer-text"
-				id="timeDisplay">05:00</span>
-		</div>
+    <% boolean isRoomEnable = "Y".equals(roomInfo.getEnable()); %>
 
-		<form action="reserveProcess.do" method="post"
-			onsubmit="return validateForm();">
-			<input type="hidden" id="resNo" name="resNo" value=""> <input
-				type="hidden" id="roomId" name="roomId"
-				value="<%=roomInfo.getRoomId()%>"> <input type="hidden"
-				id="empNo" name="empNo" value="<%=loginEmp.getEmpNo()%>">
+    <div class="info-box">
+        <h3>
+            <%=roomInfo.getRoomName()%>
+            <% if (isRoomEnable) { %>
+                <span class="status-badge bg-success" style="margin-left: 10px;">예약 가능</span>
+            <% } else { %>
+                <span class="status-badge bg-danger" style="margin-left: 10px;">점검 중 (예약 불가)</span>
+            <% } %>
+        </h3>
+        <p>
+            <strong>수용 인원:</strong> <%=roomInfo.getCapacity()%>명 | 
+            <strong>빔프로젝터:</strong> <%= "Y".equals(roomInfo.getHasBeam()) ? "있음" : "없음" %>
+        </p>
+        <p><%=roomInfo.getDescription()%></p>
+    </div>
 
-			<div class="form-group">
-				<label>예약 일자</label> <input type="date" id="resDate" name="resDate"
-					required>
-			</div>
+    <div class="timer-box" id="timerBox">
+        <span id="holdTimeText" style="font-weight: 800; font-size: 15px;"></span><br>
+        해당 시간대 확보 완료. 남은 시간 내에 확정해 주세요. 
+        <span class="timer-text" id="timeDisplay">05:00</span>
+    </div>
 
-			<div class="form-group">
-				<label>예약 시간 선택</label>
-				<div class="time-grid" id="timeGrid">
-					<%
-					// 방이 비활성화 상태면 버튼들에 들어갈 disabled 속성 텍스트 준비
-					String disabledAttr = isRoomEnable ? "" : "disabled";
-					%>
-					<button type="button" class="time-btn" data-time="09:00"
-						<%=disabledAttr%>>09:00</button>
-					<button type="button" class="time-btn" data-time="10:00"
-						<%=disabledAttr%>>10:00</button>
-					<button type="button" class="time-btn" data-time="11:00"
-						<%=disabledAttr%>>11:00</button>
-					<button type="button" class="time-btn" data-time="12:00"
-						<%=disabledAttr%>>12:00</button>
-					<button type="button" class="time-btn" data-time="13:00"
-						<%=disabledAttr%>>13:00</button>
-					<button type="button" class="time-btn" data-time="14:00"
-						<%=disabledAttr%>>14:00</button>
-					<button type="button" class="time-btn" data-time="15:00"
-						<%=disabledAttr%>>15:00</button>
-					<button type="button" class="time-btn" data-time="16:00"
-						<%=disabledAttr%>>16:00</button>
-					<button type="button" class="time-btn" data-time="17:00"
-						<%=disabledAttr%>>17:00</button>
-					<button type="button" class="time-btn" data-time="18:00"
-						<%=disabledAttr%>>18:00</button>
-				</div>
+    <form action="reserveProcess.do" method="post" onsubmit="return validateForm();">
+        <input type="hidden" id="resNo" name="resNo" value=""> 
+        <input type="hidden" id="roomId" name="roomId" value="<%=roomInfo.getRoomId()%>"> 
+        <input type="hidden" id="empNo" name="empNo" value="<%=loginEmp.getEmpNo()%>">
 
-				<button type="button" class="btn-action btn-hold" id="holdBtn"
-					<%=disabledAttr%> <%if (!isRoomEnable) {%>
-					style="background-color: #6c757d; cursor: not-allowed;" <%}%>>
-					선택 시간 확보</button>
-			</div>
+        <div class="form-group">
+            <label for="resDate">예약 일자</label> 
+            <input type="date" id="resDate" name="resDate" class="form-control" required>
+        </div>
 
-			<div class="form-group">
-				<label>사용 목적</label> <input type="text" id="purpose" name="purpose"
-					placeholder="예: 주간 부서 회의" required>
-			</div>
+        <div class="form-group">
+            <label>예약 시간 선택</label>
+            <div class="time-grid" id="timeGrid">
+                <% String disabledAttr = isRoomEnable ? "" : "disabled"; %>
+                <button type="button" class="time-btn" data-time="09:00" <%=disabledAttr%>>09:00</button>
+                <button type="button" class="time-btn" data-time="10:00" <%=disabledAttr%>>10:00</button>
+                <button type="button" class="time-btn" data-time="11:00" <%=disabledAttr%>>11:00</button>
+                <button type="button" class="time-btn" data-time="12:00" <%=disabledAttr%>>12:00</button>
+                <button type="button" class="time-btn" data-time="13:00" <%=disabledAttr%>>13:00</button>
+                <button type="button" class="time-btn" data-time="14:00" <%=disabledAttr%>>14:00</button>
+                <button type="button" class="time-btn" data-time="15:00" <%=disabledAttr%>>15:00</button>
+                <button type="button" class="time-btn" data-time="16:00" <%=disabledAttr%>>16:00</button>
+                <button type="button" class="time-btn" data-time="17:00" <%=disabledAttr%>>17:00</button>
+                <button type="button" class="time-btn" data-time="18:00" <%=disabledAttr%>>18:00</button>
+            </div>
 
-			<div class="btn-group">
-				<a href="main.jsp" class="btn-action btn-cancel" style="text-align: center; text-decoration: none; line-height: normal; display: inline-flex; align-items: center; justify-content: center;">취소</a>
-				<button type="submit" class="btn-action btn-submit" id="submitBtn"
-					disabled>예약 확정</button>
-			</div>
-		</form>
-	</div>
+            <button type="button" class="btn btn-hold" id="holdBtn" <%=disabledAttr%> 
+                <% if (!isRoomEnable) { %> style="background-color: #cbd5e1; cursor: not-allowed;" <% } %>>
+                선택 시간 확보
+            </button>
+        </div>
+
+        <div class="form-group">
+            <label for="purpose">사용 목적</label> 
+            <input type="text" id="purpose" name="purpose" class="form-control" 
+                   placeholder="예: 주간 부서 회의" required>
+        </div>
+
+        <div class="btn-area">
+            <button type="submit" class="btn btn-submit" id="submitBtn" disabled>예약 확정</button>
+            <a href="main.jsp" class="btn btn-cancel">취소</a>
+        </div>
+    </form>
+</div>
 
 </body>
 </html>
