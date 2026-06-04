@@ -54,7 +54,7 @@
         document.getElementById("updateModal").style.display = "none";
         document.getElementById("modalOverlay").style.display = "none";
     }
- 	// 전역 변수 설정: 원본 텍스트, 이전 검색어, 현재 포커스 인덱스 기록
+	// 전역 변수 설정: 원본 텍스트, 이전 검색어, 현재 포커스 인덱스 기록
     const originalTexts = new Map();
     let lastKeyword = "";
     let currentMatchIndex = -1;
@@ -149,93 +149,70 @@
         return false; 
     }
 </script>
-<div class="container">
-	<!-- 1. 상단 네비게이션 헤더 (최상단 고정 고유 레이어) -->
-    <div class="header">
-        <div class="header-inner">
-            <a href="main.jsp" class="logo-area">
-                <span class="logo-group">Group</span><span class="logo-ware">Ware</span>
-            </a>
-            
-            <div class="nav-buttons">
-                <span class="user-profile-info">
-                    <% if ("Y".equals(loginEmp.getManager())) { %>
-                        <span class="admin-tag">ADMIN</span>
-                    <% } %>
-                    <b><%=loginEmp.getEmpName()%></b>님
-                </span>
+<jsp:include page="header.jsp" />
 
-                <% if ("Y".equals(loginEmp.getManager())) { %>
-                    <a href="adminEqList.do" class="nav-btn admin-special">재고 관리</a>
-                    <a href="admin.do" class="nav-btn admin-special">사원 관리</a>
-                <% } %>
-
-                <a href="officeMap.jsp" class="nav-btn">오피스 예약</a>
-                <a href="leaveForm.do" class="nav-btn">휴가 신청</a>
-                <a href="equipmentList.do" class="nav-btn">비품 대여 신청</a>
-                <a href="documentList.do" class="nav-btn">기안 문서함</a>
-                <a href="myPage.do" class="nav-btn">마이페이지</a>
-                <a href="logout.do" class="nav-btn logout">로그아웃</a>
-            </div>
-        </div>
-    </div>
-    <div class="page-header">
-        <h2>공용 비품 마스터 데이터 관리</h2>
-    </div> 
-    <div class="insert-box">
-        <h3>신규 비품 등록</h3>
-        <form action="insertEq.do" method="post" style="display: flex; gap: 10px; flex: 1;">
-            <input type="text" name="eqName" placeholder="비품 명칭 입력" required style="flex: 1;">
-            <input type="number" name="totalCount" placeholder="초기 총 수량" required style="width: 120px;">
-            <button type="submit" class="btn-submit">등록</button>
-        </form>
-    </div>
-    
-    <!-- 검색 바 영역 -->
-	<div class="search-bar-container">
-	    <div class="search-form">
-	        <select id="searchType" class="search-select">
-	            <option value="all">전체 검색</option>
-	            <option value="eqName">비품 명칭</option>
-	            <option value="eqNo">비품 번호</option>
-	        </select>
-	        <input type="text" id="searchKeyword" class="search-input" placeholder="이동할 비품명 또는 번호 입력..." autocomplete="off" onkeyup="if(event.key === 'Enter') searchAndScroll()">
-	        <button type="button" class="btn-search" onclick="searchAndScroll()">검색 및 이동</button>
+	<div class="dashboard-container" style="padding-top: 20px;">
+	    <div style="margin-bottom: 15px;">
+	        <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #1e293b;">공용 비품 마스터 데이터 관리</h2>
+	    </div> 
+	    
+	    <div class="insert-box">
+	        <h3>신규 비품 등록</h3>
+	        <form action="insertEq.do" method="post" class="insert-form-flex">
+	            <input type="text" name="eqName" class="search-input" placeholder="비품 명칭 입력" required>
+	            <input type="number" name="totalCount" class="search-input" style="max-width: 200px;" placeholder="초기 총 수량" required>
+	            <button type="submit" class="btn-register">등록</button>
+	        </form>
+	    </div>
+	    
+	    <div class="search-bar-container">
+		    <div class="search-form">
+		        <select id="searchType" class="search-select">
+		            <option value="all">전체 검색</option>
+		            <option value="eqName">비품 명칭</option>
+		            <option value="eqNo">비품 번호</option>
+		        </select>
+		        <input type="text" id="searchKeyword" class="search-input" placeholder="이동할 비품명 또는 번호 입력..." autocomplete="off" onkeyup="if(event.key === 'Enter') searchAndScroll()">
+		        <button type="button" class="btn-search" onclick="searchAndScroll()">검색 및 이동</button>
+		    </div>
+		</div>
+	
+	    <div class="table-wrapper">
+	        <table>
+	            <thead>
+	                <tr>
+	                    <th style="width: 15%;">비품 번호</th>
+	                    <th style="width: 35%;">비품 명칭</th>
+	                    <th style="width: 15%;">보유 총 수량</th>
+	                    <th style="width: 15%;">대여 가능 수량</th>
+	                    <th style="width: 20%;">데이터 관리</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	                <% if (eqList != null && !eqList.isEmpty()) {
+	                    for (EquipmentDTO eq : eqList) { 
+	                %>
+	                <tr class="eq-row">
+	                    <td class="eq-no" style="color: #64748b; font-weight: 500;"><%= eq.getEqNo() %></td>
+	                    <td class="eq-name" style="text-align: left; padding-left: 24px; font-weight: 600; color: #1e293b;"><%= eq.getEqName() %></td>
+	                    <td><%= eq.getTotalCount() %> EA</td>
+	                    <td>
+	                    	<strong class="<%= eq.getRemainCount() > 0 ? "status-badge status-blue" : "status-badge status-red" %>">
+	                    		<%= eq.getRemainCount() %> EA
+	                    	</strong>
+	                    </td>
+	                    <td>
+	                        <button class="btn-action-edit" onclick="openUpdateModal('<%= eq.getEqNo() %>', '<%= eq.getEqName() %>', '<%= eq.getTotalCount() %>', '<%= eq.getRemainCount() %>')">정보 수정</button>
+	                        <button class="btn-action-del" onclick="deleteEquipment('<%= eq.getEqNo() %>')">영구 폐기</button>
+	                    </td>
+	                </tr>
+	                <%  } } else { %>
+	                <tr><td colspan="5" class="empty-data">시스템에 등록된 비품 마스터 데이터가 없습니다.</td></tr>
+	                <% } %>
+	            </tbody>
+	        </table>
 	    </div>
 	</div>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>비품 번호</th>
-                    <th>비품 명칭</th>
-                    <th>보유 총 수량</th>
-                    <th>대여 가능 수량</th>
-                    <th>데이터 관리</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if (eqList != null && !eqList.isEmpty()) {
-                    for (EquipmentDTO eq : eqList) { 
-                %>
-                <tr class="eq-row">
-                    <td class="eq-no" style="color: #6c757d;"><%= eq.getEqNo() %></td>
-                    <td class="eq-name" style="font-weight: 600; color: #343a40;"><%= eq.getEqName() %></td>
-                    <td><%= eq.getTotalCount() %> EA</td>
-                    <td><strong style="color: <%= eq.getRemainCount() > 0 ? "#212529" : "#dc3545" %>;"><%= eq.getRemainCount() %> EA</strong></td>
-                    <td>
-                        <button class="btn-edit" onclick="openUpdateModal('<%= eq.getEqNo() %>', '<%= eq.getEqName() %>', '<%= eq.getTotalCount() %>', '<%= eq.getRemainCount() %>')">정보 수정</button>
-                        <button class="btn-del" onclick="deleteEquipment('<%= eq.getEqNo() %>')">영구 폐기</button>
-                    </td>
-                </tr>
-                <%  } } else { %>
-                <tr><td colspan="5" style="padding: 40px; color: #6c757d;">시스템에 등록된 비품 마스터 데이터가 없습니다.</td></tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
-</div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeUpdateModal()"></div>
 <div id="updateModal">
