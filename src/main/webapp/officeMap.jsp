@@ -45,20 +45,20 @@ if (loginEmp == null) {
             </div>
 
             <div id="map4" class="map-container">
-                <div class="room-btn" id="room404" onclick="location.href='reserve.do?roomId=404'"></div>
-                <div class="room-btn" id="room403" onclick="location.href='reserve.do?roomId=403'"></div>
-                <div class="room-btn" id="room402" onclick="location.href='reserve.do?roomId=402'"></div>
-                <div class="room-btn" id="room401" onclick="location.href='reserve.do?roomId=401'"></div>
-                <div class="room-btn" id="roomInterview" onclick="location.href='reserve.do?roomId=Interview'"></div>
-                <div class="room-btn" id="roomConsult" onclick="location.href='reserve.do?roomId=Consult'"></div>
-                <div class="room-btn" id="roomMeeting" onclick="location.href='reserve.do?roomId=Meeting'"></div>
+                <div class="room-btn" id="room404" data-name="404호" onclick="location.href='reserve.do?roomId=404'"></div>
+                <div class="room-btn" id="room403" data-name="403호" onclick="location.href='reserve.do?roomId=403'"></div>
+                <div class="room-btn" id="room402" data-name="402호" onclick="location.href='reserve.do?roomId=402'"></div>
+                <div class="room-btn" id="room401" data-name="401호" onclick="location.href='reserve.do?roomId=401'"></div>
+                <div class="room-btn" id="roomInterview" data-name="인터뷰실" onclick="location.href='reserve.do?roomId=Interview'"></div>
+                <div class="room-btn" id="roomConsult" data-name="상담실" onclick="location.href='reserve.do?roomId=Consult'"></div>
+                <div class="room-btn" id="roomMeeting" data-name="회의실" onclick="location.href='reserve.do?roomId=Meeting'"></div>
             </div>
             
             <div id="map5" class="map-container">
-                <div class="room-btn" id="room503" onclick="location.href='reserve.do?roomId=503'"></div>
-                <div class="room-btn" id="room502" onclick="location.href='reserve.do?roomId=502'"></div>
-                <div class="room-btn" id="room501" onclick="location.href='reserve.do?roomId=501'"></div>
-                <div class="room-btn" id="roomMeeting5" onclick="location.href='reserve.do?roomId=Meeting5'"></div>
+                <div class="room-btn" id="room503" data-name="503호" onclick="location.href='reserve.do?roomId=503'"></div>
+                <div class="room-btn" id="room502" data-name="502호" onclick="location.href='reserve.do?roomId=502'"></div>
+                <div class="room-btn" id="room501" data-name="501호" onclick="location.href='reserve.do?roomId=501'"></div>
+                <div class="room-btn" id="roomMeeting5" data-name="회의실" onclick="location.href='reserve.do?roomId=Meeting5'"></div>
             </div>
         </div>
     </div>
