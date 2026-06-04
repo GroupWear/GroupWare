@@ -76,45 +76,54 @@
             <%-- 🛠️ [교정 2] 테이블 래퍼 카드가 웅크러들지 않고 100% 확장되도록 width 인라인 강제 지정 --%>
             <div class="table-wrapper" style="width: 100% !important; max-width: 100% !important; box-sizing: border-box; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
                 <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-                    <thead>
-                        <tr>
-                            <th style="width: 12%;">문서 번호</th> 
-                            <th style="width: 25%;">휴가 기간</th>
-                            <th style="width: 12%;">사용 일수</th> 
-                            <th style="width: 39%;">휴가 사유</th> 
-                            <th style="width: 12%;">결재 상태</th> 
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <% if (leaveList == null || leaveList.isEmpty()) { %>
-                        <tr><td colspan="5" class="empty-data">신청된 휴가 기안 내역이 없습니다.</td></tr>
-                    <% } else { for (LeaveHistoryDTO leave : leaveList) { 
-                        String statusClass = "status-blue";
-                        if ("반려됨".equals(leave.getStatus())) statusClass = "status-red";
-                        else if ("승인완료".equals(leave.getStatus())) statusClass = "status-gray";
-                    %>
-                        <tr data-doc-id="leave_<%= leave.getLeaveNo() %>">
-                            <td><%= leave.getLeaveNo() %></td>
-                            <td><%= leave.getStartDate() %> ~ <%= leave.getEndDate() %></td>
-                            <td><b><%= leave.getUseDays() %>일</b></td>
-                            
-                            <%-- 🛠️ [교정 3] 휴가 사유 칸이 좁아 터지지 않게 말줄임 속성을 풀고 여백을 최적화 --%>
-                            <td style="text-align: left; padding: 14px 20px; white-space: normal; word-break: break-all;">
-                                <a href="javascript:void(0);" 
-                                   onclick="goToDetail('leave', '<%= leave.getLeaveNo() %>')"
-                                   class="title-link" 
-                                   style="color: #6366f1; font-weight: 600; text-decoration: none; cursor: pointer; display: block; width: 100%;"
-                                   onmouseover="this.style.textDecoration='underline'; this.style.color='#0284c7';"
-                                   onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';">
-                                     <%= leave.getReason() != null ? leave.getReason() : "사유 없음" %>
-                                </a>
-                            </td>
-                            
-                            <td><span class="status-badge <%= statusClass %>"><%= leave.getStatus() %></span></td>
-                        </tr>
-                    <% } } %>
-                    </tbody>
-                </table>
+				    <thead>
+				        <tr>
+				            <th style="width: 12%;">문서 번호</th> 
+				            <th style="width: 25%;">휴가 기간</th>
+				            <th style="width: 12%;">사용 일수</th> 
+				            <th style="width: 39%;">휴가 사유</th> 
+				            <th style="width: 12%;">결재 상태</th> 
+				        </tr>
+				    </thead>
+				    <tbody>
+				    <% 
+				        // [디버깅] 데이터가 컨트롤러에서 넘어오는지 확인하는 코드 (나중에 삭제하세요)
+				        System.out.println("JSP에서 확인한 leaveList 사이즈: " + (leaveList != null ? leaveList.size() : "null"));
+				        
+				        if (leaveList == null || leaveList.isEmpty()) { 
+				    %>
+				        <tr><td colspan="5" class="empty-data" style="text-align:center; padding:20px;">신청된 휴가 기안 내역이 없습니다.</td></tr>
+				    <% 
+				        } else { 
+				            for (LeaveHistoryDTO leave : leaveList) { 
+				                String statusClass = "status-blue";
+				                if ("반려됨".equals(leave.getStatus())) statusClass = "status-red";
+				                else if ("승인완료".equals(leave.getStatus())) statusClass = "status-gray";
+				    %>
+				        <tr data-doc-id="leave_<%= leave.getLeaveNo() %>">
+				            <td><%= leave.getLeaveNo() %></td>
+				            <td><%= leave.getStartDate() %> ~ <%= leave.getEndDate() %></td>
+				            <td><b><%= leave.getUseDays() %>일</b></td>
+				            
+				            <td style="text-align: left; padding: 14px 20px; white-space: normal; word-break: break-all;">
+				                <a href="javascript:void(0);" 
+				                   onclick="goToDetail('leave', '<%= leave.getLeaveNo() %>')"
+				                   class="title-link" 
+				                   style="color: #6366f1; font-weight: 600; text-decoration: none; cursor: pointer; display: block; width: 100%;"
+				                   onmouseover="this.style.textDecoration='underline'; this.style.color='#0284c7';"
+				                   onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';">
+				                    <%= leave.getReason() != null ? leave.getReason() : "사유 없음" %>
+				                </a>
+				            </td>
+				            
+				            <td><span class="status-badge <%= statusClass %>"><%= leave.getStatus() %></span></td>
+				        </tr>
+				    <% 
+				            } 
+				        } 
+				    %>
+				    </tbody>
+				</table>
             </div>
         </div>
 
