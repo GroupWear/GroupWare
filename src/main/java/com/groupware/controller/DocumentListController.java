@@ -41,27 +41,27 @@ public class DocumentListController extends HttpServlet {
             int empNo = loginEmp.getEmpNo();
             RentalDAO rentalDao = new RentalDAO();
             
-            // 📌 [변경 포인트] 기존 getMyRentalList(empNo) 대신 전체 목록을 뽑아오는 메서드로 교체합니다.
-            // 이 메서드는 RentalDAO 내부에서 3개 테이블(RENTAL_HISTORY, EMPLOYEE, EQUIPMENT)을 
-            // LEFT JOIN 하여 기안자 이름(EMP_NAME)까지 한 번에 수집해 옵니다.
+            // 1. 비품 목록 로드
             List<RentalHistoryDTO> docList = rentalDao.getAllDocumentList(); 
             request.setAttribute("docList", docList); 
             
-            // 휴가 신청 리스트는 기존 본인 조회 규칙 유지 (터짐 방지용 가드 포함)
+            // 2. [수정 포인트] 휴가 목록 로드 (디버깅 추가)
             List<LeaveHistoryDTO> leaveList = new ArrayList<>();
             try {
                 LeaveDAO leaveDao = new LeaveDAO();
-                leaveList = leaveDao.getMyLeaveList(empNo);
+                // getMyLeaveList(empNo) 대신 getAllLeaveDocuments() 사용
+                leaveList = leaveDao.getAllLeaveDocuments(); 
+                
+                System.out.println("디버그: 시스템 내 전체 휴가 신청 건수 -> " + (leaveList != null ? leaveList.size() : "null"));
+                
             } catch (Exception e) {
-                System.out.println("LeaveDAO 메서드가 없는 상태이므로 빈 리스트 대체");
+                e.printStackTrace(); 
             }
             request.setAttribute("leaveList", leaveList);
             
-            // 📌 [신규 추가]: 돌아갈 탭 파라미터를 받아서 존재하면 request에 심어 JSP로 보냅니다.
             String activeTab = request.getParameter("tab");
             request.setAttribute("activeTab", activeTab); 
             
-            // 데이터 탑재 후 기안 문서함 화면(JSP)으로 포워딩
             request.getRequestDispatcher("documentList.jsp").forward(request, response);
             
         } catch (Exception e) {
