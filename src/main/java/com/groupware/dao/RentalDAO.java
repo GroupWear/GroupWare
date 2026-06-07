@@ -11,22 +11,23 @@ import com.groupware.util.DBConnection;
 
 public class RentalDAO {
 
+    /* 📌 [오류 해결 완료] 물음표 개수 불일치 및 인덱스 누락 완벽 교정 */
     public boolean insertRental(RentalHistoryDTO dto) {
         boolean result = false;
         Connection conn = null;
         PreparedStatement pstmt = null;
         PreparedStatement pstmtEq = null;
 
-        // ★ REQ_COUNT 추가됨
         String sql = "INSERT INTO RENTAL_HISTORY (RENTAL_NO, TITLE, EMP_NO, EQ_NO, RENTAL_DATE, RETURN_DATE, STATUS, APPROVAL_STEP, "
-                   + "SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REQ_COUNT) "
-                   + "VALUES (SEQ_RENTAL.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                   + "SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE, REQ_COUNT, REASON) "
+                   + "VALUES (SEQ_RENTAL.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
 
         try {
             conn = DBConnection.getConnection();
-            conn.setAutoCommit(false); 
+            conn.setAutoCommit(false); // 트랜잭션 시작
 
             pstmt = conn.prepareStatement(sql);
+            
             pstmt.setString(1, dto.getTitle());
             pstmt.setInt(2, dto.getEmpNo());
             pstmt.setInt(3, dto.getEqNo());
@@ -45,37 +46,35 @@ public class RentalDAO {
             pstmt.setDate(15, dto.getSign4Date());
             pstmt.setString(16, dto.getSign5());
             pstmt.setDate(17, dto.getSign5Date());
-            pstmt.setInt(18, dto.getReqCount()); // ★ 수량 바인딩
+            
+            pstmt.setInt(18, dto.getReqCount()); 
+            pstmt.setString(19, dto.getContent()); 
 
             int count = pstmt.executeUpdate();
 
             if (count > 0) {
-                if ("대여중".equals(dto.getStatus())) {
-                    // ★ 신청 수량만큼 차감
-                    String updateEqSql = "UPDATE EQUIPMENT SET REMAIN_COUNT = REMAIN_COUNT - ? WHERE EQ_NO = ? AND REMAIN_COUNT >= ?";
-                    pstmtEq = conn.prepareStatement(updateEqSql);
-                    pstmtEq.setInt(1, dto.getReqCount());
-                    pstmtEq.setInt(2, dto.getEqNo());
-                    pstmtEq.setInt(3, dto.getReqCount());
-                    
-                    int eqCount = pstmtEq.executeUpdate();
-                    if (eqCount > 0) {
-                        conn.commit();
-                        result = true;
-                    } else {
-                        conn.rollback(); 
-                    }
-                } else {
+                String updateEqSql = "UPDATE EQUIPMENT SET REMAIN_COUNT = REMAIN_COUNT - ? WHERE EQ_NO = ? AND REMAIN_COUNT >= ?";
+                pstmtEq = conn.prepareStatement(updateEqSql);
+                pstmtEq.setInt(1, dto.getReqCount());
+                pstmtEq.setInt(2, dto.getEqNo());
+                pstmtEq.setInt(3, dto.getReqCount()); 
+                
+                int eqCount = pstmtEq.executeUpdate();
+                if (eqCount > 0) {
                     conn.commit(); 
                     result = true;
+                } else {
+                    conn.rollback(); 
                 }
+            } else {
+                conn.rollback(); 
             }
         } catch (Exception e) {
             try { if (conn != null) conn.rollback(); } catch (Exception ex) {}
             e.printStackTrace();
         } finally {
-            closeResource(conn, pstmt, null);
             if (pstmtEq != null) try { pstmtEq.close(); } catch(Exception e) {}
+            closeResource(conn, pstmt, null);
         }
         return result;
     }
@@ -86,7 +85,7 @@ public class RentalDAO {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
+        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.REASON, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
                 + "CASE WHEN h.STATUS = '대여중' AND h.RETURN_DATE < TRUNC(SYSDATE) THEN '미반납' ELSE h.STATUS END AS STATUS, "
                 + "h.APPROVAL_STEP, h.SIGN1, h.SIGN1_DATE, h.SIGN2, h.SIGN2_DATE, h.SIGN3, h.SIGN3_DATE, "
                 + "h.SIGN4, h.SIGN4_DATE, h.SIGN5, h.SIGN5_DATE, h.REQ_COUNT, "
@@ -117,9 +116,15 @@ public class RentalDAO {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "SELECT h.*, e.EMP_NAME, e.EMP_LEVEL, eq.EQ_NAME, eq.TOTAL_COUNT, eq.REMAIN_COUNT "
-                + "FROM RENTAL_HISTORY h " + "LEFT JOIN EMPLOYEE e ON h.EMP_NO = e.EMP_NO "
-                + "LEFT JOIN EQUIPMENT eq ON h.EQ_NO = eq.EQ_NO " + "WHERE h.RENTAL_NO = ?";
+        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.REASON, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
+                + "CASE WHEN h.STATUS = '대여중' AND h.RETURN_DATE < TRUNC(SYSDATE) THEN '미반납' ELSE h.STATUS END AS STATUS, "
+                + "h.APPROVAL_STEP, h.SIGN1, h.SIGN1_DATE, h.SIGN2, h.SIGN2_DATE, h.SIGN3, h.SIGN3_DATE, "
+                + "h.SIGN4, h.SIGN4_DATE, h.SIGN5, h.SIGN5_DATE, h.REQ_COUNT, "
+                + "e.EMP_NAME, e.EMP_LEVEL, eq.EQ_NAME, eq.TOTAL_COUNT, eq.REMAIN_COUNT "
+                + "FROM RENTAL_HISTORY h "
+                + "LEFT JOIN EMPLOYEE e ON h.EMP_NO = e.EMP_NO "
+                + "LEFT JOIN EQUIPMENT eq ON h.EQ_NO = eq.EQ_NO "
+                + "WHERE h.RENTAL_NO = ?";
 
         try {
             conn = DBConnection.getConnection();
@@ -136,6 +141,11 @@ public class RentalDAO {
         return dto;
     }
 
+    // 💡 [신규 추가]: ReturnProcessController의 컴파일 에러를 방지하기 위한 가교 메서드
+    public RentalHistoryDTO getRentalDetail(int rentalNo) {
+        return getDocumentDetail(rentalNo);
+    }
+
     public boolean processApproval(int rentalNo, int eqNo, int step, String empName, boolean isApprove) {
         boolean result = false;
         Connection conn = null;
@@ -144,16 +154,14 @@ public class RentalDAO {
 
         String signCol = "SIGN" + step;
         String dateCol = "SIGN" + step + "_DATE";
-        String status = isApprove ? "승인대기" : "반려됨";
+        
+        String status = isApprove ? (step == 5 ? "대여중" : "승인대기") : "반려됨";
         int nextStep = isApprove ? step + 1 : step;
-
-        if (isApprove && step == 5) status = "대여중";
 
         String sql = "UPDATE RENTAL_HISTORY SET " + signCol + " = ?, " + dateCol + " = SYSDATE, STATUS = ?, APPROVAL_STEP = ? WHERE RENTAL_NO = ?";
         
-        // ★ 승인 시 기안에 적혀있던 수량만큼 차감
-        String updateEqSql = "UPDATE EQUIPMENT SET REMAIN_COUNT = REMAIN_COUNT - (SELECT REQ_COUNT FROM RENTAL_HISTORY WHERE RENTAL_NO = ?) "
-                           + "WHERE EQ_NO = ? AND REMAIN_COUNT >= (SELECT REQ_COUNT FROM RENTAL_HISTORY WHERE RENTAL_NO = ?)";
+        String refundEqSql = "UPDATE EQUIPMENT SET REMAIN_COUNT = REMAIN_COUNT + (SELECT REQ_COUNT FROM RENTAL_HISTORY WHERE RENTAL_NO = ?) "
+                           + "WHERE EQ_NO = ?";
 
         try {
             conn = DBConnection.getConnection();
@@ -166,29 +174,30 @@ public class RentalDAO {
             pstmt.setInt(4, rentalNo);
             int count = pstmt.executeUpdate();
 
-            if (count > 0 && isApprove && step == 5) {
-                pstmtEq = conn.prepareStatement(updateEqSql);
-                pstmtEq.setInt(1, rentalNo);
-                pstmtEq.setInt(2, eqNo);
-                pstmtEq.setInt(3, rentalNo);
-                
-                int eqCount = pstmtEq.executeUpdate();
-                if (eqCount > 0) {
+            if (count > 0) {
+                if (!isApprove) {
+                    pstmtEq = conn.prepareStatement(refundEqSql);
+                    pstmtEq.setInt(1, rentalNo);
+                    pstmtEq.setInt(2, eqNo);
+                    
+                    int eqCount = pstmtEq.executeUpdate();
+                    if (eqCount > 0) {
+                        conn.commit();
+                        result = true;
+                    } else {
+                        conn.rollback();
+                    }
+                } else {
                     conn.commit();
                     result = true;
-                } else {
-                    conn.rollback(); 
                 }
-            } else if (count > 0) {
-                conn.commit(); 
-                result = true;
             }
         } catch (Exception e) {
             try { if (conn != null) conn.rollback(); } catch (Exception ex) {}
             e.printStackTrace();
         } finally {
-            closeResource(conn, pstmt, null);
             if (pstmtEq != null) try { pstmtEq.close(); } catch(Exception e) {}
+            closeResource(conn, pstmt, null);
         }
         return result;
     }
@@ -221,14 +230,17 @@ public class RentalDAO {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-
-        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
+        
+        // 💡 [교정 완료]: 메인 및 마이페이지에서 퇴사자 보정 로직이 정상 동작하도록 
+        // EMPLOYEE 테이블 조인 관계를 명시하고 h.EMP_LEVEL 컬럼을 명확하게 조회 데이터셋에 동기화합니다.
+        String sql = "SELECT h.RENTAL_NO, h.TITLE, h.REASON, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
                 + "CASE WHEN h.STATUS = '대여중' AND h.RETURN_DATE < TRUNC(SYSDATE) THEN '미반납' ELSE h.STATUS END AS STATUS, "
                 + "h.APPROVAL_STEP, h.SIGN1, h.SIGN1_DATE, h.SIGN2, h.SIGN2_DATE, h.SIGN3, h.SIGN3_DATE, "
-                + "h.SIGN4, h.SIGN4_DATE, h.SIGN5, h.SIGN5_DATE, h.REQ_COUNT, e.EQ_NAME "
-                + "FROM RENTAL_HISTORY h JOIN EQUIPMENT e ON h.EQ_NO = e.EQ_NO "
+                + "h.SIGN4, h.SIGN4_DATE, h.SIGN5, h.SIGN5_DATE, h.REQ_COUNT, e.EQ_NAME, emp.EMP_LEVEL "
+                + "FROM RENTAL_HISTORY h "
+                + "JOIN EQUIPMENT e ON h.EQ_NO = e.EQ_NO "
+                + "LEFT JOIN EMPLOYEE emp ON h.EMP_NO = emp.EMP_NO "
                 + "WHERE h.EMP_NO = ? ORDER BY h.RENTAL_NO DESC";
-        
         
         try {
             conn = DBConnection.getConnection();
@@ -237,7 +249,8 @@ public class RentalDAO {
                 pstmt.setInt(1, empNo);
                 rs = pstmt.executeQuery();
                 while (rs.next()) {
-                    list.add(mapResultSetToDTO(rs, false));
+                    // EMP_LEVEL 필드가 쿼리에 포함되었으므로 true를 전달하여 온전한 데이터를 수령합니다.
+                    list.add(mapResultSetToDTO(rs, true));
                 }
             }
         } catch (Exception e) { e.printStackTrace(); } 
@@ -263,7 +276,6 @@ public class RentalDAO {
 
             int count = pstmt.executeUpdate();
             
-            // ★ 반납 완료 시 수량 복구 (재고 더하기)
             if (count > 0 && "반납완료".equals(status)) {
                 String restoreSql = "UPDATE EQUIPMENT SET REMAIN_COUNT = REMAIN_COUNT + (SELECT REQ_COUNT FROM RENTAL_HISTORY WHERE RENTAL_NO = ?) "
                                   + "WHERE EQ_NO = (SELECT EQ_NO FROM RENTAL_HISTORY WHERE RENTAL_NO = ?)";
@@ -324,7 +336,6 @@ public class RentalDAO {
         return result;
     }
 
-    // 공통 매핑 유틸리티 (중복 코드 제거)
     private RentalHistoryDTO mapResultSetToDTO(ResultSet rs, boolean includeJoinFields) throws Exception {
         RentalHistoryDTO dto = new RentalHistoryDTO();
         dto.setRentalNo(rs.getInt("RENTAL_NO"));
@@ -340,23 +351,24 @@ public class RentalDAO {
         dto.setSign4(rs.getString("SIGN4"));
         dto.setSign5(rs.getString("SIGN5"));
         dto.setTitle(rs.getString("TITLE"));
+        dto.setContent(rs.getString("REASON"));
         dto.setSign1Date(rs.getDate("SIGN1_DATE"));
         dto.setSign2Date(rs.getDate("SIGN2_DATE"));
         dto.setSign3Date(rs.getDate("SIGN3_DATE"));
         dto.setSign4Date(rs.getDate("SIGN4_DATE"));
         dto.setSign5Date(rs.getDate("SIGN5_DATE"));
-        dto.setReqCount(rs.getInt("REQ_COUNT")); // ★ 수량 매핑
+        dto.setReqCount(rs.getInt("REQ_COUNT")); 
 
-        // JOIN 필드가 있는 경우 처리
         if (includeJoinFields) {
-            dto.setEmpName(rs.getString("EMP_NAME"));
-            dto.setEmpLevel(rs.getInt("EMP_LEVEL"));
-            dto.setEqName(rs.getString("EQ_NAME"));
-            dto.setTotalCount(rs.getInt("TOTAL_COUNT"));
-            dto.setRemainCount(rs.getInt("REMAIN_COUNT"));
-        } else {
-            // MyRentalList에서 조인으로 EQ_NAME만 가져올 경우 대비
+            // 💡 예외 방지 가드를 추가하여 안전하게 컬럼 데이터를 바인딩합니다.
+            try { dto.setEmpName(rs.getString("EMP_NAME")); } catch (Exception e) {}
+            try { dto.setEmpLevel(rs.getInt("EMP_LEVEL")); } catch (Exception e) {}
             try { dto.setEqName(rs.getString("EQ_NAME")); } catch (Exception e) {}
+            try { dto.setTotalCount(rs.getInt("TOTAL_COUNT")); } catch (Exception e) {}
+            try { dto.setRemainCount(rs.getInt("REMAIN_COUNT")); } catch (Exception e) {}
+        } else {
+            try { dto.setEqName(rs.getString("EQ_NAME")); } catch (Exception e) {}
+            try { dto.setEmpLevel(rs.getInt("EMP_LEVEL")); } catch (Exception e) {}
         }
         return dto;
     }

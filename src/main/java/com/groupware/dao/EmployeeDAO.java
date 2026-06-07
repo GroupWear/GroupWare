@@ -73,12 +73,12 @@ public class EmployeeDAO {
 		boolean result = false;
 		// 사번을 조건으로 비밀번호를 업데이트합니다.
 		String sql = "UPDATE EMPLOYEE SET emp_pw = ? WHERE emp_no = ?";
-
+		System.out.println("암호화 : "+empPw);
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
 			pstmt.setString(1, empPw);
 			pstmt.setString(2, empNo);
-
+			
 			int count = pstmt.executeUpdate();
 			if (count > 0) {
 				result = true;
@@ -115,17 +115,18 @@ public class EmployeeDAO {
 //		return dto;
 //	}
 	// 2. getEmployeeByNo 메서드 수정 (회원가입 시 정보 확인용)
+	//20260526 LHS retired 추가
 	public EmployeeDTO getEmployeeByNo(String empNo) {
 	    EmployeeDTO dto = null;
 	    // SQL문에 dept, max_leave, cur_leave 추가
-	    String sql = "SELECT emp_no, emp_name, emp_level, manager, dept, max_leave, cur_leave "
+	    String sql = "SELECT emp_no, emp_name, emp_level, manager, dept, max_leave, cur_leave , retired, emp_pw "
 	               + "FROM EMPLOYEE WHERE emp_no = ?";
 
 	    try (Connection conn = DBConnection.getConnection(); 
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
 	        pstmt.setString(1, empNo);
-
+	        
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            if (rs.next()) {
 	                dto = new EmployeeDTO();
@@ -137,6 +138,13 @@ public class EmployeeDAO {
 	                dto.setDept(rs.getString("dept"));
 	                dto.setMaxLeave(rs.getInt("max_leave"));
 	                dto.setCurLeave(rs.getInt("cur_leave"));
+	                // ★ 추가된 필드 세팅
+	                dto.setRetired(rs.getString("retired"));
+	                // ★ 추가된 필드 세팅
+	                dto.setEmpPw(rs.getString("emp_pw"));
+	                
+	                System.out.println(sql);
+//	                System.out.println(dto.getEmpPw()+": Test");
 	            }
 	        }
 	    } catch (Exception e) {
@@ -408,5 +416,35 @@ public class EmployeeDAO {
 	    }
 	    
 	    return result;
+	}
+	
+	/*
+	 * 0526 [비밀번호 변경 기능 추가]
+	 * 1. 보안을 위해 현재 비밀번호(currentPw)가 DB값과 일치하는지 WHERE절에서 함께 검증합니다.
+	 * 2. 일치하는 행이 있을 경우에만 UPDATE가 수행되며, 업데이트된 행의 개수를 통해 성공 여부를 반환합니다.
+	 */
+	public boolean updatePasswordWithVerify(int empNo, String currentPw, String newPw) {
+		boolean result = false;
+		// 사번과 현재 비밀번호가 모두 일치하는 경우에만 비밀번호를 새 값으로 갱신합니다.
+		String sql = "UPDATE EMPLOYEE SET EMP_PW = ? WHERE EMP_NO = ? AND EMP_PW = ?";
+
+		try (java.sql.Connection conn = com.groupware.util.DBConnection.getConnection(); 
+			 java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+			pstmt.setString(1, newPw); // 새 비밀번호
+			pstmt.setInt(2, empNo);    // 사번
+			pstmt.setString(3, currentPw); // 현재 비밀번호 확인
+
+			// executeUpdate()는 쿼리 수행 후 영향을 받은 행의 개수를 반환합니다.
+			// 1이면 비밀번호 변경 성공, 0이면 현재 비밀번호가 틀려 변경 실패를 의미합니다.
+			if (pstmt.executeUpdate() > 0) {
+				result = true;
+			}
+			
+			System.out.println("(updatePasswordWithVerify) 비밀번호 변경 시도 - 사번: " + empNo + ", 결과: " + result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }

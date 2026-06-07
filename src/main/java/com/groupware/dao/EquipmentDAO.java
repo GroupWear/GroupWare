@@ -132,6 +132,7 @@ public class EquipmentDAO {
 				if (count > 0)
 					result = true;
 			}
+			System.out.println("비품 정보 수정 : "+sql);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

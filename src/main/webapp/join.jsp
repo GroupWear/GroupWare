@@ -58,10 +58,18 @@
             dataType: 'json',
             success: function(data) {
                 if(data.result === "success") {
-                    $('#empName').val(data.name);
-                    $('#deptInfo').val(data.dept + " / " + data.position);
-                    alert("사원 정보가 확인되었습니다.");
-                    $('#password').focus();
+                	if(data.retired === "N")
+                	{
+	                    $('#empName').val(data.name);
+	                    $('#deptInfo').val(data.dept + " / " + data.position);
+	                    alert("사원 정보가 확인되었습니다.");
+	                    $('#password').focus();                		
+                	}else
+                	{
+                		alert("퇴사자 입니다. 확인부탁드립니다.");
+                		return;
+                	}
+                	
                 } else {
                     alert("등록되지 않은 사번이거나 이미 계정이 등록된 사원입니다.");
                     $('#empNo').val('').focus();

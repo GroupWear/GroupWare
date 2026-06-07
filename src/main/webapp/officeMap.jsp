@@ -26,34 +26,7 @@ if (loginEmp == null) {
 </head>
 <body>
 
-    <div class="header">
-        <div class="header-inner">
-            <a href="main.jsp" class="logo-area">
-                <span class="logo-group">Group</span><span class="logo-ware">Ware</span>
-            </a>
-            
-            <div class="nav-buttons">
-                <span class="user-profile-info">
-                    <% if ("Y".equals(loginEmp.getManager())) { %>
-                        <span class="admin-tag">ADMIN</span>
-                    <% } %>
-                    <b><%=loginEmp.getEmpName()%></b>님
-                </span>
-
-                <% if ("Y".equals(loginEmp.getManager())) { %>
-                    <a href="adminEqList.do" class="nav-btn admin-special">재고 관리</a>
-                    <a href="admin.do" class="nav-btn admin-special">사원 관리</a>
-                <% } %>
-                
-                <a href="officeMap.jsp" class="nav-btn active-page">오피스 예약</a>
-                <a href="leaveForm.do" class="nav-btn">휴가 신청</a>
-                <a href="equipmentList.do" class="nav-btn">비품 대여 신청</a>
-                <a href="documentList.do" class="nav-btn">기안 문서함</a>	
-                <a href="myPage.do" class="nav-btn">마이페이지</a>
-                <a href="logout.do" class="nav-btn logout">로그아웃</a>
-            </div>
-        </div>
-    </div>
+<jsp:include page="header.jsp" />
 
     <div class="dashboard-container">
         <div class="map-wrapper">
@@ -72,20 +45,20 @@ if (loginEmp == null) {
             </div>
 
             <div id="map4" class="map-container">
-                <div class="room-btn" id="room404" onclick="location.href='reserve.do?roomId=404'"></div>
-                <div class="room-btn" id="room403" onclick="location.href='reserve.do?roomId=403'"></div>
-                <div class="room-btn" id="room402" onclick="location.href='reserve.do?roomId=402'"></div>
-                <div class="room-btn" id="room401" onclick="location.href='reserve.do?roomId=401'"></div>
-                <div class="room-btn" id="roomInterview" onclick="location.href='reserve.do?roomId=Interview'"></div>
-                <div class="room-btn" id="roomConsult" onclick="location.href='reserve.do?roomId=Consult'"></div>
-                <div class="room-btn" id="roomMeeting" onclick="location.href='reserve.do?roomId=Meeting'"></div>
+                <div class="room-btn" id="room404" data-name="404호" onclick="location.href='reserve.do?roomId=404'"></div>
+                <div class="room-btn" id="room403" data-name="403호" onclick="location.href='reserve.do?roomId=403'"></div>
+                <div class="room-btn" id="room402" data-name="402호" onclick="location.href='reserve.do?roomId=402'"></div>
+                <div class="room-btn" id="room401" data-name="401호" onclick="location.href='reserve.do?roomId=401'"></div>
+                <div class="room-btn" id="roomInterview" data-name="인터뷰실" onclick="location.href='reserve.do?roomId=Interview'"></div>
+                <div class="room-btn" id="roomConsult" data-name="상담실" onclick="location.href='reserve.do?roomId=Consult'"></div>
+                <div class="room-btn" id="roomMeeting" data-name="회의실" onclick="location.href='reserve.do?roomId=Meeting'"></div>
             </div>
             
             <div id="map5" class="map-container">
-                <div class="room-btn" id="room503" onclick="location.href='reserve.do?roomId=503'"></div>
-                <div class="room-btn" id="room502" onclick="location.href='reserve.do?roomId=502'"></div>
-                <div class="room-btn" id="room501" onclick="location.href='reserve.do?roomId=501'"></div>
-                <div class="room-btn" id="roomMeeting5" onclick="location.href='reserve.do?roomId=Meeting5'"></div>
+                <div class="room-btn" id="room503" data-name="503호" onclick="location.href='reserve.do?roomId=503'"></div>
+                <div class="room-btn" id="room502" data-name="502호" onclick="location.href='reserve.do?roomId=502'"></div>
+                <div class="room-btn" id="room501" data-name="501호" onclick="location.href='reserve.do?roomId=501'"></div>
+                <div class="room-btn" id="roomMeeting5" data-name="회의실" onclick="location.href='reserve.do?roomId=Meeting5'"></div>
             </div>
         </div>
     </div>

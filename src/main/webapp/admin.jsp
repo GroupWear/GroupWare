@@ -24,12 +24,25 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/admin.css">
 </head>
 <body>
+	<!-- 1. 상단 네비게이션 헤더 (최상단 고정 고유 레이어) -->
+<jsp:include page="header.jsp" />
+    
+    <!-- 2. 페이지 대제목 영역 (고정 영역에서 완전히 제외하여 최상단 헤더 밑에 배치) -->
 	<div class="container">
-		<div class="page-header">
+	
+ 		<!-- <div class="page-header">
 			<h2>전사 직원 관리 (마스터)</h2>
 			<a href="main.jsp" class="btn-back">시스템 메인으로</a>
 		</div>
-
+		페이지 대제목 영역 (고정 영역에서 완전히 제외하여 최상단 헤더 밑에 배치)
+    	<div class="table-container" style="margin-top: 30px; margin-bottom: 0;">
+	        <div class="headertitle">
+	            <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: #1e293b;">비품 대여 신청</h2>
+	        </div>
+    	</div> -->
+	    <div class="table-title-area">
+        	<h2>전사 직원 관리 (마스터)</h2>
+        </div>
 		<div class="table-wrapper">
 			<table>
 				<thead>
