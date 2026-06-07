@@ -92,8 +92,16 @@ tbody tr:hover { background: #fcfdfe; }
 
 /* [버튼] 예약 취소 및 반납 버튼 스타일 */
 .btn-action {
-    display: inline-flex; padding: 4px 12px; font-size: 12px; font-weight: bold; 
-    border-radius: 30px; color: #e74c3c; border: 1px solid #e74c3c; cursor: pointer;
+    display: inline-flex; 
+    padding: 4px 12px; 
+    border: 1px solid #e74c3c; 
+    border-radius: 30px; 
+    background-color: #fde8e8;
+    color: #e74c3c;
+    font-size: 12px; 
+    font-weight: bold; 
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 .btn-cancel { background-color: #fde8e8; }
 .btn-cancel:hover { background-color: #ffcccc; }

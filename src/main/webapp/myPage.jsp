@@ -159,11 +159,29 @@
 	</script>
 <script>
     function returnProcess(rentalNo) { 
-        if (confirm("해당 반납 처리하시겠습니까?")) 
+        if (confirm("해당 비품을 반납 처리하시겠습니까?")) 
             location.href = 'returnProcess.do?rentalNo=' + rentalNo + '&from=main'; }
+    
     function cancelReserve(resNo) { 
         if (confirm("정말 이 예약을 취소하시겠습니까?")) 
             location.href = "cancelReserve.do?resNo=" + resNo + '&from=main'; }
+    
+    function navigateWithScroll(url) {
+        saveScroll();
+        location.href = url;
+    }
+    
+    function saveScroll() {
+        localStorage.setItem("main_scroll_y", window.scrollY);
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+        var savedScrollY = localStorage.getItem("main_scroll_y");
+        if (savedScrollY !== null) {
+            window.scrollTo(0, parseInt(savedScrollY)); 
+            localStorage.removeItem("main_scroll_y"); 
+        }
+    });
 </script>
 </head>
 <body>
@@ -202,7 +220,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% if (reserveList1 == null || reserveList.isEmpty()) { %>
+                    <% if (reserveList == null || reserveList.isEmpty()) { %>
                         <tr><td colspan="7" style="padding: 105px 0; color: #6c757d; border-bottom: none;">예약 내역이 없습니다.</td></tr>
                     <% } else {
                            for (ReservationDTO dto : reserveList) {
