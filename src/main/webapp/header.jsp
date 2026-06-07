@@ -68,6 +68,7 @@
                 <a href="leaveForm.do" class="nav-btn">휴가 신청</a>
                 <a href="equipmentList.do" class="nav-btn">비품 대여 신청</a>
                 <a href="documentList.do" class="nav-btn">기안 문서함</a>
+                <a href="addressBook.do" class="nav-btn">주소록</a>
                 <a href="myPage.do" class="nav-btn">마이페이지</a>
                 <a href="logout.do" class="nav-btn logout">로그아웃</a>
             </div>
