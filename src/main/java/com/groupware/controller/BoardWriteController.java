@@ -68,6 +68,7 @@ public class BoardWriteController extends HttpServlet {
         // 파일 업로드 처리
         String uploadPath = getServletContext().getRealPath("/upload/board");
         File uploadDir = new File(uploadPath);
+        System.out.println("내 파일이 저장되는 실제 위치: " + uploadPath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
         
         List<BoardFileDTO> files = new ArrayList<>();
