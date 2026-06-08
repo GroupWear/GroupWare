@@ -3,6 +3,10 @@
 <%@ page import="com.groupware.dto.EmployeeDTO"%>
 <%
     List<EmployeeDTO> empList = (List<EmployeeDTO>) request.getAttribute("empList");
+    Integer currentPage = (Integer) request.getAttribute("currentPage");
+    Integer totalPages = (Integer) request.getAttribute("totalPages");
+    if (currentPage == null) currentPage = 1;
+    if (totalPages == null) totalPages = 1;
 %>
 <!DOCTYPE html>
 <html>
@@ -25,11 +29,12 @@
             const no = card.getAttribute('data-no').toLowerCase();
             
             if (name.includes(keyword) || dept.includes(keyword) || no.includes(keyword)) {
-                card.style.display = 'flex'; // grid일 때는 block이었으나 list(flex)이므로 flex로 변경
+                card.style.display = 'flex';
             } else {
                 card.style.display = 'none';
             }
         }
+        // 페이징이 있는 경우 클라이언트 사이드 필터링은 현재 페이지 내에서만 작동함을 알림 (필요시)
     }
 </script>
 </head>
@@ -47,14 +52,14 @@
         </div>
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" onkeyup="filterEmployees()" placeholder="이름, 부서 또는 사번으로 검색">
+            <input type="text" id="searchInput" onkeyup="filterEmployees()" placeholder="현재 페이지 내에서 검색">
         </div>
     </div>
 
     <!-- Employee List -->
     <div class="employee-grid">
         <% 
-            if (empList != null) {
+            if (empList != null && !empList.isEmpty()) {
                 for (EmployeeDTO emp : empList) {
                     // 직급 매핑
                     String levelName = "사원";
@@ -109,8 +114,35 @@
         </div>
         <% 
                 }
+            } else {
+        %>
+            <div class="no-data">등록된 주소록 정보가 없습니다.</div>
+        <%
+            }
+        %>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+            <a href="addressBook.do?page=<%=currentPage - 1%>" class="page-link"><i class="fa-solid fa-chevron-left"></i></a>
+        <% } %>
+        
+        <% 
+            for (int i = 1; i <= totalPages; i++) { 
+                if (i == currentPage) {
+        %>
+            <span class="page-link active"><%=i%></span>
+        <%      } else { %>
+            <a href="addressBook.do?page=<%=i%>" class="page-link"><%=i%></a>
+        <% 
+                }
             } 
         %>
+        
+        <% if (currentPage < totalPages) { %>
+            <a href="addressBook.do?page=<%=currentPage + 1%>" class="page-link"><i class="fa-solid fa-chevron-right"></i></a>
+        <% } %>
     </div>
 </div>
 
