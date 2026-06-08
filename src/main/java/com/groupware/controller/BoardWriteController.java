@@ -65,7 +65,7 @@ public class BoardWriteController extends HttpServlet {
         board.setContent(content);
         board.setEmpNo(loginEmp.getEmpNo());
         
-        // 파일 업로드 처리
+        // 파일 업로드 처리, 위치 로깅
         String uploadPath = getServletContext().getRealPath("/upload/board");
         File uploadDir = new File(uploadPath);
         System.out.println("내 파일이 저장되는 실제 위치: " + uploadPath);

@@ -24,10 +24,20 @@ public class AddressBookController extends HttpServlet {
             return;
         }
 
+        // 페이징 파라미터 처리
+        String pageStr = request.getParameter("page");
+        int page = (pageStr == null || pageStr.isEmpty()) ? 1 : Integer.parseInt(pageStr);
+        int pageSize = 10;
+
         AddressBookDAO dao = new AddressBookDAO();
-        List<EmployeeDTO> empList = dao.getAllAddressList();
+        List<EmployeeDTO> empList = dao.getAddressListPaged(page, pageSize);
+        int totalCount = dao.getTotalAddressCount();
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 
         request.setAttribute("empList", empList);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        
         request.getRequestDispatcher("addressBook.jsp").forward(request, response);
     }
 
