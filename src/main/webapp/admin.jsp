@@ -52,6 +52,7 @@
 						<th>권한 레벨 조정</th>
 						<th>시스템 권한</th>
 						<th>인사 관리 (위임/퇴사/위임변경/위임취소)</th>
+						<th>부서</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -94,7 +95,7 @@
 					                <% if (isRetired) { %>
 					                    <span style="color: #dc3545; font-weight: bold; font-size: 13px;">퇴사 처리됨</span>
 					                <% } else { %>
-					                    <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;">
+					                    <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 사원의 직급을 수정하시겠습니까?');">
 					                        <input type="hidden" name="action" value="updateLevel">
 					                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 					                        <select name="newLevel">
@@ -158,7 +159,7 @@
 								                
 								                <% if (!isManager) { // 2. 최고관리자가 아닌 일반 인원들 %>
 								                    <!-- 위임 버튼 if 들어가서 처리 해보자 -->
-								                    <form action="adminAction.do" method="post" style="display: inline;">
+								                    <form action="adminAction.do" method="post" style="display: inline;" >
 								                        <input type="hidden" name="action" value="transferManager">
 								                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 								                        <button type="submit" class="btn-action btn-transfer" 
@@ -195,7 +196,31 @@
 								            
 								        </div>
 								    <% } %>
-								</td>					
+								</td>
+								<!-- 6. 부서 -->
+								<td>
+								    <% if (isRetired) { %>
+								        <span style="color: #dc3545; font-weight: bold; font-size: 13px;">퇴사 처리됨</span>
+								    <% } else { %>
+								        <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 사원의 부서를 수정하시겠습니까?');">
+								            <input type="hidden" name="action" value="updateDept">
+								            <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
+								            
+								            <select name="newDept" style="padding: 4px; border: 1px solid #ced4da; border-radius: 4px;">
+								                <% 
+								                    // 현재 사원의 부서명 또는 부서코드를 가져옴 (Getter명은 DTO에 맞게 수정하세요)
+								                    String currentDept = emp.getDept(); 
+								                %>
+								                <option value="경영지원팀" <%= "경영지원팀".equals(currentDept) ? "selected" : "" %>>경영지원팀</option>
+												<option value="기획팀"     <%= "기획팀".equals(currentDept) ? "selected" : "" %>>기획팀</option>
+												<option value="재무팀"     <%= "재무팀".equals(currentDept) ? "selected" : "" %>>재무팀</option>
+												<option value="영업팀"     <%= "영업팀".equals(currentDept) ? "selected" : "" %>>영업팀</option>
+												<option value="개발팀"     <%= "개발팀".equals(currentDept) ? "selected" : "" %>>개발팀</option>
+								            </select>
+								            <button type="submit" class="btn-action btn-update">수정</button>
+								        </form>
+								    <% } %>
+								</td>
 					            <%-- <!-- 5. 인사 관리 (위임/퇴사) -->
 					            <td>
 					                <% if (isRetired) { %>
@@ -267,6 +292,18 @@
 					<option value="Y">관리자 권한 (Y)</option>
 				</select>
 
+				<!-- 관리자 부서 추가 -->
+		        <select name="dept" style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
+		                <option value="경영지원팀">경영지원팀</option>
+						<option value="기획팀">기획팀</option>
+						<option value="재무팀">재무팀</option>
+						<option value="영업팀">영업팀</option>
+						<option value="개발팀">개발팀</option>
+		        </select>    
+		            
+		            
+
+
 				<button type="submit"
 					style="padding: 10px 20px; background-color: #343a40; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">사원
 					등록</button>
@@ -278,5 +315,3 @@
 	</div>
 </body>
 </html>
-
-

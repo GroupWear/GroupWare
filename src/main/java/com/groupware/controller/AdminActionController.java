@@ -183,7 +183,30 @@ public class AdminActionController extends HttpServlet {
                     out.println("alert('해당 사원의 퇴사(삭제) 처리가 완료되었습니다.');");
                     out.println("location.href='admin.do';");
                 }
+            } else if("updateDept".equals(action))
+            {
+            	//사원관리 부서 updateDept 20260608
+            	String newDept = request.getParameter("newDept");
+            	isSuccess = dao.updateEmployeeDept(targetEmpNo, newDept);
+                
+                if (isSuccess) {
+                    out.println("alert('직급이 성공적으로 변경되었습니다.');");
+                    out.println("location.href='admin.do';");
+                }
+            	
+            	
             }
+        	
+        	
+        	
+        	
+        	
+        	
+        	
+        	
+        	
+        	
+        	
 //            else if ("cancelManager".equals(action)) {
 //                // [위임 취소 - 관리자 권한 박탈]
 //                // 방어 로직: 관리자가 2명 이하일 경우 취소 불가
