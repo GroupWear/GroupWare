@@ -78,7 +78,7 @@
 <body>
 <jsp:include page="header.jsp" />
 <div class="container">
-<div class="section-title"> <a href="myReservation" class="data-link">내 회의실 예약 현황</a></div>
+<div class="section-title"> <a href="myReservation.jsp" class="data-link">내 회의실 예약 현황</a></div>
             <div class="table-wrapper">
                 <table class="table-res">
                     <thead>
