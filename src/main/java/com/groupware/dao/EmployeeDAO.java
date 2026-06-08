@@ -160,7 +160,7 @@ public class EmployeeDAO {
 		List<EmployeeDTO> list = new ArrayList<>();
 		// 관리자(Y)가 맨 위에, 그다음 직급 높은 순, 마지막으로 사번 순으로 정렬합니다.
 		String sql = "SELECT emp_no, emp_name, emp_level, manager, retired, "
-		           + "(SELECT COUNT(*) FROM EMPLOYEE WHERE 1=1 AND MANAGER = 'Y') AS count_manager " // count 뒤에 공백 추가
+		           + "(SELECT COUNT(*) FROM EMPLOYEE WHERE 1=1 AND MANAGER = 'Y') AS count_manager, dept " // count 뒤에 공백 추가 , 부서 호출 추가
 		           + "FROM EMPLOYEE ORDER BY manager DESC, emp_level DESC, emp_no ASC";
 
 		
@@ -176,6 +176,7 @@ public class EmployeeDAO {
 				dto.setManager(rs.getString("manager"));
 				dto.setRetired(rs.getString("retired"));//20260513 퇴사자 데이터 확인
 				dto.setCount_manager(rs.getInt("count_manager"));//20260514 위임 카운트 데이터
+				dto.setDept(rs.getString("dept"));//20260618 부서 호출
 				list.add(dto);
 			}
 			/* 20260513 L.H.S 실행 쿼리문 */
@@ -369,7 +370,7 @@ public class EmployeeDAO {
 	public boolean insertEmployee(EmployeeDTO dto) {
 		boolean result = false;
 		// 비밀번호는 제외하고 INSERT 진행
-		String sql = "INSERT INTO EMPLOYEE (EMP_NO, EMP_NAME, EMP_LEVEL, MANAGER,RETIRED) VALUES (?, ?, ?, ?,'N')";
+		String sql = "INSERT INTO EMPLOYEE (EMP_NO, EMP_NAME, EMP_LEVEL, MANAGER,RETIRED,DEPT) VALUES (?, ?, ?, ?,'N',?)";
 
 		try (java.sql.Connection conn = com.groupware.util.DBConnection.getConnection();
 				java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -378,6 +379,7 @@ public class EmployeeDAO {
 			pstmt.setString(2, dto.getEmpName());
 			pstmt.setInt(3, dto.getEmpLevel());
 			pstmt.setString(4, dto.getManager());
+			pstmt.setString(5, dto.getDept());
 
 			int count = pstmt.executeUpdate();
 			if (count > 0) {
@@ -443,6 +445,36 @@ public class EmployeeDAO {
 			
 			System.out.println("(updatePasswordWithVerify) 비밀번호 변경 시도 - 사번: " + empNo + ", 결과: " + result);
 		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * [관리자용] 사원 부서 변경 기능
+	 * 20260608 부서 수정 기능 추가
+	 */
+	public boolean updateEmployeeDept(int empNo, String newDept) {
+		boolean result = false;
+		String sql = "UPDATE EMPLOYEE SET DEPT = ? WHERE EMP_NO = ?";
+
+		try (Connection conn = DBConnection.getConnection(); 
+			 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+			pstmt.setString(1, newDept); // 변경할 부서명 (ex: "개발팀")
+			pstmt.setInt(2, empNo);      // 사원 번호
+
+			// executeUpdate()의 결과가 0보다 크면(성공 시) true 반환
+			if (pstmt.executeUpdate() > 0) {
+				result = true;
+			}
+			
+			/* 디버깅용 실행 로그 */
+			System.out.println("(updateEmployeeDept) 사원 부서 변경 완료 - 사번: " + empNo + ", 부서: " + newDept + " [결과: " + result + "]");
+			
+		} catch (Exception e) {
+			System.err.println("EmployeeDAO.updateEmployeeDept 오류 발생");
 			e.printStackTrace();
 		}
 		return result;
