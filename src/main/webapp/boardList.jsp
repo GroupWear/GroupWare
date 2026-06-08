@@ -22,7 +22,7 @@
 </head>
 <body>
     <jsp:include page="header.jsp" />
-
+	
     <div class="board-container">
         <div class="board-header">
             <h2>게시판</h2>
