@@ -2,11 +2,13 @@
 <%@ page import="com.groupware.dto.EmployeeDTO" %>
 <%@ page import="com.groupware.dto.BoardDTO" %>
 <%@ page import="com.groupware.dto.BoardFileDTO" %>
+<%@ page import="com.groupware.dto.CommentDTO" %>
 <%@ page import="java.util.List" %>
 <%
     EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
     BoardDTO board = (BoardDTO) request.getAttribute("board");
     List<BoardFileDTO> fileList = (List<BoardFileDTO>) request.getAttribute("fileList");
+    List<CommentDTO> commentList = (List<CommentDTO>) request.getAttribute("commentList");
 %>
 <!DOCTYPE html>
 <html>
@@ -65,6 +67,73 @@
                     <% } %>
                 </div>
             </div>
+
+            <!-- 댓글 영역 -->
+            <div class="comment-section">
+                <div class="comment-count">댓글 <%= (commentList != null) ? commentList.size() : 0 %>개</div>
+                
+                <% if (loginEmp != null) { %>
+                <form action="commentInsert.do" method="post" class="comment-form">
+                    <input type="hidden" name="boardNo" value="<%= board.getBoardNo() %>">
+                    <textarea name="content" placeholder="댓글을 입력하세요" required></textarea>
+                    <div style="text-align:right;">
+                        <button type="submit" class="btn btn-primary">등록</button>
+                    </div>
+                </form>
+                <% } %>
+
+                <div class="comment-list">
+                    <% if (commentList != null && !commentList.isEmpty()) { 
+                        for (CommentDTO comment : commentList) { %>
+                        <div class="comment-item depth-<%= comment.getDepth() %>">
+                            <div class="comment-info">
+                                <span class="comment-author"><%= comment.getEmpName() %></span>
+                                <span class="comment-date"><%= comment.getRegDate() %></span>
+                            </div>
+                            <div class="comment-content" id="comment-text-<%= comment.getCommentNo() %>"><%= comment.getContent() %></div>
+                            
+                            <div class="comment-actions">
+                                <% if (loginEmp != null) { %>
+                                    <a href="javascript:void(0);" onclick="toggleReplyForm(<%= comment.getCommentNo() %>)">답글</a>
+                                    <% if (comment.getEmpNo() == loginEmp.getEmpNo() || "Y".equals(loginEmp.getManager())) { %>
+                                        <a href="javascript:void(0);" onclick="toggleEditForm(<%= comment.getCommentNo() %>)">수정</a>
+                                        <a href="javascript:void(0);" onclick="deleteComment(<%= comment.getCommentNo() %>, <%= board.getBoardNo() %>)" style="color:#e74c3c;">삭제</a>
+                                    <% } %>
+                                <% } %>
+                            </div>
+
+                            <!-- 답글 폼 -->
+                            <div id="reply-form-<%= comment.getCommentNo() %>" class="reply-form">
+                                <form action="commentInsert.do" method="post" class="comment-form" style="margin:0; padding:10px; background:transparent;">
+                                    <input type="hidden" name="boardNo" value="<%= board.getBoardNo() %>">
+                                    <input type="hidden" name="parentNo" value="<%= comment.getCommentNo() %>">
+                                    <textarea name="content" placeholder="답글을 입력하세요" required></textarea>
+                                    <div style="text-align:right;">
+                                        <button type="button" class="btn btn-outline" onclick="toggleReplyForm(<%= comment.getCommentNo() %>)" style="margin-right:5px;">취소</button>
+                                        <button type="submit" class="btn btn-primary">등록</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- 수정 폼 -->
+                            <div id="edit-form-<%= comment.getCommentNo() %>" class="edit-form">
+                                <form action="commentUpdate.do" method="post" class="comment-form" style="margin:0; padding:10px; background:transparent;">
+                                    <input type="hidden" name="commentNo" value="<%= comment.getCommentNo() %>">
+                                    <input type="hidden" name="boardNo" value="<%= board.getBoardNo() %>">
+                                    <textarea name="content" required><%= comment.getContent() %></textarea>
+                                    <div style="text-align:right;">
+                                        <button type="button" class="btn btn-outline" onclick="toggleEditForm(<%= comment.getCommentNo() %>)" style="margin-right:5px;">취소</button>
+                                        <button type="submit" class="btn btn-primary">수정완료</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    <% } 
+                    } else { %>
+                        <p style="text-align:center; color:#999; padding:20px;">등록된 댓글이 없습니다.</p>
+                    <% } %>
+                </div>
+            </div>
         </div>
         <% } %>
     </div>
@@ -73,6 +142,25 @@
         function deleteConfirm(boardNo) {
             if(confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
                 location.href = 'boardDelete.do?boardNo=' + boardNo;
+            }
+        }
+
+        function toggleReplyForm(commentNo) {
+            const form = document.getElementById('reply-form-' + commentNo);
+            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function toggleEditForm(commentNo) {
+            const form = document.getElementById('edit-form-' + commentNo);
+            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
+            
+            const text = document.getElementById('comment-text-' + commentNo);
+            text.style.display = (form.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function deleteComment(commentNo, boardNo) {
+            if(confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
+                location.href = 'commentDelete.do?commentNo=' + commentNo + '&boardNo=' + boardNo;
             }
         }
     </script>

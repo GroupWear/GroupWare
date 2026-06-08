@@ -8,8 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.groupware.dao.BoardDAO;
+import com.groupware.dao.CommentDAO;
 import com.groupware.dto.BoardDTO;
 import com.groupware.dto.BoardFileDTO;
+import com.groupware.dto.CommentDTO;
 
 @WebServlet("/boardDetail.do")
 public class BoardDetailController extends HttpServlet {
@@ -22,8 +24,13 @@ public class BoardDetailController extends HttpServlet {
         BoardDTO board = dao.getBoardDetail(boardNo);
         List<BoardFileDTO> files = dao.getFilesByBoardNo(boardNo);
         
+        // 댓글 목록 조회 추가
+        CommentDAO commentDao = new CommentDAO();
+        List<CommentDTO> commentList = commentDao.getCommentsByBoardNo(boardNo);
+        
         request.setAttribute("board", board);
         request.setAttribute("fileList", files);
+        request.setAttribute("commentList", commentList);
         
         request.getRequestDispatcher("boardDetail.jsp").forward(request, response);
     }
