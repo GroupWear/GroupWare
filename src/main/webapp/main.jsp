@@ -170,8 +170,12 @@
         window.addEventListener("DOMContentLoaded", function() {
             var savedScrollY = localStorage.getItem("main_scroll_y");
             if (savedScrollY !== null) {
-                window.scrollTo(0, parseInt(savedScrollY)); 
-                localStorage.removeItem("main_scroll_y"); 
+                // 'instant'를 사용하여 애니메이션 없이 즉시 이동
+                window.scrollTo({
+                    top: parseInt(savedScrollY),
+                    behavior: 'instant' 
+                });
+                localStorage.removeItem("main_scroll_y");
             }
         });
     </script>
