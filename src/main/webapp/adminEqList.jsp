@@ -54,6 +54,12 @@
         document.getElementById("updateModal").style.display = "none";
         document.getElementById("modalOverlay").style.display = "none";
     }
+
+    // 🌟 [추가] 누락되었던 페이징 이동 함수 완벽 삽입
+    function changePage(page) {
+        location.href = "?page=" + page;
+    }
+
 	// 전역 변수 설정: 원본 텍스트, 이전 검색어, 현재 포커스 인덱스 기록
     const originalTexts = new Map();
     let lastKeyword = "";
@@ -189,9 +195,49 @@
 	                </tr>
 	            </thead>
 	            <tbody>
-	                <% if (eqList != null && !eqList.isEmpty()) {
-	                    for (EquipmentDTO eq : eqList) { 
-	                %>
+	                <% 
+						// 🌟 [추가] 페이징 처리를 위한 변수 선언 및 연산 로직
+						int pageSize = 10; 
+						int currentPage = 1;
+						
+						String pageParam = request.getParameter("page");
+						if (pageParam != null && !pageParam.isEmpty()) {
+							try {
+								currentPage = Integer.parseInt(pageParam);
+							} catch (NumberFormatException e) {
+								currentPage = 1;
+							}
+						}
+
+						int totalCount = 0;
+						if (eqList != null) {
+							totalCount = eqList.size();
+						}
+
+						int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+						if (totalPages == 0) { totalPages = 1; }
+						if (currentPage > totalPages) { currentPage = totalPages; }
+
+						int printCount = 0;
+						int skipCount = 0;
+						int targetStartIndex = (currentPage - 1) * pageSize;
+
+						if (eqList != null && !eqList.isEmpty()) {
+							for (EquipmentDTO eq : eqList) { 
+								if (eq == null) continue;
+
+								// 현재 페이지 이전 데이터는 패스(Skip)
+								if (skipCount < targetStartIndex) {
+									skipCount++;
+									continue;
+								}
+								
+								// 화면에 10개 출력했으면 루프 종료
+								if (printCount >= pageSize) {
+									break;
+								}
+								printCount++;
+					%>
 	                <tr class="eq-row">
 	                    <td class="eq-no" style="color: #64748b; font-weight: 500;"><%= eq.getEqNo() %></td>
 	                    <td class="eq-name" style="text-align: left; padding-left: 24px; font-weight: 600; color: #1e293b;"><%= eq.getEqName() %></td>
@@ -212,6 +258,24 @@
 	            </tbody>
 	        </table>
 	    </div>
+
+		<% if (totalCount > 0) { %>
+			<div class="pagination-container" style="display: flex; justify-content: center; align-items: center; gap: 6px; margin: 25px 0 15px 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
+				<button type="button" onclick="changePage(1)" <%= currentPage == 1 ? "disabled" : "" %> style="padding: 6px 10px; border: 1px solid #e2e8f0; background-color: #ffffff; color: #64748b; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">&lt;&lt;</button>
+				<button type="button" onclick="changePage(<%= currentPage - 1 %>)" <%= currentPage == 1 ? "disabled" : "" %> style="padding: 6px 12px; border: 1px solid #e2e8f0; background-color: #ffffff; color: #64748b; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">&lt;</button>
+				
+				<% for (int p = 1; p <= totalPages; p++) { %>
+					<button type="button" onclick="changePage(<%= p %>)" 
+							style="<%= p == currentPage ? "padding: 6px 12px; border: 2px solid #6366f1; background-color: #6366f1; color: #ffffff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 13px;" : "padding: 6px 12px; border: 1px solid #cbd5e1; background-color: #ffffff; color: #334155; font-weight: normal; border-radius: 6px; cursor: pointer; font-size: 13px;" %>">
+						<%= p %>
+					</button>
+				<% } %>
+				
+				<button type="button" onclick="changePage(<%= currentPage + 1 %>)" <%= currentPage == totalPages ? "disabled" : "" %> style="padding: 6px 12px; border: 1px solid #e2e8f0; background-color: #ffffff; color: #64748b; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">&gt;</button>
+				<button type="button" onclick="changePage(<%= totalPages %>)" <%= currentPage == totalPages ? "disabled" : "" %> style="padding: 6px 10px; border: 1px solid #e2e8f0; background-color: #ffffff; color: #64748b; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">&gt;&gt;</button>
+			</div>
+		<% } %>
+
 	</div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeUpdateModal()"></div>
