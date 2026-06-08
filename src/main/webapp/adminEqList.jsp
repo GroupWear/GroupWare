@@ -197,9 +197,9 @@
 	                    <td class="eq-name" style="text-align: left; padding-left: 24px; font-weight: 600; color: #1e293b;"><%= eq.getEqName() %></td>
 	                    <td><%= eq.getTotalCount() %> EA</td>
 	                    <td>
-	                    	<strong class="<%= eq.getRemainCount() > 0 ? "status-badge status-blue" : "status-badge status-red" %>">
+	                    	<span class="<%= eq.getRemainCount() > 0 ? "status-badge status-blue" : "status-badge status-red" %>">
 	                    		<%= eq.getRemainCount() %> EA
-	                    	</strong>
+	                    	</span>
 	                    </td>
 	                    <td>
 	                        <button class="btn-action-edit" onclick="openUpdateModal('<%= eq.getEqNo() %>', '<%= eq.getEqName() %>', '<%= eq.getTotalCount() %>', '<%= eq.getRemainCount() %>')">정보 수정</button>
