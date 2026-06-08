@@ -24,6 +24,136 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/admin.css">
 </head>
 <body>
+<script type="text/javascript">
+
+	//전역 변수 설정: 스크롤 이동 상태 관리용
+	let lastKeyword = "";
+	let currentMatchIndex = -1;
+	
+	function searchAndScroll() {
+	    const searchType = document.getElementById("searchType").value;
+	    const keyword = document.getElementById("searchKeyword").value.trim();
+	    const lowerKeyword = keyword.toLowerCase();
+	
+	    if (keyword === "") {
+	        alert("검색어를 입력해주세요.");
+	        return;
+	    }
+	
+	    // 1. 새로운 키워드로 검색 시 기존 하이라이트 스타일 전부 제거 (기존 마크 태그 해제)
+	    if (lastKeyword !== lowerKeyword) {
+	        // 이전 검색 시 생성된 custom-highlight 스팬 태그를 순수 텍스트로 환원
+	        document.querySelectorAll(".custom-highlight-span").forEach(span => {
+	            const parent = span.parentNode;
+	            if (parent) {
+	                parent.replaceChild(document.createTextNode(span.textContent), span);
+	                parent.normalize(); // 쪼개진 텍스트 노드 하나로 병합
+	            }
+	        });
+	
+	        // 부서 셀 하이라이트 클래스 및 배경색 리셋
+	        document.querySelectorAll(".custom-target-highlight").forEach(td => {
+	            td.classList.remove("custom-target-highlight");
+	            td.style.backgroundColor = "";
+	        });
+	
+	        // 2. 전체 행을 돌며 조건에 맞는 데이터 매칭 및 글자 자체에 스타일 부여
+	        const rows = document.querySelectorAll(".table-wrapper tbody tr");
+	        rows.forEach((row) => {
+	            const tds = row.querySelectorAll("td");
+	            if (tds.length >= 6) {
+	                const empNoTd = tds[0];
+	                const empNameTd = tds[1];
+	                const deptTd = tds[5];
+	
+	                // [사원 번호 검색]
+	                if (searchType === "all" || searchType === "emNo") {
+	                    highlightSpecificText(empNoTd, keyword);
+	                }
+	                
+	                // [성명 검색]
+	                if (searchType === "all" || searchType === "emName") {
+	                    highlightSpecificText(empNameTd, keyword);
+	                }
+	                
+	                // [부서 검색] 내부 select 구조를 깨지 않기 위해 TD 통째로 스타일 적용
+	                if (searchType === "all" || searchType === "emDept") {
+	                    const selectEl = deptTd.querySelector("select");
+	                    let deptText = selectEl ? selectEl.options[selectEl.selectedIndex].text : deptTd.textContent.trim();
+	
+	                    if (deptText.toLowerCase().includes(lowerKeyword)) {
+	                        deptTd.classList.add("custom-target-highlight");
+	                        deptTd.style.backgroundColor = "#fef08a"; 
+	                    }
+	                }
+	            }
+	        });
+	
+	        lastKeyword = lowerKeyword;
+	        currentMatchIndex = -1; 
+	    }
+	
+	    // 3. 스크롤 이동 대상 요소들을 리스트로 수집 (.custom-highlight-span 과 .custom-target-highlight)
+	    const allTargets = document.querySelectorAll(".custom-highlight-span, .custom-target-highlight");
+	    
+	    if (allTargets.length > 0) {
+	        currentMatchIndex++;
+	        if (currentMatchIndex >= allTargets.length) {
+	            currentMatchIndex = 0; 
+	        }
+	
+	        // 4. 잡힌 타깃 위치로 화면을 부드럽게 스크롤
+	        allTargets[currentMatchIndex].scrollIntoView({
+	            behavior: "smooth",
+	            block: "center"
+	        });
+	
+	        document.getElementById("searchKeyword").select();
+	    } else {
+	        alert("일치하는 사원 또는 부서 항목을 찾을 수 없습니다.");
+	        document.getElementById("searchKeyword").focus();
+	        lastKeyword = "";
+	        currentMatchIndex = -1;
+	    }
+	}
+	
+	// 엘리먼트 내부에서 딱 '그 글자만' 찾아내어 안전하게 스타일용 SPAN을 감싸는 함수
+	function highlightSpecificText(element, keyword) {
+	    if (!element || !keyword) return;
+	
+	    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+	    const textNodes = [];
+	    while (walker.nextNode()) {
+	        textNodes.push(walker.currentNode);
+	    }
+	
+	    // 텍스트 노드 역순으로 순회하면서 키워드 매칭 영역 스팬 래핑 (JSP 컴파일 간섭 우회)
+	    textNodes.forEach(node => {
+	        const text = node.nodeValue;
+	        const lowerText = text.toLowerCase();
+	        const lowerKeyword = keyword.toLowerCase();
+	        let index = lowerText.indexOf(lowerKeyword);
+	
+	        if (index >= 0) {
+	            const range = document.createRange();
+	            range.setStart(node, index);
+	            range.setEnd(node, index + keyword.length);
+	
+	            const highlightSpan = document.createElement("span");
+	            highlightSpan.className = "custom-highlight-span";
+	            highlightSpan.style.backgroundColor = "#fef08a";
+	            highlightSpan.style.color = "#000";
+	            highlightSpan.style.fontWeight = "bold";
+	            highlightSpan.style.padding = "2px 4px";
+	            highlightSpan.style.borderRadius = "4px";
+	
+	            range.surroundContents(highlightSpan);
+	        }
+	    });
+	}
+
+
+</script>
 	<!-- 1. 상단 네비게이션 헤더 (최상단 고정 고유 레이어) -->
 <jsp:include page="header.jsp" />
     
@@ -43,6 +173,34 @@
 	    <div class="table-title-area">
         	<h2>전사 직원 관리 (마스터)</h2>
         </div>
+        <div class="search-bar-container" 
+    		 style="max-width: 1160px; width: 100%; padding: 10px 0 15px 0; margin: 0 auto; box-sizing: border-box; position: sticky; top: 65px; z-index: 99; background-color: #f4f7fa;">
+			    <div class="search-form" 
+			         style="display: flex; gap: 10px; background: #ffffff; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06); align-items: center; width: 100%; box-sizing: border-box;">
+			        
+			        <select id="searchType" class="search-select" 
+			                style="width: 130px; height: 42px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; color: #475569; outline: none; background-color: #ffffff; cursor: pointer; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
+			            <option value="all">전체 검색</option>
+			            <option value="emNo">사원번호</option>
+			            <option value="emName">이름</option>
+			            <option value="emDept">부서</option>
+			        </select>
+			        
+			        <input type="text" id="searchKeyword" class="search-input" placeholder="이동할 비품명 또는 번호 입력..." autocomplete="off" 
+			               onkeyup="if(event.key === 'Enter') searchAndScroll()"
+			               onfocus="this.style.borderColor='#6366f1'" 
+			               onblur="this.style.borderColor='#cbd5e1'"
+			               style="flex-grow: 1; height: 42px; padding: 0 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none; background-color: #ffffff; color: #334155; font-family: -apple-system, BlinkMacSystemFont, sans-serif; transition: border-color 0.15s ease;">
+			        
+			        <button type="button" class="btn-search" onclick="searchAndScroll()"
+			                onmouseover="this.style.backgroundColor='#4f46e5'" 
+			                onmouseout="this.style.backgroundColor='#6366f1'"
+			                style="height: 42px; padding: 0 24px; background-color: #6366f1; color: #ffffff; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; white-space: nowrap; font-family: -apple-system, BlinkMacSystemFont, sans-serif; transition: background-color 0.15s ease;">
+			            검색 및 이동
+			        </button>
+			        
+			    </div>
+		</div>	
 		<div class="table-wrapper">
 			<table>
 				<thead>
