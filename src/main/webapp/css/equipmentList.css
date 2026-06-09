@@ -190,3 +190,52 @@
     from { transform: scale(1); }
     to { transform: scale(1.04); }
 }
+
+/* ==========================================
+   5. 페이징 네비게이션 스타일 
+   ========================================== */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0 50px;
+}
+
+.pagination {
+    display: flex;
+    gap: 5px;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.page-link:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+    background-color: #f8fafc;
+}
+
+.page-link.active {
+    background-color: #6366f1;
+    color: #ffffff;
+    border-color: #6366f1;
+    cursor: default;
+}
+
+.page-link.active:hover {
+    background-color: #6366f1;
+    color: #ffffff;
+}
