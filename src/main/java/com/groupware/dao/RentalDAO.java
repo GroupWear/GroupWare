@@ -110,6 +110,70 @@ public class RentalDAO {
         return list;
     }
 
+    /**
+     * 전체 비품 대여 기안 개수 조회
+     */
+    public int getTotalRentalCount() {
+        int count = 0;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String sql = "SELECT COUNT(*) FROM RENTAL_HISTORY";
+        try {
+            conn = DBConnection.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResource(conn, pstmt, rs);
+        }
+        return count;
+    }
+
+    /**
+     * 페이징 처리가 된 전체 비품 대여 기안 목록 조회
+     */
+    public List<RentalHistoryDTO> getAllDocumentListPaging(int startRow, int endRow) {
+        List<RentalHistoryDTO> list = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM ("
+                   + "  SELECT ROWNUM AS RN, A.* FROM ("
+                   + "    SELECT h.RENTAL_NO, h.TITLE, h.REASON, h.EMP_NO, h.EQ_NO, h.RENTAL_DATE, h.RETURN_DATE, "
+                   + "    CASE WHEN h.STATUS = '대여중' AND h.RETURN_DATE < TRUNC(SYSDATE) THEN '미반납' ELSE h.STATUS END AS STATUS, "
+                   + "    h.APPROVAL_STEP, h.SIGN1, h.SIGN1_DATE, h.SIGN2, h.SIGN2_DATE, h.SIGN3, h.SIGN3_DATE, "
+                   + "    h.SIGN4, h.SIGN4_DATE, h.SIGN5, h.SIGN5_DATE, h.REQ_COUNT, "
+                   + "    e.EMP_NAME, e.EMP_LEVEL, eq.EQ_NAME, eq.TOTAL_COUNT, eq.REMAIN_COUNT "
+                   + "    FROM RENTAL_HISTORY h "
+                   + "    LEFT JOIN EMPLOYEE e ON h.EMP_NO = e.EMP_NO "
+                   + "    LEFT JOIN EQUIPMENT eq ON h.EQ_NO = eq.EQ_NO "
+                   + "    ORDER BY h.RENTAL_NO DESC"
+                   + "  ) A"
+                   + ") WHERE RN BETWEEN ? AND ?";
+
+        try {
+            conn = DBConnection.getConnection();
+            if (conn != null) {
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, startRow);
+                pstmt.setInt(2, endRow);
+                rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    RentalHistoryDTO dto = mapResultSetToDTO(rs, true);
+                    list.add(dto);
+                }
+            }
+        } catch (Exception e) { e.printStackTrace(); } 
+        finally { closeResource(conn, pstmt, rs); }
+        return list;
+    }
+
     public RentalHistoryDTO getDocumentDetail(int rentalNo) {
         RentalHistoryDTO dto = null;
         Connection conn = null;

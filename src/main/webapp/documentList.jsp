@@ -26,7 +26,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>사내 시스템 - 기안 문서함</title>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css?v=1.6">
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/documentList.css?v=1.1">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/documentList.css?v=1.2">
 </head>
 <body>
 
@@ -125,6 +125,30 @@
 				    </tbody>
 				</table>
             </div>
+            
+            <%-- 휴가 신청 기안 페이징 추가 --%>
+            <%
+                Integer leaveCurrentPage = (Integer) request.getAttribute("leaveCurrentPage");
+                Integer leaveTotalPages = (Integer) request.getAttribute("leaveTotalPages");
+                Integer leaveStartPage = (Integer) request.getAttribute("leaveStartPage");
+                Integer leaveEndPage = (Integer) request.getAttribute("leaveEndPage");
+                
+                if (leaveTotalPages != null && leaveTotalPages > 1) {
+            %>
+            <div class="pagination-container" style="text-align: center; margin-top: 20px;">
+                <div class="pagination">
+                    <% if (leaveStartPage > 1) { %>
+                        <a href="documentList.do?tab=leave&leavePage=<%= leaveStartPage - 1 %>&eqPage=${eqCurrentPage}" class="page-link">&laquo; 이전</a>
+                    <% } %>
+                    <% for (int i = leaveStartPage; i <= leaveEndPage; i++) { %>
+                        <a href="documentList.do?tab=leave&leavePage=<%= i %>&eqPage=${eqCurrentPage}" class="page-link <%= (i == leaveCurrentPage) ? "active" : "" %>"><%= i %></a>
+                    <% } %>
+                    <% if (leaveEndPage < leaveTotalPages) { %>
+                        <a href="documentList.do?tab=leave&leavePage=<%= leaveEndPage + 1 %>&eqPage=${eqCurrentPage}" class="page-link">다음 &raquo;</a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
         </div>
 
         <%-- 탭 2: 비품 대여 신청 기안 콘텐츠 --%>
@@ -250,6 +274,30 @@
                     </tbody>
                 </table>
             </div>
+
+            <%-- 비품 대여 기안 페이징 추가 --%>
+            <%
+                Integer eqCurrentPage = (Integer) request.getAttribute("eqCurrentPage");
+                Integer eqTotalPages = (Integer) request.getAttribute("eqTotalPages");
+                Integer eqStartPage = (Integer) request.getAttribute("eqStartPage");
+                Integer eqEndPage = (Integer) request.getAttribute("eqEndPage");
+                
+                if (eqTotalPages != null && eqTotalPages > 1) {
+            %>
+            <div class="pagination-container" style="text-align: center; margin-top: 20px;">
+                <div class="pagination">
+                    <% if (eqStartPage > 1) { %>
+                        <a href="documentList.do?tab=equipment&eqPage=<%= eqStartPage - 1 %>&leavePage=${leaveCurrentPage}" class="page-link">&laquo; 이전</a>
+                    <% } %>
+                    <% for (int i = eqStartPage; i <= eqEndPage; i++) { %>
+                        <a href="documentList.do?tab=equipment&eqPage=<%= i %>&leavePage=${leaveCurrentPage}" class="page-link <%= (i == eqCurrentPage) ? "active" : "" %>"><%= i %></a>
+                    <% } %>
+                    <% if (eqEndPage < eqTotalPages) { %>
+                        <a href="documentList.do?tab=equipment&eqPage=<%= eqEndPage + 1 %>&leavePage=${leaveCurrentPage}" class="page-link">다음 &raquo;</a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
         </div>
     </div>
         
