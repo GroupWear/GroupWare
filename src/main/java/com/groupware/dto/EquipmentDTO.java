@@ -15,4 +15,7 @@ public class EquipmentDTO {
     private String eqName;     // 비품 명칭
     private int totalCount;    // 전체 보유 수량
     private int remainCount;   // 현재 대여 가능한 수량
+    
+    //20260608 lhs
+    private char ischecked;//20260608 데이터 유무 체크
 }
