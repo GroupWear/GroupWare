@@ -6,6 +6,17 @@ dashboard.no.data=내역이 없습니다.
 dashboard.btn.prev=이전
 dashboard.btn.next=다음
 
+# 상태값 다국어 매핑
+status.res.complete=예약완료
+status.res.finished=이용 종료
+status.res.canceled=취소됨
+status.rental.renting=대여중
+status.rental.notreturned=미반납
+status.rental.wait=승인대기
+status.leave.complete=승인완료
+status.leave.rejected=반려됨
+default.status=상태없음
+
 # header.jsp 용 키값
 user.suffix=님
 nav.office.reservation=오피스 예약

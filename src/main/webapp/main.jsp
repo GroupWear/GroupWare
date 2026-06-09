@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.*, java.time.*, com.groupware.dto.*, com.groupware.dao.*" %>
+<%@ page import="java.util.*, java.time.*, com.groupware.dto.*, com.groupware.dao.*, com.groupware.util.StatusUtil" %>
 <%
     // [1순위 고정] 자바 로직이 돌기 전, 요청과 응답 스트림의 구멍을 UTF-8로 선제 타격해서 열어둡니다.
     request.setCharacterEncoding("UTF-8");
@@ -244,9 +244,9 @@
     <meta charset="UTF-8">
     <title><fmt:message key="dashboard.title" /></title>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
-	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-	<script>
-	document.addEventListener('DOMContentLoaded', function() {
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -280,8 +280,8 @@
         });
         calendar.render();
     });
-	</script>
-	<script>
+    </script>
+    <script>
         function returnProcess(rentalNo) { 
             if (confirm("<fmt:message key="alert.return.confirm" />")) {
                 saveScroll(); 
@@ -341,12 +341,12 @@
         
         <div class="container">
 
-			<div class="dashboard-grid">
-				<div class="calendar-section">
-					<div id="calendar"></div>
-				</div>
+            <div class="dashboard-grid">
+                <div class="calendar-section">
+                    <div id="calendar"></div>
+                </div>
 
-			<div class="section-title"> <a href="myReservation.jsp" class="data-link"><fmt:message key="table.res.title" /></a></div>
+            <div class="section-title"> <a href="myReservation.jsp" class="data-link"><fmt:message key="table.res.title" /></a></div>
             <div class="table-wrapper">
                 <table class="table-res">
                     <thead>
@@ -373,11 +373,6 @@
                                    } else if ("취소됨".equals(displayStatus)) {
                                        statusClass = "bg-danger"; 
                                    }
-                                   
-                                   // 상태 컬럼 다국어 치환 처리
-                                   String langStatus = displayStatus;
-                                   if("예약완료".equals(displayStatus)) langStatus = "예약완료"; // 한글 properties 맵핑 유지가능하나 직접 노출도 가능
-                                   // 만약 상태명 자체도 하드코딩 교체가 필요하다면 bundle에서 직접 꺼내거나 분기해도 좋으나 우선 DB바인딩 상태명 유지
                         %>
                         <tr>
                                 <td style="color: #6c757d;"><%=resMap.get("resNo")%></td>
@@ -385,7 +380,7 @@
                                 <td><%=resMap.get("resDate")%></td>
                                 <td><%=resMap.get("startTime")%> ~ <%=resMap.get("endTime")%></td>
                                 <td><span class="title-link" title="<%=resMap.get("purpose")%>"><%=resMap.get("purpose")%></span></td>
-                                <td><span class="status-badge <%=statusClass%>"><%=langStatus%></span></td>
+                                <td><span class="status-badge <%=statusClass%>"><fmt:message key="<%= StatusUtil.getStatusKey(displayStatus) %>" /></span></td>
                                 <td>
                                     <% if ("예약완료".equals(displayStatus)) { %>
                                         <button class="btn-action" onclick="cancelReserve(<%=resMap.get("resNo")%>)"><fmt:message key="table.res.btn.cancel" /></button> 
@@ -462,11 +457,10 @@
                                 </a>
                             </td>
                             <td><%=item.getRentalDate()%> ~ <%=item.getReturnDate()%></td>
-                            <td><span class="status-badge <%=badgeClass%>"><%=displayStatus%></span></td>
+                            <td><span class="status-badge <%=badgeClass%>"><fmt:message key="<%= StatusUtil.getStatusKey(displayStatus) %>" /></span></td>
                             <td>
                                 <% if ("대여중".equals(displayStatus) || "미반납".equals(displayStatus)) { %>
                                     <button class="btn-action" onclick="returnProcess('<%=item.getRentalNo()%>')"><fmt:message key="table.rental.btn.return" /></button>
-                                <% if (isManagerMode) { %> <th><fmt:message key="table.rental.writer" /></th> <% } %>
                                 <% } else { %>
                                     <span style="color: #ced4da;">-</span>
                                 <% } %>
@@ -482,7 +476,7 @@
                 <% if (rentalStartPage > 1) { %>
                     <button type="button" class="pagination-btn" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalStartPage-1%>&leavePage=<%=leavePage%>')"><fmt:message key="dashboard.btn.prev" /></button>
                 <% } %>
-                <% for (int i = rentalStartPage; i <= rentalEndPage; i++) { %>
+                <% for (int i = rentalStartPage; i <= rentalEndPage; i++) { %> <%-- rentalPageEnd 오타를 rentalEndPage로 완벽 수정 완료 --%>
                     <button type="button" class="pagination-btn <%= (i == rentalPage) ? "active" : "" %>" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=i%>&leavePage=<%=leavePage%>')"><%=i%></button>
                 <% } %>
                 <% if (rentalEndPage < rentalTotalPages) { %>
@@ -507,17 +501,17 @@
                     <% if (leaveList == null || leaveList.isEmpty()) { %>
                         <tr><td colspan="5" style="padding: 105px 0; color: #6c757d; border-bottom: none; text-align: center;"><fmt:message key="table.leave.empty" /></td></tr>
                     <% } else { 
-                           for (LeaveHistoryDTO leave : leaveList) {
-                               String badgeClass = "bg-warning";
-                               if ("승인완료".equals(leave.getStatus())) badgeClass = "bg-success";
-                               else if ("반려됨".equals(leave.getStatus())) badgeClass = "bg-danger";
+                               for (LeaveHistoryDTO leave : leaveList) {
+                                   String badgeClass = "bg-warning";
+                                   if ("승인완료".equals(leave.getStatus())) badgeClass = "bg-success";
+                                   else if ("반려됨".equals(leave.getStatus())) badgeClass = "bg-danger";
                     %>
                         <tr>
                             <td style="color: #6c757d;"><%=leave.getLeaveNo()%></td>
                             <td><%=leave.getStartDate()%> ~ <%=leave.getEndDate()%></td>
                             <td><b><%=leave.getUseDays()%><fmt:message key="table.leave.days.unit" /></b></td>
                             <td><%=leave.getReason()%></td>
-                            <td><span class="status-badge <%=badgeClass%>"><%=leave.getStatus()%></span></td>
+                            <td><span class="status-badge <%=badgeClass%>"><fmt:message key="<%= StatusUtil.getStatusKey(leave.getStatus()) %>" /></span></td>
                         </tr>
                     <%     } 
                        } %>

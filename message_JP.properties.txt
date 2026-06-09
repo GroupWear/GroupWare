@@ -6,6 +6,17 @@ dashboard.no.data=履歴がありません。
 dashboard.btn.prev=以前
 dashboard.btn.next=次へ
 
+# 状態値の多言語マッピング (상태값 다국어 매핑)
+status.res.complete=予約完了
+status.res.finished=利用終了
+status.res.canceled=キャンセル済
+status.rental.renting=貸出中
+status.rental.notreturned=未返却
+status.rental.wait=承認待ち
+status.leave.complete=承認完了
+status.leave.rejected=却下
+default.status=状態なし
+
 # header.jsp 용 일본어 키값
 user.suffix=さん
 nav.office.reservation=オフィス予約
