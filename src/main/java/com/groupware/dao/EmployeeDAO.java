@@ -143,7 +143,7 @@ public class EmployeeDAO {
 	                // ★ 추가된 필드 세팅
 	                dto.setEmpPw(rs.getString("emp_pw"));
 	                
-	                System.out.println(sql);
+	                //System.out.println(sql);
 //	                System.out.println(dto.getEmpPw()+": Test");
 	            }
 	        }
