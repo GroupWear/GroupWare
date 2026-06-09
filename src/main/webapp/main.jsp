@@ -44,8 +44,8 @@
      * [Step 3] 비즈니스 데이터 연산 및 페이지 조각화 (SubList 처리)
      * ========================================================================= */
     
-    	// 3-1. 회의실 예약 현황 데이터 수집 및 정렬/페이징
-ReservationDAO resDao = new ReservationDAO();
+    // 3-1. 회의실 예약 현황 데이터 수집 및 정렬/페이징
+	ReservationDAO resDao = new ReservationDAO();
     List<ReservationDTO> rawReserveList = resDao.getMyReservations(currentEmpNo); 
     List<Map<String, Object>> fullReserveList = new ArrayList<>();
 
@@ -226,7 +226,8 @@ ReservationDAO resDao = new ReservationDAO();
     int leaveEndIdx = Math.min(leaveStartIdx + RECORDS_PER_PAGE, leaveTotalCount);
     
     // 최종 화면에 출력될 5개의 정렬된 휴가 행
-    List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leaveTotalCount) ? fullLeaveList.subList(leaveStartIdx, leaveEndIdx) : null;%>
+    List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leaveTotalCount) ? fullLeaveList.subList(leaveStartIdx, leaveEndIdx) : null;
+%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>

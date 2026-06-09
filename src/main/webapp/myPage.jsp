@@ -22,27 +22,23 @@
     /* =========================================================================
      * [Step 2] 삼분할 다중 페이징 규격 변수 세팅 (Pagination Config)
      * ========================================================================= */
-    		 final int RECORDS_PER_PAGE = 5; 
-     final int PAGES_PER_BLOCK = 5;  
-  	// 현재 요청된 페이지 파라미터 받기 (기본값 1)
-     int resPage = 1;
-     String resPageParam = request.getParameter("resPage");
-     if (resPageParam != null && !resPageParam.isEmpty()) resPage = Integer.parseInt(resPageParam);
+    final int RECORDS_PER_PAGE = 5; 
+    final int PAGES_PER_BLOCK = 5;  
+	// 현재 요청된 페이지 파라미터 받기 (기본값 1)
+    int resPage = 1;
+    String resPageParam = request.getParameter("resPage");
+    if (resPageParam != null && !resPageParam.isEmpty()) resPage = Integer.parseInt(resPageParam);
 
-     int rentalPage = 1;
-     String rentalPageParam = request.getParameter("rentalPage");
-     if (rentalPageParam != null && !rentalPageParam.isEmpty()) rentalPage = Integer.parseInt(rentalPageParam);
+    int rentalPage = 1;
+    String rentalPageParam = request.getParameter("rentalPage");
+    if (rentalPageParam != null && !rentalPageParam.isEmpty()) rentalPage = Integer.parseInt(rentalPageParam);
 
-     int leavePage = 1;
-     String leavePageParam = request.getParameter("leavePage");
-     if (leavePageParam != null && !leavePageParam.isEmpty()) leavePage = Integer.parseInt(leavePageParam);
+    int leavePage = 1;
+    String leavePageParam = request.getParameter("leavePage");
+    if (leavePageParam != null && !leavePageParam.isEmpty()) leavePage = Integer.parseInt(leavePageParam);
 
-     /* =========================================================================
-      * [Step 3] 비즈니스 데이터 연산 및 페이지 조각화 (SubList 처리)
-      * ========================================================================= */
-     
-     	// 3-1. 회의실 예약 현황 데이터 수집 및 정렬/페이징
- ReservationDAO resDao = new ReservationDAO();
+ // 3-1. 회의실 예약 현황 데이터 수집 및 정렬/페이징
+ 	ReservationDAO resDao = new ReservationDAO();
      List<ReservationDTO> rawReserveList = resDao.getMyReservations(currentEmpNo); 
      List<Map<String, Object>> fullReserveList = new ArrayList<>();
 
@@ -175,14 +171,14 @@
     
     // 최종 화면에 출력될 5개의 정렬된 대여 행
     List<RentalHistoryDTO> rentalList = (rentalStartIdx < rentalTotalCount) ? filteredRentalList.subList(rentalStartIdx, rentalEndIdx) : null;  
-
- 	// =========================================================================
+    		
+    // =========================================================================
     // 3-3. 내 휴가 신청 데이터 수집 및 상태별 우선순위 정렬
     // =========================================================================
     LeaveDAO leaveDao = new LeaveDAO();
     List<LeaveHistoryDTO> fullLeaveList = leaveDao.getMyLeaveList(currentEmpNo); 
     
-    // 🔥 [핵심 추가] 휴가 신청 상태별 우선순위 정렬 로직
+    // 휴가 신청 상태별 우선순위 (승인대기 = 0점, 승인완료 = 1점, 반려됨 = 2점)
     if (fullLeaveList != null && !fullLeaveList.isEmpty()) {
         Collections.sort(fullLeaveList, new Comparator<LeaveHistoryDTO>() {
             @Override
@@ -192,12 +188,12 @@
                 
                 // 상태별 우선순위 점수 매기기 (낮을수록 상단 노출)
                 int p1 = 2; // 기본값 (반려됨 등)
-                if ("승인완료".equals(s1)) p1 = 0;
-                else if ("승인대기".equals(s1)) p1 = 1;
+                if ("승인대기".equals(s1)) p1 = 0;
+                else if ("승인완료".equals(s1)) p1 = 1;
                 
                 int p2 = 2;
-                if ("승인완료".equals(s2)) p2 = 0;
-                else if ("승인대기".equals(s2)) p2 = 1;
+                if ("승인대기".equals(s2)) p2 = 0;
+                else if ("승인완료".equals(s2)) p2 = 1;
                 
                 if (p1 != p2) {
                     return Integer.compare(p1, p2); // 1우선순위: 상태 점수 비교
@@ -223,49 +219,65 @@
     int leaveEndIdx = Math.min(leaveStartIdx + RECORDS_PER_PAGE, leaveTotalCount);
     
     // 최종 화면에 출력될 5개의 정렬된 휴가 행
-    List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leaveTotalCount) ? fullLeaveList.subList(leaveStartIdx, leaveEndIdx) : null;%>
+    List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leaveTotalCount) ? fullLeaveList.subList(leaveStartIdx, leaveEndIdx) : null;
+%>
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Groupware Main Dashboard</title>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
-	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            headerToolbar: { left: 'prev,next', center: 'title', right: '' },
-            height: 'auto',
-            dayMaxEvents: 2, 
-            events: [
-                <% if (fullReserveList != null) {
-                    boolean isFirst = true;
-                    for (Map<String, Object> map : fullReserveList) {
-                        if (!"취소됨".equals(map.get("status"))) {
-                            if (!isFirst) { out.print(","); } isFirst = false;
-                %>
-                {
-                    title: '[<%=map.get("roomId")%>호]\n<%=map.get("startTime")%> ~ <%=map.get("endTime")%>',
-                    start: '<%=map.get("resDate")%>',
-                    extendedProps: {
-                        purpose: '<%=((String)map.get("purpose")).replace("'", "\\'")%>'
+<meta charset="UTF-8">
+<title>사내 시스템 - 마이페이지</title>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/myPage.css">
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script>
+    	document.addEventListener('DOMContentLoaded', function() {
+        	var calendarEl = document.getElementById('calendar');
+        	var calendar = new FullCalendar.Calendar(calendarEl, {
+            	initialView: 'dayGridMonth',
+            	headerToolbar: { left: 'prev,next', center: 'title', right: '' },
+            	height: 'auto',
+            	dayMaxEvents: 2, // 이벤트가 많을 경우 '더보기'로 처리하여 깔끔하게 유지
+            	events: [
+                    // 1. 비품 대여 내역 추가 (filteredRentalList 활용)
+                    <% if (filteredRentalList != null) {
+                        for (RentalHistoryDTO rDto : filteredRentalList) {
+                    %>
+                    {
+                        title: '[비품] <%=rDto.getTitle()%>',
+                        start: '<%=rDto.getRentalDate()%>',
+                        backgroundColor: '#1cc88a', // 초록색
+                        borderColor: '#1cc88a',
+                        extendedProps: { 
+                                url: 'rentalDetail.do?rentalNo=<%=rDto.getRentalNo()%>' 
+                            }
                     },
-                    backgroundColor: '#4e73df', 
-                    borderColor: '#4e73df'
+                    <% } } %>
+
+                    // 2. 휴가 내역 추가 (leaveList 활용)
+                    <% if (leaveList != null) {
+                        for (LeaveHistoryDTO lDto : leaveList) {
+                    %>
+                    {
+                        title: '[휴가] <%=lDto.getReason()%>',
+                        start: '<%=lDto.getStartDate()%>',
+                        end: '<%=lDto.getEndDate()%>', // 기간이 있다면 자동으로 범위 표시
+                        backgroundColor: '#e74a3b', // 빨간색
+                        borderColor: '#e74a3b',
+                        extendedProps: { 
+                            url: 'leaveDetail.do?leaveNo=<%=lDto.getLeaveNo()%>' 
+                        }
+                    },
+                    <% } } %>
+                ],
+            	// 캘린더 일정 클릭 시 기존 상세페이지로 이동
+            	eventClick: function(info) {
+                    // 수정된 extendedProps에서 url을 가져옵니다.
+                    if (info.event.extendedProps && info.event.extendedProps.url) {
+                        location.href = info.event.extendedProps.url;
+                    }
                 }
-                <%      } 
-                    } 
-                } %>
-            ],
-            eventClick: function(info) {
-                alert("▶ 회의실 정보\n" + info.event.title.replace('\n', ' ') + "\n\n" +
-                      "▶ 예약 목적\n" + info.event.extendedProps.purpose);
-            }
-        });
-        calendar.render();
-    });
+        	});
+        	calendar.render();
+    	});
 	</script>
 <script>
     function returnProcess(rentalNo) { 
