@@ -261,7 +261,7 @@
                             if (!isFirst) { out.print(","); } isFirst = false;
                 %>
                 {
-                    title: '[<%=map.get("roomId")%>호]\n<%=map.get("startTime")%> ~ <%=map.get("endTime")%>',
+                    title: '[<%=map.get("roomId")%>号室]\n<%=map.get("startTime")%> ~ <%=map.get("endTime")%>',
                     start: '<%=map.get("resDate")%>',
                     extendedProps: {
                         purpose: '<%=((String)map.get("purpose")).replace("'", "\\'")%>'
@@ -376,7 +376,7 @@
                         %>
                         <tr>
                                 <td style="color: #6c757d;"><%=resMap.get("resNo")%></td>
-                                <td style="font-weight: 600; color: #343a40;"><%=resMap.get("roomId")%>호</td>
+                                <td style="font-weight: 600; color: #343a40;"><%=resMap.get("roomId")%>号室</td>
                                 <td><%=resMap.get("resDate")%></td>
                                 <td><%=resMap.get("startTime")%> ~ <%=resMap.get("endTime")%></td>
                                 <td><span class="title-link" title="<%=resMap.get("purpose")%>"><%=resMap.get("purpose")%></span></td>

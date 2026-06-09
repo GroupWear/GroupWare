@@ -16,15 +16,15 @@ if (roomInfo == null) {
 }
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>사내 시스템 - 회의실 예약 신청</title>
+<title>社内システム - 会議室予約申請</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reserve.css">
 
 <script>
-    let timerInterval = null; 
+    let timerInterval = null;
     let selectedTimes = [];
 
     function isContinuous(times) {
@@ -38,17 +38,16 @@ if (roomInfo == null) {
     }
 
     function startTimer(startStr, endStr) {
-        let timeLeft = 300; 
+        let timeLeft = 300;
         const timerBox = document.getElementById("timerBox");
         const timeDisplay = document.getElementById("timeDisplay");
         const submitBtn = document.getElementById("submitBtn");
         const holdBtn = document.getElementById("holdBtn");
         const holdTimeText = document.getElementById("holdTimeText");
-
         holdTimeText.innerText = "[" + startStr + " ~ " + endStr + "]";
 
         timerBox.style.display = "block"; 
-        submitBtn.disabled = false; 
+        submitBtn.disabled = false;
         holdBtn.style.display = "none"; 
 
         document.querySelectorAll('.time-btn').forEach(btn => btn.disabled = true);
@@ -61,8 +60,9 @@ if (roomInfo == null) {
             timeDisplay.textContent = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 
             if (timeLeft <= 0) {
+ 
                 clearInterval(timerInterval);
-                alert("예약 대기 시간이 만료되었습니다. 다시 진행해 주세요.");
+                alert("予約の有効期限が切れました。最初からやり直してください。");
                 location.reload(); 
             }
         }, 1000);
@@ -77,6 +77,7 @@ if (roomInfo == null) {
         const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
         resDateInput.setAttribute("min", todayStr);
         
+ 
         timeButtons.forEach(btn => {
             btn.addEventListener('click', function() {
                 if(this.disabled) return;
@@ -84,9 +85,10 @@ if (roomInfo == null) {
 
                 if (this.classList.contains('active')) {
                     this.classList.remove('active');
+   
                     selectedTimes = selectedTimes.filter(t => t !== timeStr);
                     if (!isContinuous(selectedTimes)) {
-                        alert("연속된 시간만 선택 가능합니다.");
+                        alert("連続した時間のみ選択可能です。");
                         this.classList.add('active');
                         selectedTimes.push(timeStr);
                         selectedTimes.sort();
@@ -95,7 +97,7 @@ if (roomInfo == null) {
                     selectedTimes.push(timeStr);
                     selectedTimes.sort();
                     if (!isContinuous(selectedTimes)) {
-                        alert("연속된 시간만 선택 가능합니다.");
+                        alert("連続した時間のみ選択可能です。");
                         selectedTimes = selectedTimes.filter(t => t !== timeStr);
                     } else {
                         this.classList.add('active');
@@ -107,13 +109,13 @@ if (roomInfo == null) {
         holdBtn.addEventListener('click', function() {
             <% boolean isRoomEnableJs = "Y".equals(roomInfo.getEnable()); %>
             <% if (!isRoomEnableJs) { %>
-                alert("현재 점검 중으로 예약이 불가능한 회의실입니다.");
+                alert("現在メンテナンス中のため、予約できない会議室です。");
                 return;
             <% } %>
 
             const selectedDate = resDateInput.value;
-            if(!selectedDate) { alert("예약 일자를 먼저 선택해 주세요."); return; }
-            if(selectedTimes.length === 0) { alert("예약할 시간을 선택해 주세요."); return; }
+            if(!selectedDate) { alert("先に予約日を選択してください。"); return; }
+            if(selectedTimes.length === 0) { alert("予約する時間を選択してください。"); return; }
 
             const startTime = selectedTimes[0];
             let lastHour = parseInt(selectedTimes[selectedTimes.length - 1].split(':')[0]);
@@ -140,7 +142,8 @@ if (roomInfo == null) {
                     document.getElementById('resNo').value = data.resNo;
                     startTimer(startTime, endTimeStr);
                 } else {
-                    alert("선택하신 시간에 이미 등록된 예약이 존재합니다. 새로고침 후 다시 시도해 주세요.");
+                   
+                    alert("ご希望の時間帯に、すでに他の予約が登録されています。ページを更新してもう一度お試しください。");
                     location.reload();
                 }
             })
@@ -152,21 +155,21 @@ if (roomInfo == null) {
             if (!selectedDate) return;
             
             if (selectedDate < todayStr) {
-                alert("과거 날짜는 예약할 수 없습니다.");
+                alert("過去の日付は予約できません。");
                 this.value = "";
-                return;
+                 return;
             }
             
             const roomId = document.getElementById("roomId").value;
 
             fetch('checkReservedTime.do?roomId=' + roomId + '&resDate=' + selectedDate)
                 .then(response => response.json())
-                .then(reservedTimes => {
+                 .then(reservedTimes => {
                     selectedTimes = []; 
                     timeButtons.forEach(btn => { btn.disabled = false; btn.classList.remove('active'); });
                     
                     clearInterval(timerInterval);
-                    document.getElementById("timerBox").style.display = "none";
+                     document.getElementById("timerBox").style.display = "none";
                     document.getElementById("submitBtn").disabled = true;
                     document.getElementById("holdBtn").style.display = "block";
                     document.getElementById("resNo").value = "";
@@ -174,17 +177,16 @@ if (roomInfo == null) {
                     const now = new Date();
                     const isToday = (selectedDate === todayStr); 
                     const currentHour = now.getHours();
-
                     timeButtons.forEach(btn => {
                         const btnTime = btn.getAttribute('data-time');
                         const btnHour = parseInt(btnTime.split(':')[0]);
 
                         if (reservedTimes.includes(btnTime)) {
-                            btn.disabled = true;
+                             btn.disabled = true;
                         }
                         else if (isToday && btnHour <= currentHour) {
                             btn.disabled = true;
-                        }
+                         }
                     });
                 })
                 .catch(error => console.error('Error:', error));
@@ -192,9 +194,9 @@ if (roomInfo == null) {
     });
 
     function validateForm() {
-        if (!document.getElementById("resNo").value) { alert("예약 시간을 먼저 지정해 주세요."); return false; }
-        if (!document.getElementById("purpose").value.trim()) { alert("사용 목적을 기재해 주세요."); return false; }
-        return confirm("입력하신 내용으로 회의실 예약을 확정하시겠습니까?");
+        if (!document.getElementById("resNo").value) { alert("先に予約時間を指定してください。"); return false; }
+        if (!document.getElementById("purpose").value.trim()) { alert("使用目的を入力してください。"); return false; }
+        return confirm("入力された内容で会議室の予約を確定しますか？");
     }
 </script>
 </head>
@@ -204,14 +206,14 @@ if (roomInfo == null) {
 
 <div class="form-container">
     <h2>
-        📋 회의실 예약 신청
+        📋 会議室予約申請
         <% if ("Y".equals(loginEmp.getManager())) { %>
             <button type="button" class="btn-modify"
                 onclick="location.href='roomUpdate.do?roomId=<%=roomInfo.getRoomId()%>'">
-                정보 수정
+                情報修正
             </button>
         <% } %>
-    </h2>
+     </h2>
 
     <% boolean isRoomEnable = "Y".equals(roomInfo.getEnable()); %>
 
@@ -219,21 +221,22 @@ if (roomInfo == null) {
         <h3>
             <%=roomInfo.getRoomName()%>
             <% if (isRoomEnable) { %>
-                <span class="status-badge bg-success" style="margin-left: 10px;">예약 가능</span>
+                <span class="status-badge bg-success" style="margin-left: 10px;">予約可能</span>
             <% } else { %>
-                <span class="status-badge bg-danger" style="margin-left: 10px;">점검 중 (예약 불가)</span>
+                <span class="status-badge bg-danger" style="margin-left: 10px;">メンテナンス中 (予約不可)</span>
             <% } %>
         </h3>
         <p>
-            <strong>수용 인원:</strong> <%=roomInfo.getCapacity()%>명 | 
-            <strong>빔프로젝터:</strong> <%= "Y".equals(roomInfo.getHasBeam()) ? "있음" : "없음" %>
+            <strong>収容人数:</strong> <%=roomInfo.getCapacity()%>名 |
+            <strong>プロジェクター:</strong> <%= "Y".equals(roomInfo.getHasBeam()) ? "あり" : "なし" %>
         </p>
         <p><%=roomInfo.getDescription()%></p>
     </div>
 
     <div class="timer-box" id="timerBox">
         <span id="holdTimeText" style="font-weight: 800; font-size: 15px;"></span><br>
-        해당 시간대 확보 완료. 남은 시간 내에 확정해 주세요. 
+        対象の時間帯を仮押さえしました。
+        制限時間内に確定してください。 
         <span class="timer-text" id="timeDisplay">05:00</span>
     </div>
 
@@ -243,12 +246,12 @@ if (roomInfo == null) {
         <input type="hidden" id="empNo" name="empNo" value="<%=loginEmp.getEmpNo()%>">
 
         <div class="form-group">
-            <label for="resDate">예약 일자</label> 
+            <label for="resDate">予約日</label> 
             <input type="date" id="resDate" name="resDate" class="form-control" required>
-        </div>
+         </div>
 
         <div class="form-group">
-            <label>예약 시간 선택</label>
+            <label>予約時間の選択</label>
             <div class="time-grid" id="timeGrid">
                 <% String disabledAttr = isRoomEnable ? "" : "disabled"; %>
                 <button type="button" class="time-btn" data-time="09:00" <%=disabledAttr%>>09:00</button>
@@ -265,19 +268,19 @@ if (roomInfo == null) {
 
             <button type="button" class="btn btn-hold" id="holdBtn" <%=disabledAttr%> 
                 <% if (!isRoomEnable) { %> style="background-color: #cbd5e1; cursor: not-allowed;" <% } %>>
-                선택 시간 확보
+                選択した時間を確保
             </button>
         </div>
 
         <div class="form-group">
-            <label for="purpose">사용 목적</label> 
+            <label for="purpose">使用目的</label> 
             <input type="text" id="purpose" name="purpose" class="form-control" 
-                   placeholder="예: 주간 부서 회의" required>
+                    placeholder="例：週次部門会議" required>
         </div>
 
         <div class="btn-area">
-            <button type="submit" class="btn btn-submit" id="submitBtn" disabled>예약 확정</button>
-            <a href="main.jsp" class="btn btn-cancel">취소</a>
+            <button type="submit" class="btn btn-submit" id="submitBtn" disabled>予約確定</button>
+            <a href="main.jsp" class="btn btn-cancel">キャンセル</a>
         </div>
     </form>
 </div>

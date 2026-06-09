@@ -41,11 +41,11 @@ public class ReserveProcessController extends HttpServlet {
             boolean isSuccess = dao.confirmReservation(resNo, purpose);
 
             if (isSuccess) {
-                out.println("alert('회의실 예약이 성공적으로 확정되었습니다.');");
+                out.println("alert('会議室の予約が正常に確定しました。');");
                 // 마이페이지로 이동
                 out.println("location.href='myPage.do';"); 
             } else {
-                out.println("alert('예약 확정 시간이 초과되었거나 이미 취소된 예약입니다. 다시 선택해 주세요.');");
+                out.println("alert('予約確定時間が超過したか、すでにキャンセルされた予約です。 もう一度選択してください。');");
                 // 다시 해당 회의실 예약 첫 화면으로 튕겨냅니다.
                 out.println("location.href='reserve.do?roomId=" + roomId + "';");
             }

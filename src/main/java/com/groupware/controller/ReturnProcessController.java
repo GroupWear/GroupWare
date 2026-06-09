@@ -71,7 +71,7 @@ public class ReturnProcessController extends HttpServlet {
             response.setContentType("text/html; charset=UTF-8");
             PrintWriter out = response.getWriter();
             out.println("<script>");
-            out.println("alert('반납을 완료했습니다.');");
+            out.println("alert('返却が完了しました。');");
             out.println("location.href='main.jsp';");
             out.println("</script>");
             out.flush();

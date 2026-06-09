@@ -15,11 +15,11 @@
     }
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>사내 시스템 - 회의실 정보 수정</title>
+<title>社内システム - 会議室情報修正</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/roomUpdate.css">
 </head>
 <body>
@@ -27,52 +27,52 @@
 <jsp:include page="header.jsp" />
 
 <div class="form-container">
-    <h2>📋 회의실 정보 수정</h2>
+    <h2>📋 会議室情報修正</h2>
     
     <div class="info-box">
-        <h3>회의실 ID: <%=room.getRoomId()%></h3>
+        <h3>会議室ID: <%=room.getRoomId()%></h3>
     </div>
 
-    <form action="roomUpdateProcess.do" method="post" onsubmit="return confirm('수정된 내용을 저장하시겠습니까?');">
+    <form action="roomUpdateProcess.do" method="post" onsubmit="return confirm('修正された内容を保存しますか？');">
         <input type="hidden" name="roomId" value="<%=room.getRoomId()%>">
         
         <div class="form-group">
-            <label for="roomName">회의실 명칭</label>
-            <input type="text" id="roomName" name="roomName" class="form-control" 
+            <label for="roomName">会議室名</label>
+             <input type="text" id="roomName" name="roomName" class="form-control" 
                    value="<%=room.getRoomName()%>" required>
         </div>
         
         <div class="form-group">
-            <label for="capacity">수용 인원 (명)</label>
+            <label for="capacity">収容人数 (名)</label>
             <input type="number" id="capacity" name="capacity" class="form-control" 
-                   value="<%=room.getCapacity()%>" min="1" required>
+                    value="<%=room.getCapacity()%>" min="1" required>
         </div>
         
         <div class="form-group">
-            <label for="hasBeam">빔프로젝터 유무</label>
+            <label for="hasBeam">プロジェクターの有無</label>
             <select id="hasBeam" name="hasBeam" class="form-control">
-                <option value="Y" <%="Y".equals(room.getHasBeam()) ? "selected" : ""%>>있음 (Y)</option>
-                <option value="N" <%="N".equals(room.getHasBeam()) ? "selected" : ""%>>없음 (N)</option>
+                <option value="Y" <%="Y".equals(room.getHasBeam()) ? "selected" : ""%>>あり (Y)</option>
+                <option value="N" <%="N".equals(room.getHasBeam()) ? "selected" : ""%>>なし (N)</option>
             </select>
         </div>
         
         <div class="form-group">
-            <label for="enable">예약 가능 여부</label>
+            <label for="enable">予約可能か否か</label>
             <select id="enable" name="enable" class="form-control">
-                <option value="Y" <%="Y".equals(room.getEnable()) ? "selected" : ""%>>가능 (정상 운영)</option>
-                <option value="N" <%="N".equals(room.getEnable()) ? "selected" : ""%>>점검 중 (예약 불가)</option>
+                <option value="Y" <%="Y".equals(room.getEnable()) ? "selected" : ""%>>可能 (通常運営)</option>
+                <option value="N" <%="N".equals(room.getEnable()) ? "selected" : ""%>>メンテナンス中 (予約不可)</option>
             </select>
         </div>
         
         <div class="form-group">
-            <label for="description">회의실 상세 설명</label>
+            <label for="description">会議室の詳細説明</label>
             <textarea id="description" name="description" class="form-control" 
-                      rows="4" placeholder="회의실에 대한 부가 설명을 입력하세요."><%=room.getDescription()%></textarea>
+                      rows="4" placeholder="会議室に関する補足説明を入力してください。"><%=room.getDescription()%></textarea>
         </div>
         
         <div class="btn-area">
-            <button type="submit" class="btn btn-submit">수정 내용 저장</button>
-            <a href="adminEqList.do" class="btn btn-cancel">취소</a>
+            <button type="submit" class="btn btn-submit">修正内容を保存</button>
+            <a href="adminEqList.do" class="btn btn-cancel">キャンセル</a>
         </div>
     </form>
 </div>
