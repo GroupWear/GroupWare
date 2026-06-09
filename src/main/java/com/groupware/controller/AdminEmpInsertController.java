@@ -25,9 +25,10 @@ public class AdminEmpInsertController extends HttpServlet {
 
         // 1. 관리자가 폼에서 넘긴 파라미터 수집
         int empNo = Integer.parseInt(request.getParameter("empNo"));
-        String empName = request.getParameter("empName");
+        String empName = request.getParameter("empName").trim();
         int empLevel = Integer.parseInt(request.getParameter("empLevel"));
-        String manager = request.getParameter("manager");
+        String manager = request.getParameter("manager").trim();
+        String dept = request.getParameter("dept").trim();
 
         // 2. DTO에 담기 (비밀번호는 세팅하지 않음)
         EmployeeDTO dto = new EmployeeDTO();
@@ -35,6 +36,7 @@ public class AdminEmpInsertController extends HttpServlet {
         dto.setEmpName(empName);
         dto.setEmpLevel(empLevel);
         dto.setManager(manager);
+        dto.setDept(dept);
 
         // 3. DAO 호출하여 DB에 Insert
         EmployeeDAO dao = new EmployeeDAO();

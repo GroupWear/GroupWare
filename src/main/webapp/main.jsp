@@ -170,8 +170,12 @@
         window.addEventListener("DOMContentLoaded", function() {
             var savedScrollY = localStorage.getItem("main_scroll_y");
             if (savedScrollY !== null) {
-                window.scrollTo(0, parseInt(savedScrollY)); 
-                localStorage.removeItem("main_scroll_y"); 
+                // 'instant'를 사용하여 애니메이션 없이 즉시 이동
+                window.scrollTo({
+                    top: parseInt(savedScrollY),
+                    behavior: 'instant' 
+                });
+                localStorage.removeItem("main_scroll_y");
             }
         });
     </script>
@@ -204,7 +208,7 @@
 					<div id="calendar"></div>
 				</div>
 
-			<div class="section-title">내 회의실 예약 현황</div>
+			<div class="section-title"> <a href="myReservation.jsp" class="data-link">내 회의실 예약 현황</a></div>
             <div class="table-wrapper">
                 <table class="table-res">
                     <thead>
@@ -274,7 +278,7 @@
 
 
             <div class="section-title">
-                <%= isManagerMode ? "비품 대여 및 미반납 내역 (관리자)" : "내 비품 대여 현황" %>
+                <a href="myRental.jsp" class="data-link"><%= isManagerMode ? "비품 대여 및 미반납 내역 (관리자)" : "내 비품 대여 현황" %></a>
             </div>
             <div class="table-wrapper">
                 <table class="table-rental <%= isManagerMode ? "admin-view" : "" %>">
@@ -345,12 +349,16 @@
             </div>
 
 
-            <div class="section-title">내 휴가 신청 현황</div>
+            <div class="section-title"><a href="myLeave.jsp" class="data-link">내 휴가 신청 현황</a></div>
             <div class="table-wrapper">
                 <table class="table-leave">
                     <thead>
                         <tr>
-                            <th>문서 번호</th><th>휴가 기간</th><th>사용 일수</th><th>사유</th><th>상태</th>
+                            <th>문서 번호</th>
+                            <th>휴가 기간</th>
+                            <th>사용 일수</th>
+                            <th>사유</th>
+                            <th>상태</th>
                         </tr>
                     </thead>
                      <tbody>

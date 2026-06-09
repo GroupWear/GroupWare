@@ -205,7 +205,7 @@
 					<div id="calendar"></div>
 		</div>
 
-        <div class="section-title">내 회의실 예약 현황</div>
+        <div class="section-title"><a href="myReservation.jsp" class="data-link">내 회의실 예약 현황 </a></div>
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -273,7 +273,7 @@
                 <% } %>
             </div>
 
-        <div class="section-title">내 비품 대여 현황</div>
+        <div class="section-title"><a href="myRental.jsp" class="data-link">내 비품 대여 현황</a></div>
         <div class="table-wrapper">
             <table class="table-rental">
                 <thead>
@@ -342,7 +342,7 @@
                 <% } %>
         </div>
 
-        <div class="section-title">내 휴가 신청 현황</div>
+        <div class="section-title"><a href="myLeave.jsp" class="data-link">내 휴가 신청 현황</a></div>
         <div class="table-wrapper">
             <table class="table-leave">
                 <thead>
