@@ -1,0 +1,61 @@
+dashboard.title=Groupware 메인 대시보드
+dashboard.welcome=안녕하세요, {0}님!
+dashboard.dept={0} 소속
+dashboard.leave.label=잔여 연차 현황
+dashboard.no.data=내역이 없습니다.
+dashboard.btn.prev=이전
+dashboard.btn.next=다음
+
+# header.jsp 용 키값
+user.suffix=님
+nav.office.reservation=오피스 예약
+nav.leave.apply=휴가 신청
+nav.rental.apply=비품 대여 신청
+nav.document.box=기안 문서함
+nav.board=게시판
+nav.address.book=주소록
+nav.mypage=마이페이지
+nav.logout=로그아웃
+nav.admin.stock=재고 관리
+nav.admin.emp=사원 관리
+
+# 테이블 헤더 및 링크 제목
+table.res.title=내 회의실 예약 현황
+table.res.no=예약 번호
+table.res.room=회의실
+table.res.date=예약 일자
+table.res.time=사용 시간
+table.res.purpose=사용 목적
+table.res.status=상태
+table.res.note=비고
+table.res.btn.cancel=예약 취소
+table.res.empty=예약 내역이 없습니다.
+
+table.rental.title.user=내 비품 대여 현황
+table.rental.title.admin=비품 대여 및 미반납 내역 (관리자)
+table.rental.no=기안 번호
+table.rental.writer=기안자
+table.rental.title=기안 제목
+table.rental.date=대여 기간
+table.rental.status=상태
+table.rental.note=비고
+table.rental.btn.return=반납 처리
+table.rental.empty=대여 내역이 없습니다.
+table.rental.retired=퇴사
+table.rental.myself=본인
+table.rental.notitle=제목 없음
+
+table.leave.title=내 휴가 신청 현황
+table.leave.no=문서 번호
+table.leave.date=휴가 기간
+table.leave.days=사용 일수
+table.leave.days.unit=일
+table.leave.reason=사유
+table.leave.status=상태
+table.leave.empty=신청한 휴가 내역이 없습니다.
+
+# 자바스크립트 얼럿 및 컨펌창
+alert.return.confirm=해당 비품을 반납 처리하시겠습니까?
+alert.cancel.confirm=정말 이 예약을 취소하시겠습니까?
+alert.cal.title=▶ 회의실 정보\\n
+alert.cal.purpose=\\n\\n▶ 예약 목적\\n
