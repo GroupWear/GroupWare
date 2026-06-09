@@ -205,6 +205,69 @@ public class EquipmentDAO {
 	}
 
 	/**
+	 * 전체 비품 개수 조회 (페이징 처리를 위해 필요)
+	 */
+	public int getTotalCount() {
+		int count = 0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT COUNT(*) FROM EQUIPMENT";
+		try {
+			conn = DBConnection.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				count = rs.getInt(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeResource(conn, pstmt, rs);
+		}
+		return count;
+	}
+
+	/**
+	 * 페이징 처리가 된 비품 목록 조회
+	 */
+	public List<EquipmentDTO> getEquipmentsPaging(int startRow, int endRow) {
+		List<EquipmentDTO> list = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		// H2 (Oracle 모드) 또는 Oracle에서 사용 가능한 ROWNUM 쿼리
+		String sql = "SELECT * FROM ("
+				   + "  SELECT ROWNUM AS RN, A.* FROM ("
+				   + "    SELECT * FROM EQUIPMENT ORDER BY EQ_NO ASC"
+				   + "  ) A"
+				   + ") WHERE RN BETWEEN ? AND ?";
+
+		try {
+			conn = DBConnection.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, startRow);
+			pstmt.setInt(2, endRow);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				EquipmentDTO dto = new EquipmentDTO();
+				dto.setEqNo(rs.getInt("EQ_NO"));
+				dto.setEqName(rs.getString("EQ_NAME"));
+				dto.setTotalCount(rs.getInt("TOTAL_COUNT"));
+				dto.setRemainCount(rs.getInt("REMAIN_COUNT"));
+				list.add(dto);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeResource(conn, pstmt, rs);
+		}
+		return list;
+	}
+
+	/**
 	 * 자원 해제 공통 메서드입니다.
 	 */
 	private void closeResource(Connection conn, PreparedStatement pstmt, ResultSet rs) {

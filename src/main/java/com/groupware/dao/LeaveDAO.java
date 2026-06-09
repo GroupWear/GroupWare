@@ -296,6 +296,62 @@ public class LeaveDAO {
 		return list;
 	}
 
+	/**
+	 * 전체 휴가 기안 개수 조회
+	 */
+	public int getTotalLeaveCount() {
+		int count = 0;
+		String sql = "SELECT COUNT(*) FROM LEAVE_HISTORY";
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				ResultSet rs = pstmt.executeQuery()) {
+			if (rs.next()) {
+				count = rs.getInt(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+
+	/**
+	 * 페이징 처리가 된 전체 휴가 기안 목록 조회
+	 */
+	public List<com.groupware.dto.LeaveHistoryDTO> getAllLeaveDocumentsPaging(int startRow, int endRow) {
+		List<com.groupware.dto.LeaveHistoryDTO> list = new ArrayList<>();
+		String sql = "SELECT * FROM ("
+				   + "  SELECT ROWNUM AS RN, A.* FROM ("
+				   + "    SELECT h.*, e.EMP_NAME, e.EMP_LEVEL, e.DEPT FROM LEAVE_HISTORY h "
+				   + "    JOIN EMPLOYEE e ON h.EMP_NO = e.EMP_NO ORDER BY h.LEAVE_NO DESC"
+				   + "  ) A"
+				   + ") WHERE RN BETWEEN ? AND ?";
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, startRow);
+			pstmt.setInt(2, endRow);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					com.groupware.dto.LeaveHistoryDTO dto = new com.groupware.dto.LeaveHistoryDTO();
+					dto.setLeaveNo(rs.getInt("LEAVE_NO"));
+					dto.setEmpNo(rs.getInt("EMP_NO"));
+					dto.setEmpName(rs.getString("EMP_NAME"));
+					dto.setDept(rs.getString("DEPT"));
+					dto.setStartDate(rs.getDate("START_DATE"));
+					dto.setEndDate(rs.getDate("END_DATE"));
+					dto.setUseDays(rs.getInt("USE_DAYS"));
+					dto.setStatus(rs.getString("STATUS"));
+					dto.setApprovalStep(rs.getInt("APPROVAL_STEP"));
+					dto.setReason(rs.getString("REASON"));
+					dto.setEmpLevel(rs.getInt("EMP_LEVEL"));
+					list.add(dto);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
 	// 상세 화면용 승인 (POST 방식 대응)
 	public boolean processApproval(int leaveNo, int step, String managerName, boolean isApprove) {
 		boolean result = false;

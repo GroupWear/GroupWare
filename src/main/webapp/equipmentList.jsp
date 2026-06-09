@@ -93,6 +93,32 @@
         </table>
     </div>
 
+    <!-- 5. 페이징 네비게이션 영역 추가 -->
+    <%
+        Integer currentPage = (Integer) request.getAttribute("currentPage");
+        Integer totalPages = (Integer) request.getAttribute("totalPages");
+        Integer startPage = (Integer) request.getAttribute("startPage");
+        Integer endPage = (Integer) request.getAttribute("endPage");
+        
+        if (totalPages != null && totalPages > 1) {
+    %>
+    <div class="pagination-container" style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
+        <div class="pagination">
+            <% if (startPage > 1) { %>
+                <a href="equipmentList.do?page=<%= startPage - 1 %>" class="page-link">&laquo; 이전</a>
+            <% } %>
+
+            <% for (int i = startPage; i <= endPage; i++) { %>
+                <a href="equipmentList.do?page=<%= i %>" class="page-link <%= (i == currentPage) ? "active" : "" %>"><%= i %></a>
+            <% } %>
+
+            <% if (endPage < totalPages) { %>
+                <a href="equipmentList.do?page=<%= endPage + 1 %>" class="page-link">다음 &raquo;</a>
+            <% } %>
+        </div>
+    </div>
+    <% } %>
+
 </body>
 </html>
 
