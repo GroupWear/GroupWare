@@ -9,10 +9,10 @@
     int type = (typeAttr != null) ? typeAttr : (board != null ? board.getBoardType() : 1);
 %>
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title><%= (board == null) ? "글쓰기" : "글 수정" %> - GroupWare</title>
+<title><%= (board == null) ? "新規投稿" : "投稿編集" %> - GroupWare</title>
 <link rel="stylesheet" href="css/board.css">
 </head>
 <body>
@@ -22,11 +22,12 @@
         <div class="board-header">
             <h2>
                 <% if (board == null) { %>
-                    <% if (type == 1) out.print("사내 소식 작성");
-                       else if (type == 2) out.print("자유 게시글 작성");
-                       else if (type == 3) out.print("건의 사항 작성"); %>
+                    <% if (type == 1) out.print("社内ニュース作成");
+                       else if (type == 2) out.print("フリートーク投稿作成");
+                       else if (type == 3) out.print("改善要望作成");
+                    %>
                 <% } else { %>
-                    게시글 수정
+                    投稿の編集
                 <% } %>
             </h2>
         </div>
@@ -39,19 +40,19 @@
 
             <table>
                 <tr>
-                    <th>제목</th>
-                    <td><input type="text" name="title" value="<%= (board != null) ? board.getTitle() : "" %>" required placeholder="제목을 입력하세요"></td>
+                    <th>タイトル</th>
+                    <td><input type="text" name="title" value="<%= (board != null) ? board.getTitle() : "" %>" required placeholder="タイトルを入力してください"></td>
                 </tr>
                 <tr>
-                    <th>내용</th>
-                    <td><textarea name="content" required placeholder="내용을 입력하세요"><%= (board != null) ? board.getContent() : "" %></textarea></td>
+                    <th>内容</th>
+                    <td><textarea name="content" required placeholder="内容を入力してください"><%= (board != null) ? board.getContent() : "" %></textarea></td>
                 </tr>
                 <tr>
-                    <th>첨부파일</th>
+                    <th>添付ファイル</th>
                     <td>
                         <% if (fileList != null && !fileList.isEmpty()) { %>
                             <div style="margin-bottom:10px;">
-                                <p style="margin:0 0 5px 0; font-size:13px; color:#666;">기존 파일 (삭제하려면 체크)</p>
+                                <p style="margin:0 0 5px 0; font-size:13px; color:#666;"> 既存ファイル (削除する場合はチェック)</p>
                                 <% for (BoardFileDTO file : fileList) { %>
                                     <div style="margin-bottom:5px;">
                                         <label style="font-size:14px;">
@@ -62,14 +63,14 @@
                             </div>
                         <% } %>
                         <input type="file" name="files" multiple>
-                        <p style="margin:5px 0 0 0; font-size:12px; color:#999;">여러 파일을 선택할 수 있습니다. (최대 10MB)</p>
+                        <p style="margin:5px 0 0 0; font-size:12px; color:#999;"> 複数ファイルを選択できます。(最大10MB)</p>
                     </td>
                 </tr>
             </table>
 
             <div style="margin-top:30px; text-align:center; display:flex; gap:10px; justify-content: center;">
-                <button type="submit" class="btn btn-primary"><%= (board == null) ? "등록하기" : "수정완료" %></button>
-                <a href="javascript:history.back();" class="btn btn-outline">취소</a>
+                <button type="submit" class="btn btn-primary"><%= (board == null) ? "登録する" : "修正完了" %></button>
+                <a href="javascript:history.back();" class="btn btn-outline">キャンセル</a>
             </div>
         </form>
     </div>

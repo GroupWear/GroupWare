@@ -9,13 +9,12 @@
     if (totalPages == null) totalPages = 1;
 %>
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>전사 주소록 - GroupWare</title>
+<title>社内連絡先 - GroupWare</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/addressBook.css">
-<!-- FontAwesome for Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <script>
@@ -34,7 +33,6 @@
                 card.style.display = 'none';
             }
         }
-        // 페이징이 있는 경우 클라이언트 사이드 필터링은 현재 페이지 내에서만 작동함을 알림 (필요시)
     }
 </script>
 </head>
@@ -44,42 +42,42 @@
 
 <div class="address-book-container">
     
-    <!-- Search Area -->
     <div class="search-header">
         <div class="search-title">
-            <h2>전사 주소록</h2>
-            <p>함께 일하는 동료들의 정보를 확인하세요.</p>
+            <h2>社内連絡先一覧</h2>
+            <p>社員の連絡先情報を確認できます。</p>
         </div>
+   
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" onkeyup="filterEmployees()" placeholder="현재 페이지 내에서 검색">
+            <input type="text" id="searchInput" onkeyup="filterEmployees()" placeholder="現在のページ内から検索">
         </div>
     </div>
 
-    <!-- Employee List -->
     <div class="employee-grid">
         <% 
             if (empList != null && !empList.isEmpty()) {
+          
                 for (EmployeeDTO emp : empList) {
-                    // 직급 매핑
-                    String levelName = "사원";
+                    // 役職マッピング
+                    String levelName = "社員";
                     switch(emp.getEmpLevel()) {
-                        case 5: levelName = "임원"; break;
-                        case 4: levelName = "부서장"; break;
-                        case 3: levelName = "과장"; break;
-                        case 2: levelName = "대리"; break;
-                        default: levelName = "사원"; break;
+                        case 5: levelName = "役員"; break;
+                        case 4: levelName = "部長"; break; // 또는 部署長
+                        case 3: levelName = "課長"; break;
+                        case 2: levelName = "係長"; break; // 한국의 '대리' 직급에 가장 매칭되는 일본 직책
+                        default: levelName = "社員"; break;
                     }
                     
-                    String deptName = emp.getDept() != null ? emp.getDept() : "미지정";
+                    String deptName = emp.getDept() != null ? emp.getDept() : "未所属";
         %>
         <div class="employee-card" 
              data-name="<%=emp.getEmpName()%>" 
              data-dept="<%=deptName%>" 
              data-no="<%=emp.getEmpNo()%>">
             
-            <!-- Left: Main Info -->
             <div class="emp-main-info">
+     
                 <div class="emp-no-badge">NO. <%=emp.getEmpNo()%></div>
                 <div class="emp-name-area">
                     <div class="emp-name">
@@ -94,8 +92,8 @@
                 </div>
             </div>
             
-            <!-- Right: Details -->
             <div class="emp-details">
+            
                 <div class="detail-item">
                     <i class="fa-solid fa-envelope"></i>
                     <div>
@@ -116,13 +114,12 @@
                 }
             } else {
         %>
-            <div class="no-data">등록된 주소록 정보가 없습니다.</div>
+            <div class="no-data">登録されている連絡先情報がありません。</div>
         <%
             }
         %>
     </div>
 
-    <!-- Pagination -->
     <div class="pagination">
         <% if (currentPage > 1) { %>
             <a href="addressBook.do?page=<%=currentPage - 1%>" class="page-link"><i class="fa-solid fa-chevron-left"></i></a>

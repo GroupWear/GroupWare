@@ -32,7 +32,7 @@ public class DocumentListController extends HttpServlet {
         
         if (loginEmp == null) {
             PrintWriter out = response.getWriter();
-            out.println("<script>alert('로그인이 필요한 서비스입니다.');location.href='index.jsp';</script>");
+            out.println("<script>alert('ログインが必要なサービスです。');location.href='index.jsp';</script>");
             out.close();
             return;
         }
@@ -96,7 +96,7 @@ public class DocumentListController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             PrintWriter out = response.getWriter();
-            out.println("<script>alert('문서함을 로드하는 중 오류가 발생했습니다.');location.href='main.jsp';</script>");
+            out.println("<script>alert('フォルダを読み込んでいる途中でエラーが発生しました。');location.href='main.jsp';</script>");
             out.close();
         }
     }

@@ -28,7 +28,7 @@ public class RentalDetailController extends HttpServlet {
         EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
         if (loginEmp == null) {
             PrintWriter out = response.getWriter();
-            out.println("<script>alert('로그인이 필요한 서비스입니다.');location.href='index.jsp';</script>");
+            out.println("<script>alert('ログインが必要なサービスです。');location.href='index.jsp';</script>");
             out.close();
             return;
         }
@@ -49,7 +49,7 @@ public class RentalDetailController extends HttpServlet {
             
             if (rentalDetail == null) {
                 PrintWriter out = response.getWriter();
-                out.println("<script>alert('존재하지 않거나 삭제된 기안 문서입니다.');location.href='documentList.do';</script>");
+                out.println("<script>alert('存在しないか削除された起案文書です。');location.href='documentList.do';</script>");
                 out.close();
                 return;
             }
@@ -61,7 +61,7 @@ public class RentalDetailController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             PrintWriter out = response.getWriter();
-            out.println("<script>alert('상세보기를 불러오는 중 오류가 발생했습니다.');location.href='documentList.do';</script>");
+            out.println("<script>alert('詳細表示を取得中にエラーが発生しました。');location.href='documentList.do';</script>");
             out.close();
         }
     }

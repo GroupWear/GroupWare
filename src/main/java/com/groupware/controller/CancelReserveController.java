@@ -37,9 +37,9 @@ public class CancelReserveController extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.println("<script>");
         if (isSuccess) {
-            out.println("alert('예약이 성공적으로 취소되었습니다.');");
+            out.println("alert('予約が正常にキャンセルされました。');");
         } else {
-            out.println("alert('예약 취소 처리에 실패했습니다.');");
+            out.println("alert('予約のキャンセル処理に失敗しました。');");
         }
         
         

@@ -15,7 +15,7 @@ body {
 /* ==========================================
    2. 상단 네비게이션 헤더바 스킨
    ========================================== */
-.header {
+/* .header {
     background-color: #0f172a;
     height: 65px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -39,7 +39,7 @@ body {
     align-items: center !important;
     padding: 0 20px !important;
     box-sizing: border-box !important;
-}
+} */
 
 /* ==========================================
    3. 입력 폼 프레임 구조 (650px / 인디고 무드)
