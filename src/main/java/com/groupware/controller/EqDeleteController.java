@@ -26,19 +26,33 @@ public class EqDeleteController extends HttpServlet {
         // 1. 삭제할 비품 번호를 파라미터에서 가져옵니다.
         int eqNo = Integer.parseInt(request.getParameter("eqNo"));
         EquipmentDAO dao = new EquipmentDAO();
-
+        
+        //※ ischecked 를 통해 값이 1인 상태만 무조건
+        int checkEquipment = dao.getCheckEquipment(eqNo);
+        System.out.println(checkEquipment);
+        
+        
         PrintWriter out = response.getWriter();
         out.println("<script>");
         try {
             // 2. DAO를 호출하여 비품 삭제를 시도합니다.
-            boolean isSuccess = dao.deleteEquipment(eqNo);
-            if (isSuccess) {
-                out.println("alert('비품이 성공적으로 폐기되었습니다.');");
-                out.println("location.href='adminEqList.do';");
-            } else {
-                out.println("alert('폐기 처리에 실패했습니다.');");
-                out.println("history.back();");
-            }
+			if(checkEquipment > 0)
+			{
+				  boolean isSuccess = dao.deleteEquipment(eqNo); 
+				  
+				  if (isSuccess) {
+					  	out.println("alert('비품이 성공적으로 폐기되었습니다.');");
+				  		out.println("location.href='adminEqList.do';"); 
+				  } 
+				  else {
+					  out.println("alert('폐기 처리에 실패했습니다.');"); 
+					  out.println("history.back();"); 
+				  }
+			}else {
+				out.println("alert('반납 확인 해주세요. 폐기 처리에 실패했습니다.');"); 
+				out.println("history.back();");
+			}
+				
         } catch (Exception e) {
             // 3. 외래 키 제약 조건 등으로 인해 삭제가 불가능한 경우 예외 처리를 수행합니다.
             // 해당 비품이 대여 내역 테이블에 묶여있어 외래 키 오류가 발생하는 경우
