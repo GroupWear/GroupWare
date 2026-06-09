@@ -88,7 +88,7 @@
 				    <tbody>
 				    <% 
 				        // [디버깅] 데이터가 컨트롤러에서 넘어오는지 확인하는 코드 (나중에 삭제하세요)
-				        System.out.println("JSP에서 확인한 leaveList 사이즈: " + (leaveList != null ? leaveList.size() : "null"));
+				        //System.out.println("JSP에서 확인한 leaveList 사이즈: " + (leaveList != null ? leaveList.size() : "null"));
 				        
 				        if (leaveList == null || leaveList.isEmpty()) { 
 				    %>
