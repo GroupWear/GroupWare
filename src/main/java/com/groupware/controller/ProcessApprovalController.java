@@ -30,7 +30,7 @@ public class ProcessApprovalController extends HttpServlet {
         
         if (loginEmp == null) {
             out.println("<script>");
-            out.println("alert('로그인이 필요한 서비스입니다.');");
+            out.println("alert('ログインが必要なサービスです。');");
             out.println("location.href='index.jsp';");
             out.println("</script>");
             out.close();
@@ -46,7 +46,7 @@ public class ProcessApprovalController extends HttpServlet {
         // 데이터 누락 시 안전 백 가드 장착
         if (rentalNoStr == null || eqNoStr == null || stepStr == null || isApproveStr == null) {
             out.println("<script>");
-            out.println("alert('올바르지 않은 결재 요청 정보입니다.');");
+            out.println("alert('不正な承認依頼情報です。');");
             out.println("location.href='documentList.do?tab=equipment';");
             out.println("</script>");
             out.close();
@@ -64,7 +64,7 @@ public class ProcessApprovalController extends HttpServlet {
             
             // 반려 처리가 진행될 경우, 이름 뒤에 공백 가공 후 (반려)가 박히도록 포맷팅 규칙을 적용합니다.
             if (!isApprove) {
-                empName = empName + " (반려)";
+                empName = empName + " (差し戻し)";
             }
             
             // 4. 백엔드 비즈니스 트랜잭션 레이어 호출
@@ -73,7 +73,7 @@ public class ProcessApprovalController extends HttpServlet {
             
             // 5. 트랜잭션 결과에 따른 목록 리다이렉트 피드백 처리
             if (isSuccess) {
-                String resultMsg = isApprove ? "기안서 결재 승인이 완료되었습니다." : "기안서가 최종 반려되어 선점되었던 비품 재고가 안전하게 복구되었습니다.";
+                String resultMsg = isApprove ? "起案書の承認が完了しました。" : "起案書が最終的に却下され、先に確保されていた備品在庫が安全に復旧しました。";
                 
                 out.println("<script>");
                 out.println("alert('" + resultMsg + "');");
@@ -86,10 +86,10 @@ public class ProcessApprovalController extends HttpServlet {
             
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            out.println("<script>alert('파라미터 데이터 형식이 유실되었습니다.');history.back();</script>");
+            out.println("<script>alert('パラメータデータ形式が失われました。');history.back();</script>");
         } catch (Exception e) {
             e.printStackTrace();
-            out.println("<script>alert('결재 처리 도중 예기치 못한 시스템 오류가 발생했습니다.');history.back();</script>");
+            out.println("<script>alert('決済処理中に予期しないシステムエラーが発生しました。');history.back();</script>");
         } finally {
             out.close();
         }

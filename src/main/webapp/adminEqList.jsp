@@ -34,7 +34,7 @@
 <body>
 <script>
     function deleteEquipment(eqNo) {
-        if (confirm("해당 비품 데이터를 시스템에서 영구 삭제하시겠습니까?\n(경고: 현재 사원이 대여 중인 비품은 삭제할 수 없습니다)")) {
+        if (confirm("該当の備品データをシステムから永久に削除しますか？")) {
             document.getElementById("delEqNo").value = eqNo;
             document.getElementById("deleteForm").submit();
         }
@@ -79,7 +79,7 @@
         const lowerKeyword = keyword.toLowerCase();
 
         if (keyword === "") {
-            alert("검색어를 입력해주세요.");
+            alert("検索キーワードを入力してください。");
             return;
         }
 
@@ -131,7 +131,7 @@
             // 5. 사용자가 편하게 다음 검색을 이어나가도록 텍스트창 블록 지정 (기존 유지)
             document.getElementById("searchKeyword").select();
         } else {
-            alert("일치하는 비품 항목을 찾을 수 없습니다.");
+            alert("一致する備品が見つかりません。");
             document.getElementById("searchKeyword").focus();
             lastKeyword = "";
             currentMatchIndex = -1;
@@ -159,27 +159,32 @@
 
 	<div class="dashboard-container" style="padding-top: 20px;">
 	    <div style="margin-bottom: 15px;">
-	        <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #1e293b;">공용 비품 마스터 데이터 관리</h2>
+	        <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #1e293b;">共用備品マスターデータ管理</h2>
+	        <!-- <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #1e293b;">공용 비품 마스터 데이터 관리</h2> -->
 	    </div> 
 	    
 	    <div class="insert-box">
-	        <h3>신규 비품 등록</h3>
+	        <h3>備品の新規登録</h3>
+	        <!-- <h3>신규 비품 등록</h3> -->
 	        <form action="insertEq.do" method="post" class="insert-form-flex">
-	            <input type="text" name="eqName" class="search-input" placeholder="비품 명칭 입력" required>
-	            <input type="number" name="totalCount" class="search-input" style="max-width: 200px;" placeholder="초기 총 수량" required>
-	            <button type="submit" class="btn-register">등록</button>
+	            <input type="text" name="eqName" class="search-input" placeholder="びひんめいにゅうりょく" required>
+	            <input type="number" name="totalCount" class="search-input" style="max-width: 200px;" placeholder="しょきすうりょう" required>
+	            <button type="submit" class="btn-register">とうろく</button>
 	        </form>
 	    </div>
 	    
 	    <div class="search-bar-container">
 		    <div class="search-form">
 		        <select id="searchType" class="search-select">
-		            <option value="all">전체 검색</option>
+		            <option value="all">ぜんたいけんさく</option>
+		            <option value="eqName">びひんめい</option>
+		            <option value="eqNo">備品コード</option>
+<!-- 		            <option value="all">전체 검색</option>
 		            <option value="eqName">비품 명칭</option>
-		            <option value="eqNo">비품 번호</option>
+		            <option value="eqNo">비품 번호</option> -->
 		        </select>
-		        <input type="text" id="searchKeyword" class="search-input" placeholder="이동할 비품명 또는 번호 입력..." autocomplete="off" onkeyup="if(event.key === 'Enter') searchAndScroll()">
-		        <button type="button" class="btn-search" onclick="searchAndScroll()">검색 및 이동</button>
+		        <input type="text" id="searchKeyword" class="search-input" placeholder="しようする びひんめい または こーどを にゅうりょく..." autocomplete="off" onkeyup="if(event.key === 'Enter') searchAndScroll()">
+		        <button type="button" class="btn-search" onclick="searchAndScroll()">けんさく および いどう</button>
 		    </div>
 		</div>
 	
@@ -187,11 +192,11 @@
 	        <table>
 	            <thead>
 	                <tr>
-	                    <th style="width: 15%;">비품 번호</th>
-	                    <th style="width: 35%;">비품 명칭</th>
-	                    <th style="width: 15%;">보유 총 수량</th>
-	                    <th style="width: 15%;">대여 가능 수량</th>
-	                    <th style="width: 20%;">데이터 관리</th>
+	                    <th style="width: 15%;">備品番号</th>
+	                    <th style="width: 35%;">備品名</th>
+	                    <th style="width: 15%;">保有総数量</th>
+	                    <th style="width: 15%;">貸出可能数</th>
+	                    <th style="width: 20%;">データ管理</th>
 	                </tr>
 	            </thead>
 	            <tbody>
@@ -248,12 +253,12 @@
 	                    	</span>
 	                    </td>
 	                    <td>
-	                        <button class="btn-action-edit" onclick="openUpdateModal('<%= eq.getEqNo() %>', '<%= eq.getEqName() %>', '<%= eq.getTotalCount() %>', '<%= eq.getRemainCount() %>')">정보 수정</button>
-	                        <button class="btn-action-del" onclick="deleteEquipment('<%= eq.getEqNo() %>')">영구 폐기</button>
+	                        <button class="btn-action-edit" onclick="openUpdateModal('<%= eq.getEqNo() %>', '<%= eq.getEqName() %>', '<%= eq.getTotalCount() %>', '<%= eq.getRemainCount() %>')">情報修正</button>
+	                        <button class="btn-action-del" onclick="deleteEquipment('<%= eq.getEqNo() %>')">永久廃棄</button>
 	                    </td>
 	                </tr>
 	                <%  } } else { %>
-	                <tr><td colspan="5" class="empty-data">시스템에 등록된 비품 마스터 데이터가 없습니다.</td></tr>
+	                <tr><td colspan="5" class="empty-data">システムに登録された備品マスタデータがありません。</td></tr>
 	                <% } %>
 	            </tbody>
 	        </table>
@@ -280,24 +285,24 @@
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeUpdateModal()"></div>
 <div id="updateModal">
-    <h3>비품 정보 수정</h3>
+    <h3>備品情報修正</h3>
     <form action="updateEq.do" method="post">
         <input type="hidden" name="eqNo" id="upEqNo">
         <div class="update-group">
-            <label>비품 명칭</label>
+            <label>備品名</label>
             <input type="text" name="eqName" id="upEqName" required>
         </div>
         <div class="update-group">
-            <label>보유 총 수량</label>
+            <label>保有総数量</label>
             <input type="number" name="totalCount" id="upTotalCount" required>
         </div>
         <div class="update-group">
-            <label>대여 가능 잔여 수량</label>
+            <label>レンタル可能残数量</label>
             <input type="number" name="remainCount" id="upRemainCount" required>
         </div>
         <div class="modal-btn-group">
-            <button type="button" class="btn-modal-cancel" onclick="closeUpdateModal()">취소</button>
-            <button type="submit" class="btn-modal-submit">수정 반영</button>
+            <button type="button" class="btn-modal-cancel" onclick="closeUpdateModal()">キャンセル</button>
+            <button type="submit" class="btn-modal-submit">修正反映</button>
         </div>
     </form>
 </div>
