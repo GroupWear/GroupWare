@@ -382,61 +382,55 @@
             </div>
 
         <div class="section-title">
-            <a href="myRental.jsp" class="data-link">
-                <% if (isManagerMode) { %>
-                    <fmt:message key="table.rental.title.admin" />
-                <% } else { %>
-                    <fmt:message key="table.rental.title.user" />
-                <% } %>
-            </a>
-        </div>
-        <div class="table-wrapper">
-            <table class="table-rental">
-                <thead>
-                    <tr>
-                        <th><fmt:message key="table.rental.no" /></th>
-                        <% if (isManagerMode) { %> <th><fmt:message key="table.rental.writer" /></th> <% } %>
-                        <th><fmt:message key="table.rental.title" /></th>
-                        <th><fmt:message key="table.rental.date" /></th>
-                        <th><fmt:message key="table.rental.status" /></th>
-                        <th><fmt:message key="table.rental.note" /></th>
-                    </tr>
-                </thead>
-                <tbody>
+                <a href="myRental.jsp" class="data-link">
+                    <fmt:message key="<%= isManagerMode ? \"table.rental.title.admin\" : \"table.rental.title.user\" %>" />
+                </a>
+            </div>
+            <div class="table-wrapper">
+                <table class="table-rental <%= isManagerMode ? "admin-view" : "" %>">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;"><fmt:message key="table.rental.no" /></th>
+                            <% if (isManagerMode) { %> <th style="width: 15%;"><fmt:message key="table.rental.writer" /></th> <% } %>
+                            <th><fmt:message key="table.rental.title" /></th>
+                            <th style="width: 25%;"><fmt:message key="table.rental.date" /></th>
+                            <th style="width: 12%;"><fmt:message key="table.rental.status" /></th>
+                            <th style="width: 12%;"><fmt:message key="table.rental.note" /></th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     <% if (rentalList == null || rentalList.isEmpty()) { %>
-                        <tr><td colspan="<%= isManagerMode ? 6 : 5 %>" style="padding: 105px 0; color: #6c757d; border-bottom: none;"><fmt:message key="table.rental.empty" /></td></tr>
+                        <tr><td colspan="<%= isManagerMode ? 6 : 5 %>" style="padding: 105px 0; color: #6c757d; border-bottom: none; text-align: center;"><fmt:message key="table.rental.empty" /></td></tr>
                     <% } else {
-                           for (RentalHistoryDTO item : rentalList) {
-                               boolean isRetiredCreator = (item.getEmpLevel() == 0);
-                               
-                               String statusKey = StatusUtil.getStatusKey(item.getStatus());
-                               
-                               String badgeClass = "bg-secondary";
-                               if ("status.rental.wait".equals(statusKey)) { badgeClass = "bg-warning"; }
-                               else if ("status.rental.renting".equals(statusKey)) { badgeClass = "bg-success"; }
-                               else if ("status.rental.notreturned".equals(statusKey) || "status.leave.rejected".equals(statusKey)) { badgeClass = "bg-danger"; }
+                               for (RentalHistoryDTO item : rentalList) {
+                                   String displayStatus = item.getStatus();
+                                   boolean isRetiredCreator = (item.getEmpLevel() == 0);
+                                   
+                                   String badgeClass = "bg-secondary";
+                                   if ("승인대기".equals(displayStatus)) badgeClass = "bg-warning";
+                                   else if ("대여중".equals(displayStatus)) badgeClass = "bg-success";
+                                   else if ("반려됨".equals(displayStatus) || "미반납".equals(displayStatus)) badgeClass = "bg-danger";
                     %>
                         <tr>
                             <td><%=item.getRentalNo()%></td>
                             <% if (isManagerMode) { %>
                                 <td style="font-weight: 600; color: #64748b;">
                                     <%=item.getEmpName()%> 
-                                    <% if(isRetiredCreator) { %> <br>(<fmt:message key="table.rental.retired" />) 
-                                    <% } else { %> <br>(<fmt:message key="table.rental.myself" />) <% } %>
+                                    <fmt:message key="<%= isRetiredCreator ? \"table.rental.retired\" : \"table.rental.myself\" %>" var="empType"/>
+                                    <br>(${empType})
                                 </td>
                             <% } %>
                             <td>
-                                <a href="rentalDetail.do?rentalNo=<%=item.getRentalNo()%>" 
-                                   style="text-decoration: none; color: #6366f1; font-weight: 600; display: block;">
-                                    <span class="title-link" title="<%=item.getTitle()%>">
+                                <a href="rentalDetail.do?rentalNo=<%=item.getRentalNo()%>" style="text-decoration: none; display: block;">
+                                    <span class="title-link" style="color: #6366f1; font-weight: 600;" title="<%=item.getTitle()%>">
                                         <%=item.getTitle() != null ? item.getTitle() : "제목 없음"%>
                                     </span>
                                 </a>
                             </td>
                             <td><%=item.getRentalDate()%> ~ <%=item.getReturnDate()%></td>
-                            <td><span class="status-badge <%=badgeClass%>"><fmt:message key="<%=statusKey%>" /></span></td>
+                            <td><span class="status-badge <%=badgeClass%>"><fmt:message key="<%= StatusUtil.getStatusKey(displayStatus) %>" /></span></td>
                             <td>
-                                <% if ("status.rental.renting".equals(statusKey) || "status.rental.notreturned".equals(statusKey)) { %>
+                                <% if ("대여중".equals(displayStatus) || "미반납".equals(displayStatus)) { %>
                                     <button class="btn-action" onclick="returnProcess('<%=item.getRentalNo()%>')"><fmt:message key="table.rental.btn.return" /></button>
                                 <% } else { %>
                                     <span style="color: #ced4da;">-</span>
@@ -446,10 +440,10 @@
                     <%     } 
                        } %>
                     </tbody>
-            </table>
-        </div> 
-        
-        <div class="pagination-container">
+                </table>
+            </div> 
+            
+            <div class="pagination-container">
                 <% if (rentalStartPage > 1) { %>
                     <button type="button" class="pagination-btn" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalStartPage-1%>&leavePage=<%=leavePage%>')"><fmt:message key="dashboard.btn.prev" /></button>
                 <% } %>
@@ -459,7 +453,7 @@
                 <% if (rentalEndPage < rentalTotalPages) { %>
                     <button type="button" class="pagination-btn" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalEndPage+1%>&leavePage=<%=leavePage%>')"><fmt:message key="dashboard.btn.next" /></button>
                 <% } %>
-        </div>
+            </div>
 
         <div class="section-title"><a href="myLeave.jsp" class="data-link"><fmt:message key="table.leave.title" /></a></div>
         <div class="table-wrapper">
