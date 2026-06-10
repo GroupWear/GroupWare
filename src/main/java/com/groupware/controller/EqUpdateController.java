@@ -46,10 +46,10 @@ public class EqUpdateController extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.println("<script>");
         if (isSuccess) {
-            out.println("alert('비품 정보가 성공적으로 수정되었습니다.');");
+            out.println("alert('備品情報が正常に修正されました。');");
             out.println("location.href='adminEqList.do';");
         } else {
-            out.println("alert('수정에 실패했습니다.');");
+            out.println("alert('修正に失敗しました.');");
             out.println("history.back();");
         }
         out.println("</script>");

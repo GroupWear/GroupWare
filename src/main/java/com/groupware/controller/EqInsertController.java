@@ -1,7 +1,9 @@
 package com.groupware.controller;
 
 import com.groupware.dao.EquipmentDAO;
+import com.groupware.dao.RentalDAO;
 import com.groupware.dto.EquipmentDTO;
+import com.groupware.dto.RentalHistoryDTO;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,10 +45,10 @@ public class EqInsertController extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.println("<script>");
         if (isSuccess) {
-            out.println("alert('신규 비품이 성공적으로 등록되었습니다.');");
+            out.println("alert('新規備品が正常に登録されました。');");
             out.println("location.href='adminEqList.do';");
         } else {
-            out.println("alert('등록에 실패했습니다.');");
+            out.println("alert('登録に失敗しました。');");
             out.println("history.back();");
         }
         out.println("</script>");

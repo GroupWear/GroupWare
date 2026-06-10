@@ -34,7 +34,7 @@ public class AdminActionController extends HttpServlet {
         
         // 관리자가 아니면 튕겨내는 방어 로직 20260513 LHS 수정
         if (loginEmp == null || !"Y".equals(loginEmp.getManager())) {
-            out.println("<script>alert('관리자가 아닙니다.'); location.href='index.jsp';</script>");
+            out.println("<script>alert('管理者ではありません。'); location.href='index.jsp';</script>");
             return;
         }
         
@@ -112,7 +112,7 @@ public class AdminActionController extends HttpServlet {
                 isSuccess = dao.updateEmployeeLevel(targetEmpNo, newLevel);
                 
                 if (isSuccess) {
-                    out.println("alert('직급이 성공적으로 변경되었습니다.');");
+                    out.println("alert('職位が正常に変更されました。');");
                     out.println("location.href='admin.do';");
                 }
                 
@@ -164,13 +164,13 @@ public class AdminActionController extends HttpServlet {
             	if(loginEmp.getEmpLevel() == 5)
               	{
               		
-              		out.println("alert('직급이 성공적으로 변경되었습니다.');");
+              		out.println("alert('職位が正常に変更されました。');");
                     out.println("location.href='admin.do';");
               	}else
               	{
               		// 권한을 넘겼으므로 세션을 초기화하고 강제 로그아웃 처리합니다.
                       session.invalidate();
-                      out.println("alert('관리자 권한을 성공적으로 넘겼습니다. 일반 사원 권한으로 변경되어 로그아웃됩니다.');");
+                      out.println("alert('管理者権限の譲渡が完了しました。一般社員権限に変更されるため、ログアウトします。');");
                       out.println("location.href='index.jsp';");
               	}
               }
@@ -180,7 +180,7 @@ public class AdminActionController extends HttpServlet {
                 isSuccess = dao.deleteEmployee(targetEmpNo);
                 
                 if (isSuccess) {
-                    out.println("alert('해당 사원의 퇴사(삭제) 처리가 완료되었습니다.');");
+                    out.println("alert('該当社員の退職（削除）処理が完了しました。');");
                     out.println("location.href='admin.do';");
                 }
             } else if("updateDept".equals(action))
@@ -190,7 +190,7 @@ public class AdminActionController extends HttpServlet {
             	isSuccess = dao.updateEmployeeDept(targetEmpNo, newDept);
                 
                 if (isSuccess) {
-                    out.println("alert('직급이 성공적으로 변경되었습니다.');");
+                    out.println("alert('職位が正常に変更されました。');");
                     out.println("location.href='admin.do';");
                 }
             	
@@ -225,14 +225,14 @@ public class AdminActionController extends HttpServlet {
 //            }
 
             if (!isSuccess) {
-                out.println("alert('요청하신 작업 처리에 실패했습니다.');");
+                out.println("alert('要求された処理に失敗しました。');");
                 out.println("history.back();");
             }
             
 //            }
         } catch (Exception e) {
             e.printStackTrace();
-            out.println("alert('서버 오류가 발생했습니다.');");
+            out.println("alert('サーバーエラーが発生しました。');");
             out.println("history.back();");
         }
 

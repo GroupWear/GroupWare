@@ -45,10 +45,10 @@ public class AdminEmpInsertController extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.println("<script>");
         if (isSuccess) {
-            out.println("alert('신규 사원 정보가 시스템에 사전 등록되었습니다.');");
+            out.println("alert('新規社員情報がシステムに事前登録されました。');");
             out.println("location.href='admin.do';"); // 사원 관리 목록 페이지로 리다이렉트
         } else {
-            out.println("alert('등록에 실패했습니다. 이미 존재하는 사번인지 확인해 주세요.');");
+            out.println("alert('登録に失敗しました。既に存在する社員番号か確認してください。');");
             out.println("history.back();");
         }
         out.println("</script>");

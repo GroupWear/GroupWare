@@ -268,7 +268,7 @@
 					                <% if (isRetired) { %>
 					                    <span style="color: #dc3545; font-weight: bold; font-size: 13px;">退職処理済み</span>
 					                <% } else { %>
-					                    <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 사원의 직급을 수정하시겠습니까?');">
+					                    <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 社員の職位を修正しますか？');">
 					                        <input type="hidden" name="action" value="updateLevel">
 					                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 					                        <select name="newLevel">
@@ -349,7 +349,7 @@
 								    <% if (isRetired) { %>
 								        <span style="color: #dc3545; font-weight: bold; font-size: 13px;">退職処理済み</span>
 								    <% } else { %>
-								        <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 사원의 부서를 수정하시겠습니까?');">
+								        <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 社員の部署を修正しますか？');">
 								            <input type="hidden" name="action" value="updateDept">
 								            <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 								            
