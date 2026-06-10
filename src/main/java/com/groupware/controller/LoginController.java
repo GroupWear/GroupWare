@@ -1,6 +1,8 @@
 package com.groupware.controller;
 
 import java.io.IOException;
+import java.util.*;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -74,7 +76,12 @@ public class LoginController extends HttpServlet {
         
         // 3. 최종적으로 로그인이 성공했는지 확인합니다. (신규 유저든, 옛날 유저든 둘 중 하나라도 성공했다면 들어옴)
         if (loginEmp != null) {
+        	// 💡 1. 현재 요청한 브라우저(클라이언트)의 Locale(언어 세팅) 정보를 자동으로 감지합니다.
+            Locale currentLocale = request.getLocale();
             
+            // 💡 2. 다국어 properties 파일을 로드합니다. (경로는 resources 패키지 밑의 message.properties 기준)
+            // 언어 설정이 영어면 message_en.properties, 한국어면 message_ko.properties(또는 기본 bundle)를 알아서 찾습니다.
+            ResourceBundle bundle = ResourceBundle.getBundle("resources.message", currentLocale);
             // ★★★ [이 부분이 핵심 질문 답변: 자동 암호화 업그레이드] ★★★
             if (isLegacyUser) {
                 // 옛날 평문 유저임이 확인되었으니, 방금 입력한 따끈따끈한 비밀번호를 암호문으로 변환합니다.
@@ -84,7 +91,13 @@ public class LoginController extends HttpServlet {
                 boolean isUpdateSuccess = dao.updateEmployeePassword(empNo, newEncryptedPassword);
                 
                 if (isUpdateSuccess) {
-                    System.out.println("[보안 알림] 사번 " + empNo + " 사원의 구형 평문 비밀번호가 신형 암호문으로 자동 업그레이드 되었습니다!");
+                	
+                	// properties 파일에서 설정해두신 각각의 다국어 텍스트 조각 추출
+                    String securityPrefix = bundle.getString("login.error.Security");   // "[보안 알림] 사번"
+                    String securitySuffix = bundle.getString("login.error.Security1");  // "사원의 구형 평문 비밀번호가..."
+                    
+                    // 원래 원하셨던 변수(empNo)와 프로퍼티 문자열들을 조합하여 콘솔 출력
+                    System.out.println(securityPrefix + " " + empNo + " " + securitySuffix);
                 }
             }
             
@@ -94,8 +107,21 @@ public class LoginController extends HttpServlet {
             response.sendRedirect("main.jsp");         
             
         } else { 
-            // 로그인 실패 (사번이 없거나 비밀번호가 진짜로 틀린 경우)
-            request.setAttribute("msg", "사원번호 또는 비밀번호가 일치하지 않습니다.");
+
+        	// 로그인 실패 (사번이 없거나 비밀번호가 진짜로 틀린 경우)
+            
+            // 1. 현재 요청한 브라우저의 언어(Locale) 정보를 가져옵니다.
+            java.util.Locale currentLocale = request.getLocale();
+            
+            // 2. 다국어 properties 파일을 자바단에서 직접 로드합니다.
+            java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("resources.message", currentLocale);
+            
+            // 3. 번들에서 "login.error.invalid" 키에 해당하는 실제 번역 텍스트를 꺼냅니다.
+            String errorMsg = bundle.getString("login.error.invalid");
+            
+            // 4. 키값 문자열 대신 번역이 완료된 '실제 텍스트 문장'을 msg에 담아 보냅니다.
+            request.setAttribute("msg", errorMsg);
+
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
     }

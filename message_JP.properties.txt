@@ -1,24 +1,95 @@
+# =========================================================================
+# ダッシュボードおよび共通要素 (대시보드 및 공통 요소)
+# =========================================================================
 dashboard.title=Groupware メインダッシュボード
 dashboard.welcome=こんにちは、{0}様！
 dashboard.dept={0} 所属
-dashboard.leave.label=残余年次現況
+dashboard.leave.label=残存有給休暇状況
 dashboard.no.data=履歴がありません。
-dashboard.btn.prev=以前
+dashboard.btn.prev=前へ
 dashboard.btn.next=次へ
 
-# 状態値の多言語マッピング (상태값 다국어 매핑)
+# =========================================================================
+# ログインページ構成要素 (로그인 페이지 구성요소)
+# =========================================================================
+login.page.title=GroupWare - ログイン
+login.brand.bold=Group
+login.brand.thin=Ware
+login.placeholder.empNo=社員番号を入力してください。
+login.placeholder.password=パスワードを入力してください。
+login.btn.submit=ログイン
+login.link.join=アカウント登録
+login.link.findPw=パスワードをお忘れの方
+
+# ログイン例外処理メッセージ (Controller連動用)
+login.error.invalid=社員番号またはパスワードが正しくありません。
+login.error.Security=[セキュリティ通知] 社員番号
+login.error.Security1=社員の旧型プレーンテキストパスワードが最新の暗号化パスワードに自動アップグレードされました！
+login.error.locked=パスワードの入力誤りが5回に達したため、アカウントがロックされました。管理職にお問い合わせください。
+
+# パスワード再設定ページ構成要素
+findPw.page.title=パスワードの再設定
+findPw.page.subtitle=アカウントセキュリティのため、本人確認が必要です。<br>登録されている社員番号と氏名を入力してください。
+findPw.placeholder.name=氏명を入力してください
+
+# マイページ拡張要素
+mypage.btn.changePw=パスワード変更
+calendar.prefix.rental=備品
+status.res.wait=承認待ち
+
+# 日本語基準 (비밀번호 변경 화면용)
+password.change.title=Groupware - パスワード変更
+password.change.heading=セキュリティ認証 (パスワード変更)
+password.change.current=現在のパスワード
+password.change.new=新しいパスワード
+password.change.confirm=新しいパスワード(確認)
+password.change.btn.save=変更内容を保存
+password.change.btn.cancel=キャンセルしてマイページへ戻る
+
+# パスワード変更失敗時にコントロールラーから投げるエラーテキスト例
+password.change.error.wrong=現在のパスワードが一致しません。
+password.change.error.mismatch=新しいパスワードと確認用パスワードが一致しません。
+# =========================================================================
+# アカウント登録ページ構成要素 (계정 등록 페이지 구성요소)
+# =========================================================================
+join.page.title=アカウント登録 - GroupWare
+join.page.subtitle=社内システム アカウント登録
+join.label.empNo=社員番号確認
+join.placeholder.empNo=社員番号入力 (数字)
+join.btn.check=情報確認
+join.label.password=パスワード設定
+join.placeholder.password=使用するパスワードを入力
+join.label.name=氏名
+join.label.dept=付与された権限レベル
+join.placeholder.auto=社員番号確認時に自動入力
+join.btn.cancel=キャンセル
+join.btn.submit=登録完了
+
+# アカウント登録通知 (JS Alert)
+join.alert.emptyEmpNo=社員番号を入力してください。
+join.alert.successCheck=社員情報が確認されました。
+join.alert.retired=退職者です。ご確認をお願いいたします。
+join.alert.invalidEmpNo=登録されていない社員番号か、すでにアカウントが登録されている社員です。
+join.alert.needCheck=最初に「情報確認」ボタンを押してください。
+join.alert.netError=通信エラーが発生しました。
+
+# =========================================================================
+# ステータス多言語マッピング (상태값 다국어 매핑)
+# =========================================================================
 status.res.complete=予約完了
 status.res.finished=利用終了
-status.res.canceled=キャンセル済
+status.res.canceled=キャンセル済み
 status.rental.renting=貸出中
 status.rental.notreturned=未返却
 status.rental.wait=承認待ち
 status.leave.complete=承認完了
 status.leave.rejected=却下
-default.status=状態なし
+default.status=ステータスなし
 
-# header.jsp 용 일본어 키값
-user.suffix=さん
+# =========================================================================
+# ナビゲーションおよびヘッダー (header.jsp)
+# =========================================================================
+user.suffix=様
 nav.office.reservation=オフィス予約
 nav.leave.apply=休暇申請
 nav.rental.apply=備品貸出申請
@@ -30,43 +101,50 @@ nav.logout=ログアウト
 nav.admin.stock=在庫管理
 nav.admin.emp=社員管理
 
-# 테이블 헤더 및 링크 제목
-table.res.title=会議室予約現況
+# =========================================================================
+# テーブルヘッダーおよびリンクタイトル (테이블 헤더 및 링크 제목)
+# =========================================================================
+# 会議室予約関連
+table.res.title=マイ会議室予約状況
 table.res.no=予約番号
 table.res.room=会議室
-table.res.date=予約日付
-table.res.time=使用時間
-table.res.purpose=使用目的
-table.res.status=状態
+table.res.date=予約日
+table.res.time=利用時間
+table.res.purpose=利用目的
+table.res.status=ステータス
 table.res.note=備考
 table.res.btn.cancel=予約キャンセル
 table.res.empty=予約履歴がありません。
-
-table.rental.title.user=備品貸出現況
+table.res.room.unit=号
+# 備品貸出関連
+table.rental.title.user=マイ備品貸出状況
 table.rental.title.admin=備品貸出および未返却履歴 (管理者)
 table.rental.no=起案番号
 table.rental.writer=起案者
-table.rental.title=起案タイトル
+table.rental.title=起案件名
 table.rental.date=貸出期間
-table.rental.status=状態
+table.rental.status=ステータス
 table.rental.note=備考
 table.rental.btn.return=返却処理
 table.rental.empty=貸出履歴がありません。
 table.rental.retired=退職
 table.rental.myself=本人
-table.rental.notitle=タイトルなし
+table.rental.notitle=件名なし
 
-table.leave.title=休暇申請現況
+# 休暇申請関連
+table.leave.title=マイ休暇申請状況
 table.leave.no=文書番号
 table.leave.date=休暇期間
 table.leave.days=使用日数
 table.leave.days.unit=日
 table.leave.reason=事由
-table.leave.status=状態
-table.leave.empty=申請した休暇履歴がありません。
+table.leave.status=ステータス
+table.leave.empty=申請された休暇履歴がありません。
 
-# 자바스크립트 얼럿 및 컨펌창
-alert.return.confirm=該当備品を返却処理しますか？
+# =========================================================================
+# JavaScript アラートおよび確認ウィンドウ (자바스크립트 얼럿 및 컨펌창)
+# =========================================================================
+alert.return.confirm=該当の備品を返却処理しますか？
 alert.cancel.confirm=本当にこの予約をキャンセルしますか？
 alert.cal.title=▶ 会議室情報\\n
 alert.cal.purpose=\\n\\n▶ 予約目的\\n

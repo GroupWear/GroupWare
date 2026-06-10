@@ -1,10 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.*" %>
+<%
+    // [1순위 고정] 자바 로직이 돌기 전, 요청과 응답 스트림의 구멍을 UTF-8로 선제 타격해서 열어둡니다.
+    request.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding("UTF-8");
+%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<%-- [2순위 고정] JSTL이 브라우저 언어헤더를 읽어 동적으로 프로퍼티를 선택할 때, 깨지지 않도록 인코딩 필터 주입 --%>
+<fmt:requestEncoding value="UTF-8" />
+<fmt:setBundle basename="resources.message" scope="session" />
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GroupWare - 로그인</title>
+<title>GroupWare - Login</title>
 
 <link rel="stylesheet" href="css/index.css?v=1"> <%-- ?v=1을 붙이면 새로고침을 강제합니다 --%>
 
@@ -20,7 +32,8 @@
 
 			<header class="brand-header">
 				<div class="brand-logo">
-					<span class="bold">Group</span><span class="thin">Ware</span>
+					<span class="bold"><fmt:message key="login.brand.bold" /><!-- Group --></span>
+					<span class="thin"><fmt:message key="login.brand.thin" /><!-- Ware --></span>
 				</div>
 			</header>
 
@@ -36,7 +49,7 @@
                         name="empNo": 서버(Java) 측에서 request.getParameter("empNo")로 
                         데이터를 받기 위한 식별자입니다. 
                     --%>
-					<input type="text" name="empNo" placeholder="사원번호를 입력하세요." required
+					<input type="text" name="empNo" placeholder="<fmt:message key="login.placeholder.empNo" />" required
 						autocomplete="off">
 				</div>
 
@@ -45,7 +58,7 @@
                         name="password": 서버 측에서 request.getParameter("password")로 
                         데이터를 받기 위한 식별자입니다. 
                     --%>
-					<input type="password" name="password" placeholder="비밀번호를 입력하세요."
+					<input type="password" name="password" placeholder="<fmt:message key="login.placeholder.password" />"
 						required>
 				</div>
 
@@ -61,13 +74,13 @@
 				</div>
 				<% } %>
 
-				<button type="submit" class="login-submit">로그인</button>
+				<button type="submit" class="login-submit"><fmt:message key = "login.btn.submit"/></button>
 			</form>
 
 				<div class="link-footer">
 					<%-- 계정 등록(join.jsp)과 비밀번호 찾기(findPw.jsp)로 이동하는 링크 --%>
-					<a href="join.jsp">계정 등록</a> <span class="sep">|</span> <a
-						href="findPw.jsp">비밀번호 찾기</a>
+					<a href="join.jsp"><fmt:message key = "login.link.join"/></a> <span class="sep">|</span> <a
+						href="findPw.jsp"><fmt:message key = "login.link.findPw"/></a>
 				</div>
 			</div>
 		</div>
