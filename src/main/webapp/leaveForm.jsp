@@ -41,15 +41,16 @@
             </div>
             
             <div class="form-group">
-                <label>사유</label>
-                <select id="reasonCategory" name="reasonCategory" onchange="toggleReason(this.value)">
-                    <option value="연차">연차</option>
-                    <option value="병가">병가</option>
-                    <option value="경조사">경조사</option>
-                    <option value="직접입력">직접 입력</option> 
-                </select>
-                <input type="text" id="customReason" name="reason" style="display:none; margin-top:10px;" placeholder="사유 입력">
-            </div>
+   				<label>사유 선택</label>
+    					<select id="reasonCategory" name="reasonCategory" onchange="toggleReason(this.value)">
+        					<option value="연차">연차</option>
+        					<option value="병가">병가</option>
+        					<option value="경조사">경조사</option>
+        
+    					</select>
+    
+    			<input type="text" id="customReason" name="reason" style="margin-top:10px; width:100%; box-sizing:border-box;" placeholder="사유를 상세히 입력해주세요.">
+			</div>
 
             <div class="btn-group">
                 <button type="submit" class="btn-submit">신청서 제출</button>

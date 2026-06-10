@@ -50,21 +50,23 @@ public class LeaveDAO {
 		}
 		return workingDays;
 	}
-
+//06 10 수정 
 	public boolean insertLeave(LeaveHistoryDTO dto) {
 		boolean result = false;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		PreparedStatement pstmtUpdateEmp = null; // ★ 연차 차감용
+		PreparedStatement pstmtUpdateEmp = null;
 
-		// 도장(SIGN) 정보까지 모두 저장하도록 쿼리를 확장합니다.
+		// 기안자의 레벨을 받아 시작 단계로 설정 (컨트롤러에서 dto.setEmpLevel() 호출 필수)
+		int startStep = dto.getEmpLevel();
+
 		String sql = "INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, "
 				+ "SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE) "
 				+ "VALUES (SEQ_LEAVE.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try {
 			conn = DBConnection.getConnection();
-			conn.setAutoCommit(false); // ★ 트랜잭션 시작
+			conn.setAutoCommit(false);
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, dto.getEmpNo());
@@ -73,8 +75,8 @@ public class LeaveDAO {
 			pstmt.setInt(4, dto.getUseDays());
 			pstmt.setString(5, dto.getReason());
 			pstmt.setString(6, dto.getStatus());
-			pstmt.setInt(7, dto.getApprovalStep());
-			// 컨트롤러에서 세팅한 자동 도장 데이터 바인딩
+			pstmt.setInt(7, startStep); // 기안자 레벨을 단계로 저장
+
 			pstmt.setString(8, dto.getSign1());
 			pstmt.setDate(9, dto.getSign1Date());
 			pstmt.setString(10, dto.getSign2());
@@ -89,47 +91,25 @@ public class LeaveDAO {
 			int count = pstmt.executeUpdate();
 
 			if (count > 0) {
-				// ★ 최고 등급 직원 신청 시(상태가 승인완료인 경우) 즉시 연차 차감
 				if ("승인완료".equals(dto.getStatus())) {
 					String updateSql = "UPDATE EMPLOYEE SET CUR_LEAVE = CUR_LEAVE - ? WHERE EMP_NO = ?";
 					pstmtUpdateEmp = conn.prepareStatement(updateSql);
 					pstmtUpdateEmp.setInt(1, dto.getUseDays());
 					pstmtUpdateEmp.setInt(2, dto.getEmpNo());
-
-					if (pstmtUpdateEmp.executeUpdate() > 0) {
-						conn.commit();
-						result = true;
-					} else {
-						conn.rollback();
-					}
-				} else {
-					conn.commit();
-					result = true;
+					pstmtUpdateEmp.executeUpdate();
 				}
+				conn.commit();
+				result = true;
 			}
 		} catch (Exception e) {
-			try {
-				if (conn != null)
-					conn.rollback();
-			} catch (Exception ex) {
-			}
+			try { if (conn != null) conn.rollback(); } catch (Exception ex) {}
 			e.printStackTrace();
 		} finally {
-			try {
-				if (pstmtUpdateEmp != null)
-					pstmtUpdateEmp.close();
-			} catch (Exception e) {
-			}
-			try {
-				if (pstmt != null)
-					pstmt.close();
-			} catch (Exception e) {
-			}
-			try {
-				if (conn != null)
-					conn.close();
-			} catch (Exception e) {
-			}
+			// PreparedStatement가 2개이므로 closeResource를 호출하지 않고 직접 닫거나 
+            // 별도의 오버로딩된 closeResource를 사용해야 합니다.
+			try { if (pstmtUpdateEmp != null) pstmtUpdateEmp.close(); } catch (Exception e) {}
+			try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
+			try { if (conn != null) conn.close(); } catch (Exception e) {}
 		}
 		return result;
 	}
@@ -224,7 +204,7 @@ public class LeaveDAO {
 		return list;
 	}
 
-	// 특정 휴가 신청 상세 조회 (기존 코드 아래에 추가)
+	// 특정 휴가 신청 상세 조회 (기존 코드 아래에 추가) 06 10 수정 
 	public com.groupware.dto.LeaveHistoryDTO getLeaveDetail(int leaveNo) {
 		com.groupware.dto.LeaveHistoryDTO dto = null;
 		String sql = "SELECT h.*, e.EMP_NAME, e.EMP_LEVEL, e.DEPT " + "FROM LEAVE_HISTORY h "
@@ -242,6 +222,7 @@ public class LeaveDAO {
 				dto.setEmpNo(rs.getInt("EMP_NO"));
 				dto.setEmpName(rs.getString("EMP_NAME"));
 				dto.setDept(rs.getString("DEPT"));
+				dto.setEmpLevel(rs.getInt("EMP_LEVEL"));//06 10 추가 
 				dto.setStartDate(rs.getDate("START_DATE"));
 				dto.setEndDate(rs.getDate("END_DATE"));
 				dto.setUseDays(rs.getInt("USE_DAYS"));
@@ -426,4 +407,28 @@ public class LeaveDAO {
 		} catch (Exception e) {
 		}
 	}
+	//06 10 추가 
+	// 특정 사원의 직급(EMP_LEVEL)을 조회하는 메서드
+	public int getEmpLevelByNo(int empNo) {
+	    int level = 0;
+	    String sql = "SELECT EMP_LEVEL FROM EMPLOYEE WHERE EMP_NO = ?";
+
+	    try (Connection conn = com.groupware.util.DBConnection.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        
+	        pstmt.setInt(1, empNo);
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            if (rs.next()) {
+	                level = rs.getInt("EMP_LEVEL");
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return level;
+	}
+	
+	
+	
+	
 }

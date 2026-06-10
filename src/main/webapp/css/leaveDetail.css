@@ -20,7 +20,7 @@ body {
     box-shadow: 0 4px 16px rgba(0,0,0,0.06); 
     box-sizing: border-box !important;
 }
-.stamp-date { font-size: 11px; color: #666; margin-top: 2px; }
+
 .header-area { 
     display: flex; justify-content: space-between; align-items: flex-end; 
     margin-bottom: 25px; border-bottom: 2px solid #6366f1; padding-bottom: 15px; 
@@ -28,14 +28,11 @@ body {
 .header-area h2 { font-size: 26px; font-weight: 800; color: #1e293b; margin: 0; }
 
 /* ==========================================
-   2. 5단계 결재선 디자인 (스탬프 스타일)
+   2. 5단계 결재선 디자인
    ========================================== */
 .approval-table { 
     display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 35px; border: none; width: 100%;
 }
-.stamp-date { font-size: 12px; display: block; }
-.approval-table tr, .approval-table th, .approval-table td { display: block; border: none; padding: 0; }
-
 .stamp-box { 
     display: flex !important; flex-direction: column !important; width: 100px !important; 
     min-width: 100px !important; border: 1px solid #cbd5e1 !important; 
@@ -51,6 +48,7 @@ body {
     color: #0f172a !important; min-height: 22px !important; text-align: center !important; 
 }
 .stamp-name::after { content: '(인)'; font-size: 11px; color: #ef4444; margin-left: 3px; }
+.stamp-date { font-size: 11px; color: #666; margin-top: 2px; display: block; padding-bottom: 5px; }
 
 /* ==========================================
    3. 문서 상세 정보 테이블
@@ -83,8 +81,6 @@ body {
 .btn-group { 
     text-align: center; border-top: 1px solid #e2e8f0; padding-top: 25px; margin-top: 20px;
 }
-
-/* 버튼 공통 스타일 (크기 통일) */
 .btn-group button {
     padding: 12px 28px;
     font-size: 15px;
@@ -96,15 +92,9 @@ body {
     margin: 0 5px; 
     display: inline-block;
 }
-
-/* 목록으로 이동 버튼 */
 .btn-list { background-color: #6366f1; color: white; }
 .btn-list:hover { background-color: #4f46e5; }
-
-/* 결재 승인 버튼 (초록색) */
 .btn-approve { background-color: #10b981; color: white; }
 .btn-approve:hover { background-color: #059669; }
-
-/* 결재 반려 버튼 (빨간색) */
 .btn-reject { background-color: #ef4444; color: white; }
 .btn-reject:hover { background-color: #dc2626; }
