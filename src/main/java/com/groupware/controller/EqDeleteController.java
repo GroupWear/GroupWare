@@ -41,22 +41,22 @@ public class EqDeleteController extends HttpServlet {
 				  boolean isSuccess = dao.deleteEquipment(eqNo); 
 				  
 				  if (isSuccess) {
-					  	out.println("alert('비품이 성공적으로 폐기되었습니다.');");
+					  	out.println("alert('備品が正常に廃棄されました。');");
 				  		out.println("location.href='adminEqList.do';"); 
 				  } 
 				  else {
-					  out.println("alert('폐기 처리에 실패했습니다.');"); 
+					  out.println("alert('廃棄処理に失敗しました。');"); 
 					  out.println("history.back();"); 
 				  }
 			}else {
-				out.println("alert('반납 확인 해주세요. 폐기 처리에 실패했습니다.');"); 
+				out.println("alert('返却を確認してください。廃棄処理に失敗しました。');"); 
 				out.println("history.back();");
 			}
 				
         } catch (Exception e) {
             // 3. 외래 키 제약 조건 등으로 인해 삭제가 불가능한 경우 예외 처리를 수행합니다.
             // 해당 비품이 대여 내역 테이블에 묶여있어 외래 키 오류가 발생하는 경우
-            out.println("alert('현재 대여 기록이 남아있는 비품은 폐기할 수 없습니다.');");
+            out.println("alert('現在貸出記録が残っている備品は廃棄できません。');");
             out.println("history.back();");
         }
         out.println("</script>");
