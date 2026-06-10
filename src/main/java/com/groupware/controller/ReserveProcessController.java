@@ -31,7 +31,7 @@ public class ReserveProcessController extends HttpServlet {
         out.println("<script>");
 
         if (resNoStr == null || resNoStr.isEmpty()) {
-            out.println("alert('시간을 먼저 선택해 주세요.');");
+            out.println("alert('まず時間を選択してください。');");
             out.println("history.back();");
         } else {
             int resNo = Integer.parseInt(resNoStr);
