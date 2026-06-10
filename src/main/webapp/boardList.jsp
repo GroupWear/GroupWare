@@ -14,10 +14,10 @@
     if (keyword == null) keyword = "";
 %>
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>게시판 - GroupWare</title>
+<title>掲示板 - GroupWare</title>
 <link rel="stylesheet" href="css/board.css">
 </head>
 <body>
@@ -25,22 +25,22 @@
 	
     <div class="board-container">
         <div class="board-header">
-            <h2>게시판</h2>
+            <h2>掲示板</h2>
             <div class="board-tabs">
-                <a href="boardList.do?type=1" class="board-tab <%= (type == 1) ? "active" : "" %>">사내 소식</a>
-                <a href="boardList.do?type=2" class="board-tab <%= (type == 2) ? "active" : "" %>">자유 게시판</a>
-                <a href="boardList.do?type=3" class="board-tab <%= (type == 3) ? "active" : "" %>">건의 게시판</a>
+                <a href="boardList.do?type=1" class="board-tab <%= (type == 1) ? "active" : "" %>">社内ニュース</a>
+                <a href="boardList.do?type=2" class="board-tab <%= (type == 2) ? "active" : "" %>">フリートーク</a>
+                <a href="boardList.do?type=3" class="board-tab <%= (type == 3) ? "active" : "" %>">改善要望掲示板</a>
             </div>
         </div>
 
         <table class="board-table">
             <thead>
                 <tr>
-                    <th width="80">번호</th>
-                    <th>제목</th>
-                    <th width="120">작성자</th>
-                    <th width="150">작성일</th>
-                    <th width="80">조회수</th>
+                    <th width="80">No.</th>
+                    <th>タイトル</th>
+                    <th width="120">投稿者</th>
+                    <th width="150">投稿日</th>
+                    <th width="80">閲覧数</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,13 +60,12 @@
                     </tr>
                 <% } } else { %>
                     <tr>
-                        <td colspan="5" style="padding:50px 0; color:#999;">등록된 게시글이 없습니다.</td>
+                    <td colspan="5" style="padding:50px 0; color:#999;">登録された投稿がありません。</td>
                     </tr>
                 <% } %>
             </tbody>
         </table>
 
-        <!-- 페이징 -->
         <div class="pagination">
             <% if (currentPage > 1) { %>
                 <a href="boardList.do?type=<%= type %>&page=<%= currentPage - 1 %>&searchType=<%= searchType %>&keyword=<%= keyword %>">&laquo;</a>
@@ -83,20 +82,20 @@
             <form action="boardList.do" method="get" class="search-form">
                 <input type="hidden" name="type" value="<%= type %>">
                 <select name="searchType">
-                    <option value="title" <%= "title".equals(searchType) ? "selected" : "" %>>제목</option>
-                    <option value="content" <%= "content".equals(searchType) ? "selected" : "" %>>내용</option>
-                    <option value="author" <%= "author".equals(searchType) ? "selected" : "" %>>작성자</option>
+                    <option value="title" <%= "title".equals(searchType) ? "selected" : "" %>>タイトル</option>
+                    <option value="content" <%= "content".equals(searchType) ? "selected" : "" %>>内容</option>
+                    <option value="author" <%= "author".equals(searchType) ? "selected" : "" %>>投稿者</option>
                 </select>
-                <input type="text" name="keyword" value="<%= keyword %>" placeholder="검색어 입력">
-                <button type="submit" class="btn btn-outline">검색</button>
+                <input type="text" name="keyword" value="<%= keyword %>" placeholder="検索キーワードを入力">
+                <button type="submit" class="btn btn-outline">検索</button>
             </form>
 
             <% if (type == 1) { %>
                 <% if (loginEmp != null && "Y".equals(loginEmp.getManager())) { %>
-                    <a href="boardWrite.do?type=<%= type %>" class="btn btn-primary">글쓰기</a>
+                    <a href="boardWrite.do?type=<%= type %>" class="btn btn-primary">新規投稿</a>
                 <% } %>
             <% } else { %>
-                <a href="boardWrite.do?type=<%= type %>" class="btn btn-primary">글쓰기</a>
+                <a href="boardWrite.do?type=<%= type %>" class="btn btn-primary">新規投稿</a>
             <% } %>
         </div>
     </div>

@@ -38,7 +38,7 @@ public class BoardUpdateController extends HttpServlet {
         
         if (board.getEmpNo() != loginEmp.getEmpNo() && !"Y".equals(loginEmp.getManager())) {
             response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().println("<script>alert('수정 권한이 없습니다.'); history.back();</script>");
+            response.getWriter().println("<script>alert('編集権限がありません。'); history.back();</script>");
             return;
         }
         
@@ -88,7 +88,7 @@ public class BoardUpdateController extends HttpServlet {
             response.sendRedirect("boardDetail.do?boardNo=" + boardNo);
         } else {
             response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().println("<script>alert('게시글 수정에 실패했습니다.'); history.back();</script>");
+            response.getWriter().println("<script>alert('投稿の修正に失敗しました。'); history.back();</script>");
         }
     }
 

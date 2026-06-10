@@ -41,7 +41,7 @@ public class BoardWriteController extends HttpServlet {
         // 사내 소식(1)은 관리자만 작성 가능
         if (type == 1 && !"Y".equals(loginEmp.getManager())) {
             response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().println("<script>alert('사내 소식 게시판은 관리자만 작성할 수 있습니다.'); history.back();</script>");
+            response.getWriter().println("<script>alert('社内ニュース掲示板は管理者のみが投稿できます。'); history.back();</script>");
             return;
         }
         
@@ -91,7 +91,7 @@ public class BoardWriteController extends HttpServlet {
             response.sendRedirect("boardList.do?type=" + type);
         } else {
             response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().println("<script>alert('게시글 등록에 실패했습니다.'); history.back();</script>");
+            response.getWriter().println("<script>alert('投稿の登録に失敗しました。'); history.back();</script>");
         }
     }
 

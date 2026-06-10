@@ -60,6 +60,12 @@
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0.4</version>
 		</dependency>
-
+		<!--다국어화 하기 위한 서블릿-->
+		<dependency>
+        	<groupId>javax.servlet</groupId>
+        	<artifactId>jstl</artifactId>
+        	<version>1.2</version>
+    	</dependency>
+    	
 	</dependencies>
 </project>

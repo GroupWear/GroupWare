@@ -22,9 +22,9 @@ public class EquipmentDAO {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-
-		String sql = "SELECT * FROM EQUIPMENT ORDER BY EQ_NO ASC";
-
+		//ischecked 추가 폐기 때문에
+		String sql = "SELECT * FROM EQUIPMENT WHERE 1=1 AND ISCHECKED = 'Y' ORDER BY EQ_NO ASC";
+		System.out.println("전체 : 장비 list 출력 : getAllEquipments"+sql);
 		try {
 			conn = DBConnection.getConnection();
 			if (conn != null) {
@@ -33,10 +33,12 @@ public class EquipmentDAO {
 
 				while (rs.next()) {
 					EquipmentDTO dto = new EquipmentDTO();
+					String ischecked_ch = rs.getString("ischecked");
 					dto.setEqNo(rs.getInt("EQ_NO"));
 					dto.setEqName(rs.getString("EQ_NAME"));
 					dto.setTotalCount(rs.getInt("TOTAL_COUNT"));
 					dto.setRemainCount(rs.getInt("REMAIN_COUNT"));
+					dto.setIschecked(ischecked_ch.charAt(0));
 					list.add(dto);
 				}
 			}
@@ -149,8 +151,10 @@ public class EquipmentDAO {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 
-		String sql = "DELETE FROM EQUIPMENT WHERE EQ_NO = ?";
-
+		//전) history 이력에 있는 테이블로 인해 폐기 오류가 나옴
+		//20260608 LHS
+		//String sql = "DELETE FROM EQUIPMENT WHERE EQ_NO = ?";
+		String sql = "UPDATE EQUIPMENT SET ISCHECKED = 'N' WHERE EQ_NO = ?";
 		try {
 			conn = DBConnection.getConnection();
 			if (conn != null) {
@@ -202,6 +206,92 @@ public class EquipmentDAO {
 			closeResource(conn, pstmt, rs);
 		}
 		return dto;
+	}
+	/*
+	 * Ischecked 컬럼 추가로 인해 select 를 통해 반납 완료한 데이터 삭제 가능한 쿼리
+	 * 
+	 * */
+	public int getCheckEquipment(int eqNo) {
+        int count = 0;
+        String sql = "SELECT COUNT(*)  FROM RENTAL_HISTORY A WHERE 1=1 AND A.EQ_NO = ? AND A.STATUS = '반납완료' AND NOT EXISTS ( SELECT 1  FROM RENTAL_HISTORY B WHERE B.EQ_NO = A.EQ_NO AND B.STATUS IN ('승인대기', '대여중', '반려됨'))";
+        try {
+        	Connection conn = DBConnection.getConnection();
+        	PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, eqNo);
+        		
+            ResultSet rs = pstmt.executeQuery(); 
+            if (rs.next()) count = rs.getInt(1);
+            //test
+            //System.out.println("여부 파악"+sql);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+	
+	
+	/**
+	 * 전체 비품 개수 조회 (페이징 처리를 위해 필요)
+	 */
+	public int getTotalCount() {
+		int count = 0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT COUNT(*) FROM EQUIPMENT";
+		try {
+			conn = DBConnection.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				count = rs.getInt(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeResource(conn, pstmt, rs);
+		}
+		return count;
+	}
+
+	/**
+	 * 페이징 처리가 된 비품 목록 조회
+	 */
+	public List<EquipmentDTO> getEquipmentsPaging(int startRow, int endRow) {
+		List<EquipmentDTO> list = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		// H2 (Oracle 모드) 또는 Oracle에서 사용 가능한 ROWNUM 쿼리
+		String sql = "SELECT * FROM ("
+				   + "  SELECT ROWNUM AS RN, A.* FROM ("
+				   + "    SELECT * FROM EQUIPMENT ORDER BY EQ_NO ASC"
+				   + "  ) A"
+				   + ") WHERE RN BETWEEN ? AND ?";
+
+		try {
+			conn = DBConnection.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, startRow);
+			pstmt.setInt(2, endRow);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				EquipmentDTO dto = new EquipmentDTO();
+				dto.setEqNo(rs.getInt("EQ_NO"));
+				dto.setEqName(rs.getString("EQ_NAME"));
+				dto.setTotalCount(rs.getInt("TOTAL_COUNT"));
+				dto.setRemainCount(rs.getInt("REMAIN_COUNT"));
+				list.add(dto);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeResource(conn, pstmt, rs);
+		}
+		return list;
 	}
 
 	/**

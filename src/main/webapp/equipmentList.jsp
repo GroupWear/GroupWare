@@ -6,7 +6,6 @@
 
 <%
     EmployeeDTO loginEmp = (EmployeeDTO) session.getAttribute("loginEmp");
-
     if (loginEmp == null) {
         response.sendRedirect("index.jsp");
         return;
@@ -15,48 +14,43 @@
     List<EquipmentDTO> eqList = (List<EquipmentDTO>) request.getAttribute("eqList");
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사내 시스템 - 비품 대여 신청</title>
-    <!-- 경로 뒤에 ?v=1.1 이나 임의의 숫자를 붙여서 저장하세요 -->
+    <title>社内システム - 備品貸出申請</title>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/css/equipmentList.css?v=1.1">
 </head>
 <body>
     
-    <!-- 1. 상단 네비게이션 헤더 (최상단 고정 고유 레이어) -->
-<jsp:include page="header.jsp" />
+    <jsp:include page="header.jsp" />
     
-    <!-- 2. 페이지 대제목 영역 (고정 영역에서 완전히 제외하여 최상단 헤더 밑에 배치) -->
     <div class="table-container" style="margin-top: 30px; margin-bottom: 0;">
         <div class="headertitle">
-            <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: #1e293b;">비품 대여 신청</h2>
+            <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: #1e293b;">備品貸出申請</h2>
         </div>
     </div>
     
-    <!-- 3. 실시간 고정형 검색 바 영역 (헤더 바로 하단인 top: 65px 지점에 단독 고정) -->
-	<div class="search-bar-container">
+    <div class="search-bar-container">
 	    <div class="search-form">
 	        <select id="searchType" class="search-select">
-	            <option value="all">전체 검색</option>
-	            <option value="eqName">비품 명칭</option>
-	            <option value="eqNo">비품 번호</option>
+	            <option value="all">全体検索</option>
+	            <option value="eqName">備品名</option>
+	            <option value="eqNo">備品番号</option>
 	        </select>
-	        <input type="text" id="searchKeyword" class="search-input" placeholder="이동할 비품명 또는 번호 입력..." autocomplete="off" onkeyup="if(event.key === 'Enter') searchAndScroll()">
-	        <button type="button" class="btn-search" onclick="searchAndScroll()">검색 및 이동</button>
+	        <input type="text" id="searchKeyword" class="search-input" placeholder="移動する備品名または番号を入力..." autocomplete="off" onkeyup="if(event.key === 'Enter') searchAndScroll()">
+	        <button type="button" class="btn-search" onclick="searchAndScroll()">検索・移動</button>
 	    </div>
 	</div>
 
-    <!-- 4. 메인 비품 목록 테이블 영역 (이하 기존 코드 유지) -->
     <div class="table-container" style="margin-top: 10px;">
         <table class="eq-table">
             <thead>
                 <tr>
-                    <th style="width: 15%; text-align: center;">비품 번호</th>
-                    <th style="width: 45%; text-align: center;">비품 명칭</th>
-                    <th style="width: 25%; text-align: center;">대여 가능 수량 (잔여/전체)</th>
-                    <th style="width: 15%; text-align: center;">신청</th>
+                    <th style="width: 15%; text-align: center;">備品番号</th>
+                    <th style="width: 45%; text-align: center;">備品名</th>
+                    <th style="width: 25%; text-align: center;">貸出可能数量 (残り/全体)</th>
+                    <th style="width: 15%; text-align: center;">申請</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,46 +58,67 @@
                     for (EquipmentDTO eq : eqList) {
                 %>
                     <tr class="eq-row">
-                        <!-- 비품 번호 출력 -->
                         <td class="eq-no" style="text-align: center;"><%= eq.getEqNo() %></td>
                         
-                        <!-- 비품 명칭 출력 -->
                         <td class="eq-name" style="text-align: center;"><%= eq.getEqName() %></td>
                         
-                        <!-- 잔여 수량 조건별 강조 출력 -->
                         <td style="text-align: center;" class="eq-count <%= eq.getRemainCount() == 0 ? "text-danger" : "" %>">
                             <b><%= eq.getRemainCount() %></b> / <%= eq.getTotalCount() %> EA
                         </td>
                         
-                        <!-- 작동 상태 버튼 출력 -->
                         <td style="text-align: center;">
                             <% if (eq.getRemainCount() > 0) { %>
-                                <button class="btn-rent" onclick="location.href='rentForm.do?eqNo=<%= eq.getEqNo() %>'">대여 신청</button>
+                                <button class="btn-rent" onclick="location.href='rentForm.do?eqNo=<%= eq.getEqNo() %>'">貸出申請</button>
                             <% } else { %>
-                                <button class="btn-disabled" disabled>재고 소진</button>
+                                <button class="btn-disabled" disabled>在庫切れ</button>
                             <% } %>
                         </td>
                     </tr>
                 <% } } else { %>
                     <tr>
-                        <td colspan="4" style="text-align: center; color: #64748b; padding: 50px; font-size: 15px;">등록된 비품 목록이 없습니다.</td>
+                        <td colspan="4" style="text-align: center; color: #64748b; padding: 50px; font-size: 15px;">登録されている備品がありません。</td>
                     </tr>
                 <% } %>
             </tbody>
         </table>
     </div>
 
+    <%
+        Integer currentPage = (Integer) request.getAttribute("currentPage");
+        Integer totalPages = (Integer) request.getAttribute("totalPages");
+        Integer startPage = (Integer) request.getAttribute("startPage");
+        Integer endPage = (Integer) request.getAttribute("endPage");
+        
+        if (totalPages != null && totalPages > 1) {
+    %>
+    <div class="pagination-container" style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
+        <div class="pagination">
+            <% if (startPage > 1) { %>
+                <a href="equipmentList.do?page=<%= startPage - 1 %>" class="page-link">&laquo; 前へ</a>
+            <% } %>
+
+            <% for (int i = startPage; i <= endPage; i++) { %>
+                <a href="equipmentList.do?page=<%= i %>" class="page-link <%= (i == currentPage) ? "active" : "" %>"><%= i %></a>
+            <% } %>
+
+            <% if (endPage < totalPages) { %>
+                <a href="equipmentList.do?page=<%= endPage + 1 %>" class="page-link">次へ &raquo;</a>
+            <% } %>
+        </div>
+    </div>
+    <% } %>
+
 </body>
 </html>
 
 <script>
-// 전역 변수 설정: 원본 텍스트, 이전 검색어, 현재 포커스 인덱스 기록
+// 全変数の設定: オリジナルテキスト、前回の検索キーワード、現在のフォーカスインデックスの記録
 const originalTexts = new Map();
 let lastKeyword = "";
 let currentMatchIndex = -1;
 
 window.addEventListener('DOMContentLoaded', () => {
-    // 페이지 로드 시 각 셀의 순수 원본 텍스트만 메모리에 기록
+    // ページロード時に各セルの純粋なオリジナルテキストのみメモリに記録
     document.querySelectorAll('.eq-no, .eq-name').forEach((td, index) => {
         td.setAttribute('data-search-id', index);
         originalTexts.set(index.toString(), td.textContent.trim());
@@ -116,21 +131,20 @@ function searchAndScroll() {
     const lowerKeyword = keyword.toLowerCase();
 
     if (keyword === "") {
-        alert("검색어를 입력해주세요.");
+        alert("検索キーワードを入力してください。");
         return;
     }
 
-    // [핵심 로직] 새로운 단어를 검색한 경우: 마킹을 새로 하고 인덱스를 초기화함
+    // [コアロジック] 新しい単語を検索した場合: マーキングを新しくし、インデックスを初期化する
     if (lastKeyword !== lowerKeyword) {
-        // 1. 기존 노란 하이라이트 마킹 전체 초기화
+        // 1. 既存のハイライトマーキングをすべて初期化
         document.querySelectorAll('.eq-no, .eq-name').forEach(td => {
             const id = td.getAttribute('data-search-id');
             if (originalTexts.has(id)) {
                 td.innerHTML = originalTexts.get(id); 
             }
         });
-
-        // 2. 루프를 돌며 일치하는 모든 항목에 하이라이트 마킹 표시
+        // 2. ループを回して一致するすべての項目にハイライトマーキングを表示
         const rows = document.querySelectorAll(".eq-row");
         rows.forEach(row => {
             const eqNoTd = row.querySelector(".eq-no");
@@ -143,46 +157,41 @@ function searchAndScroll() {
                 markCellIfMatch(eqNameTd, lowerKeyword);
             }
         });
-
-        // 상태 기록 갱신
+        // 状態記録の更新
         lastKeyword = lowerKeyword;
-        currentMatchIndex = -1; 
+        currentMatchIndex = -1;
     }
 
-    // 3. 화면에 생성된 모든 마킹 요소 리스트를 수집
+    // 3. 画面に生成されたすべてのマーキング要素のリストを収集
     const allMarks = document.querySelectorAll(".mark-highlight");
-
     if (allMarks.length > 0) {
-        // 다음 인덱스로 이동 (마지막 항목에 도달했다면 다시 0번째 첫 항목으로 회귀)
+        // 次のインデックスに移動 (最後の項目に達したら最初の項目に戻る)
         currentMatchIndex++;
         if (currentMatchIndex >= allMarks.length) {
-            currentMatchIndex = 0; 
+            currentMatchIndex = 0;
         }
 
-        // 4. 선택된 순서의 다음(Next) 마킹 위치로 부드럽게 스크롤 이동
+        // 4. 選択された順序の次のマーキング位置へスムーズにスクロール移動
         allMarks[currentMatchIndex].scrollIntoView({
             behavior: "smooth",
             block: "center"
         });
-
-        // 5. 사용자가 편하게 다음 검색을 이어나가도록 텍스트창 블록 지정 (기존 유지)
+        // 5. 次の検索がスムーズに行えるようテキストボックスを選択状態にする
         document.getElementById("searchKeyword").select();
     } else {
-        alert("일치하는 비품 항목을 찾을 수 없습니다.");
+        alert("一致する備品が見つかりません。");
         document.getElementById("searchKeyword").focus();
         lastKeyword = "";
         currentMatchIndex = -1;
     }
 }
 
-// 텍스트 매칭 및 실제 태그 치환 함수 (숫자 보존 정규식 방식 적용)
+// テキストマッチングおよび実際のタグ置換関数
 function markCellIfMatch(td, lowerKeyword) {
     if (!td) return false;
-    
     const originalText = td.textContent.trim();
     const lowerText = originalText.toLowerCase();
     const index = lowerText.indexOf(lowerKeyword);
-
     if (index >= 0) {
         const escapedKeyword = lowerKeyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         const regex = new RegExp(escapedKeyword, "gi");

@@ -24,7 +24,7 @@ public class BoardDeleteController extends HttpServlet {
         
         if (board.getEmpNo() != loginEmp.getEmpNo() && !"Y".equals(loginEmp.getManager())) {
             response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().println("<script>alert('삭제 권한이 없습니다.'); history.back();</script>");
+            response.getWriter().println("<script>alert('削除権限がありません。'); history.back();</script>");
             return;
         }
         
@@ -33,7 +33,7 @@ public class BoardDeleteController extends HttpServlet {
             response.sendRedirect("boardList.do?type=" + type);
         } else {
             response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().println("<script>alert('게시글 삭제에 실패했습니다.'); history.back();</script>");
+            response.getWriter().println("<script>alert('投稿の削除に失敗しました。'); history.back();</script>");
         }
     }
 }

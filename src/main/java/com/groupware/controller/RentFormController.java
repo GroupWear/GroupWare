@@ -44,15 +44,15 @@ public class RentFormController extends HttpServlet {
                     // jsp에서는 ${equipment.eqName}, ${equipment.remainCount} 형태로 바로 꺼낼 수 있습니다.
                     request.setAttribute("equipment", equipment);
                 } else {
-                    request.setAttribute("errorMsg", "해당 비품의 정보를 찾을 수 없습니다.");
+                    request.setAttribute("errorMsg", "該当する備品の情報が見つかりません。");
                 }
                 
             } catch (NumberFormatException e) {
                 e.printStackTrace();
-                request.setAttribute("errorMsg", "잘못된 비품 번호 형식입니다.");
+                request.setAttribute("errorMsg", "不正な備品番号形式です。");
             }
         } else {
-            request.setAttribute("errorMsg", "비품 번호 파라미터가 누락되었습니다.");
+            request.setAttribute("errorMsg", "備品番号パラメータが欠落しています。");
         }
 
         // 6. 조회한 데이터를 request 객체에 실어 대여 신청 폼 페이지(rentForm.jsp)로 이동 (Forward)

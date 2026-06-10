@@ -32,7 +32,7 @@ public class DocumentListController extends HttpServlet {
         
         if (loginEmp == null) {
             PrintWriter out = response.getWriter();
-            out.println("<script>alert('로그인이 필요한 서비스입니다.');location.href='index.jsp';</script>");
+            out.println("<script>alert('ログインが必要なサービスです。');location.href='index.jsp';</script>");
             out.close();
             return;
         }
@@ -40,24 +40,53 @@ public class DocumentListController extends HttpServlet {
         try {
             int empNo = loginEmp.getEmpNo();
             RentalDAO rentalDao = new RentalDAO();
+            LeaveDAO leaveDao = new LeaveDAO();
             
-            // 1. 비품 목록 로드
-            List<RentalHistoryDTO> docList = rentalDao.getAllDocumentList(); 
-            request.setAttribute("docList", docList); 
+            // --- 페이징 공통 설정 ---
+            int pageSize = 10;
+            int pageBlock = 5;
             
-            // 2. [수정 포인트] 휴가 목록 로드 (디버깅 추가)
-            List<LeaveHistoryDTO> leaveList = new ArrayList<>();
-            try {
-                LeaveDAO leaveDao = new LeaveDAO();
-                // getMyLeaveList(empNo) 대신 getAllLeaveDocuments() 사용
-                leaveList = leaveDao.getAllLeaveDocuments(); 
-                
-                System.out.println("디버그: 시스템 내 전체 휴가 신청 건수 -> " + (leaveList != null ? leaveList.size() : "null"));
-                
-            } catch (Exception e) {
-                e.printStackTrace(); 
+            // 1. 비품 목록 페이징 처리
+            int eqCurrentPage = 1;
+            String eqPageParam = request.getParameter("eqPage");
+            if (eqPageParam != null && !eqPageParam.isEmpty()) {
+                try { eqCurrentPage = Integer.parseInt(eqPageParam); } catch (NumberFormatException e) { eqCurrentPage = 1; }
             }
+            int eqStartRow = (eqCurrentPage - 1) * pageSize + 1;
+            int eqEndRow = eqCurrentPage * pageSize;
+            
+            List<RentalHistoryDTO> docList = rentalDao.getAllDocumentListPaging(eqStartRow, eqEndRow);
+            int eqTotalCount = rentalDao.getTotalRentalCount();
+            int eqTotalPages = (int) Math.ceil((double) eqTotalCount / pageSize);
+            int eqStartPage = ((eqCurrentPage - 1) / pageBlock) * pageBlock + 1;
+            int eqEndPage = Math.min(eqStartPage + pageBlock - 1, eqTotalPages);
+            
+            request.setAttribute("docList", docList);
+            request.setAttribute("eqCurrentPage", eqCurrentPage);
+            request.setAttribute("eqTotalPages", eqTotalPages);
+            request.setAttribute("eqStartPage", eqStartPage);
+            request.setAttribute("eqEndPage", eqEndPage);
+            
+            // 2. 휴가 목록 페이징 처리
+            int leaveCurrentPage = 1;
+            String leavePageParam = request.getParameter("leavePage");
+            if (leavePageParam != null && !leavePageParam.isEmpty()) {
+                try { leaveCurrentPage = Integer.parseInt(leavePageParam); } catch (NumberFormatException e) { leaveCurrentPage = 1; }
+            }
+            int leaveStartRow = (leaveCurrentPage - 1) * pageSize + 1;
+            int leaveEndRow = leaveCurrentPage * pageSize;
+            
+            List<LeaveHistoryDTO> leaveList = leaveDao.getAllLeaveDocumentsPaging(leaveStartRow, leaveEndRow);
+            int leaveTotalCount = leaveDao.getTotalLeaveCount();
+            int leaveTotalPages = (int) Math.ceil((double) leaveTotalCount / pageSize);
+            int leaveStartPage = ((leaveCurrentPage - 1) / pageBlock) * pageBlock + 1;
+            int leaveEndPage = Math.min(leaveStartPage + pageBlock - 1, leaveTotalPages);
+            
             request.setAttribute("leaveList", leaveList);
+            request.setAttribute("leaveCurrentPage", leaveCurrentPage);
+            request.setAttribute("leaveTotalPages", leaveTotalPages);
+            request.setAttribute("leaveStartPage", leaveStartPage);
+            request.setAttribute("leaveEndPage", leaveEndPage);
             
             String activeTab = request.getParameter("tab");
             request.setAttribute("activeTab", activeTab); 
@@ -67,7 +96,7 @@ public class DocumentListController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             PrintWriter out = response.getWriter();
-            out.println("<script>alert('문서함을 로드하는 중 오류가 발생했습니다.');location.href='main.jsp';</script>");
+            out.println("<script>alert('フォルダを読み込んでいる途中でエラーが発生しました。');location.href='main.jsp';</script>");
             out.close();
         }
     }

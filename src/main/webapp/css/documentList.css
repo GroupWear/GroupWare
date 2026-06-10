@@ -313,3 +313,60 @@ body {
 .status-blue { background-color: #e0e7ff !important; color: #4338ca !important; border: 1px solid #c7d2fe !important; }
 .status-red { background-color: #fee2e2 !important; color: #b91c1c !important; border: 1px solid #fecaca !important; }
 .status-gray { background-color: #f3f4f6 !important; color: #4b5563 !important; border: 1px solid #e5e7eb !important; }
+
+/* ==========================================
+   8. 페이징 네비게이션 스타일 (강력한 스타일 적용)
+   ========================================== */
+.pagination-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 5px !important;
+    margin: 30px 0 50px 0 !important;
+    width: 100% !important;
+}
+
+.pagination {
+    display: flex !important;
+    gap: 6px !important;
+}
+
+/* 기존 page-link 클래스에 대한 디자인 강화 */
+.page-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    padding: 0 10px !important;
+    border-radius: 8px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+.page-link:hover {
+    border-color: #6366f1 !important;
+    color: #6366f1 !important;
+    background-color: #f8fafc !important;
+    transform: translateY(-1px) !important;
+}
+
+.page-link.active {
+    background-color: #6366f1 !important;
+    color: #ffffff !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4) !important;
+    cursor: default !important;
+}
+
+.page-link.active:hover {
+    background-color: #6366f1 !important;
+    color: #ffffff !important;
+    transform: none !important;
+}

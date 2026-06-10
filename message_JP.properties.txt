@@ -1,0 +1,72 @@
+dashboard.title=Groupware メインダッシュボード
+dashboard.welcome=こんにちは、{0}様！
+dashboard.dept={0} 所属
+dashboard.leave.label=残余年次現況
+dashboard.no.data=履歴がありません。
+dashboard.btn.prev=以前
+dashboard.btn.next=次へ
+
+# 状態値の多言語マッピング (상태값 다국어 매핑)
+status.res.complete=予約完了
+status.res.finished=利用終了
+status.res.canceled=キャンセル済
+status.rental.renting=貸出中
+status.rental.notreturned=未返却
+status.rental.wait=承認待ち
+status.leave.complete=承認完了
+status.leave.rejected=却下
+default.status=状態なし
+
+# header.jsp 용 일본어 키값
+user.suffix=さん
+nav.office.reservation=オフィス予約
+nav.leave.apply=休暇申請
+nav.rental.apply=備品貸出申請
+nav.document.box=起案文書箱
+nav.board=掲示板
+nav.address.book=アドレス帳
+nav.mypage=マイページ
+nav.logout=ログアウト
+nav.admin.stock=在庫管理
+nav.admin.emp=社員管理
+
+# 테이블 헤더 및 링크 제목
+table.res.title=会議室予約現況
+table.res.no=予約番号
+table.res.room=会議室
+table.res.date=予約日付
+table.res.time=使用時間
+table.res.purpose=使用目的
+table.res.status=状態
+table.res.note=備考
+table.res.btn.cancel=予約キャンセル
+table.res.empty=予約履歴がありません。
+
+table.rental.title.user=備品貸出現況
+table.rental.title.admin=備品貸出および未返却履歴 (管理者)
+table.rental.no=起案番号
+table.rental.writer=起案者
+table.rental.title=起案タイトル
+table.rental.date=貸出期間
+table.rental.status=状態
+table.rental.note=備考
+table.rental.btn.return=返却処理
+table.rental.empty=貸出履歴がありません。
+table.rental.retired=退職
+table.rental.myself=本人
+table.rental.notitle=タイトルなし
+
+table.leave.title=休暇申請現況
+table.leave.no=文書番号
+table.leave.date=休暇期間
+table.leave.days=使用日数
+table.leave.days.unit=日
+table.leave.reason=事由
+table.leave.status=状態
+table.leave.empty=申請した休暇履歴がありません。
+
+# 자바스크립트 얼럿 및 컨펌창
+alert.return.confirm=該当備品を返却処理しますか？
+alert.cancel.confirm=本当にこの予約をキャンセルしますか？
+alert.cal.title=▶ 会議室情報\\n
+alert.cal.purpose=\\n\\n▶ 予約目的\\n
