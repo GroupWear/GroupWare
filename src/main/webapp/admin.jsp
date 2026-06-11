@@ -36,7 +36,7 @@
 	    const lowerKeyword = keyword.toLowerCase();
 	
 	    if (keyword === "") {
-	        alert("검색어를 입력해주세요.");
+	        alert("検索キーワードを入力してください。");
 	        return;
 	    }
 	
@@ -110,7 +110,7 @@
 	
 	        document.getElementById("searchKeyword").select();
 	    } else {
-	        alert("일치하는 사원 또는 부서 항목을 찾을 수 없습니다.");
+	        alert("一致する社員または部署が見つかりません。");
 	        document.getElementById("searchKeyword").focus();
 	        lastKeyword = "";
 	        currentMatchIndex = -1;
@@ -162,7 +162,7 @@
     <div class="container">
 	
 	    <div class="table-title-area">
-        	<h2>전사 직원 관리 (마스터)</h2>
+        	<h2>ぜんじゅうぎょういんかんり</h2>
         </div>
         <div class="search-bar-container" 
  		 style="max-width: 1160px; width: 100%; padding: 10px 0 15px 0; margin: 0 auto; box-sizing: border-box; position: sticky; top: 65px; z-index: 99; background-color: #f4f7fa;">
@@ -171,13 +171,13 @@
 			        
 			        <select id="searchType" class="search-select" 
 			                style="width: 130px; height: 42px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; color: #475569; outline: none; background-color: #ffffff; cursor: pointer; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
-			            <option value="all">전체 검색</option>
-			            <option value="emNo">사원번호</option>
-			            <option value="emName">이름</option>
-			            <option value="emDept">부서</option>
+			            <option value="all">全体検索</option>
+			            <option value="emNo">社員番号</option>
+			            <option value="emName">名前</option>
+			            <option value="emDept">部署</option>
 			        </select>
 			        
-			        <input type="text" id="searchKeyword" class="search-input" placeholder="이동할 비품명 또는 번호 입력..." autocomplete="off" 
+			        <input type="text" id="searchKeyword" class="search-input" placeholder="社員番号を入力.." autocomplete="off" 
 			               onkeyup="if(event.key === 'Enter') searchAndScroll()"
 			               onfocus="this.style.borderColor='#6366f1'" 
 			               onblur="this.style.borderColor='#cbd5e1'"
@@ -187,7 +187,7 @@
 			                onmouseover="this.style.backgroundColor='#4f46e5'" 
 			                onmouseout="this.style.backgroundColor='#6366f1'"
 			                style="height: 42px; padding: 0 24px; background-color: #6366f1; color: #ffffff; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; white-space: nowrap; font-family: -apple-system, BlinkMacSystemFont, sans-serif; transition: background-color 0.15s ease;">
-			            검색 및 이동
+			            検索して移動
 			        </button>
 			        
 			    </div>
@@ -196,12 +196,12 @@
 			<table>
 				<thead>
 					<tr>
-						<th>사원 번호</th>
-						<th>성명</th>
-						<th>권한 레벨 조정</th>
-						<th>시스템 권한</th>
-						<th>인사 관리 (위임/퇴사/위임변경/위임취소)</th>
-						<th>부서</th>
+						<th>社員番号</th>
+						<th>名前</th>
+						<th>権限レベルの変更</th>
+						<th>システム権限</th>
+						<th>人事管理（権限委任／退職／委任変更／委任解除）</th>
+						<th>部署</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -266,9 +266,9 @@
 					
 					            <td>
 					                <% if (isRetired) { %>
-					                    <span style="color: #dc3545; font-weight: bold; font-size: 13px;">퇴사 처리됨</span>
+					                    <span style="color: #dc3545; font-weight: bold; font-size: 13px;">退職処理済み</span>
 					                <% } else { %>
-					                    <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 사원의 직급을 수정하시겠습니까?');">
+					                    <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 社員の職位を修正しますか？');">
 					                        <input type="hidden" name="action" value="updateLevel">
 					                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 					                        <select name="newLevel">
@@ -278,27 +278,27 @@
 											            if (i >= currentLevel) {
 											    %>
 											                <option value="<%= i %>" <%= currentLevel == i ? "selected" : "" %>>
-											                    <%= i %>단계 <%= (i==1?"(일반)": i==4?"(부서장)": i==5?"(임원)":"") %>
+											                    <%= i %>段階<%= (i==1?"（一般）": i==4?"（部署長）": i==5?"（役員）":"") %>
 											                </option>
 											    <% 
 											            }
 											        } 
 											    %>
 											</select>
-					                        <button type="submit" class="btn-action btn-update">수정</button>
+					                        <button type="submit" class="btn-action btn-update">修正</button>
 					                    </form>
 					                <% } %>
 					            </td>
 					
 					            <td>
 					                <% if (isRetired) { %>
-					                    <span class="badge-retired" style="color: #999;">접근불가</span>
+					                    <span class="badge-retired" style="color: #999;">アクセス不可</span>
 					                <% } else if (emp.getEmpLevel() == 5) { %>
-					                    <span class="badge-manager" style="color: #007bff; font-weight: bold;">최고 관리자</span>
+					                    <span class="badge-manager" style="color: #007bff; font-weight: bold;">最高管理者</span>
 					                <% } else if ("Y".equals(emp.getManager())) { %>
-				                    <span class="badge-manager" style="color: #007bff; font-weight: bold;">중간 관리자</span>
+				                    <span class="badge-manager" style="color: #007bff; font-weight: bold;">中間管理者</span>
 				                	<% } else { %>
-					                    <span class="badge-normal">일반 사원</span>
+					                    <span class="badge-normal">一般社員</span>
 					                <% } %>
 					            </td>
 								<td>
@@ -309,7 +309,7 @@
 								    <% 
 								        } else if (loginEmp != null && emp.getEmpNo() == loginEmp.getEmpNo()) { 
 								    %>
-								        <span style="color: #007bff; font-size: 12px; font-weight: bold;">본인(마스터)</span>
+								        <span style="color: #007bff; font-size: 12px; font-weight: bold;">本人（マスター）</span>
 								    <% 
 								        } else { 
 								            boolean isCEO = (emp.getEmpLevel() == 5);
@@ -324,14 +324,14 @@
 								                        <input type="hidden" name="action" value="transferManager">
 								                        <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 								                        <button type="submit" class="btn-action btn-transfer" 
-								                                onclick="return confirm('이 사원에게 관리자 권한을 부여하시겠습니까?');">위임</button>
+								                                onclick="return confirm('この社員に管理者権限を付与しますか？');">委任</button>
 								                    </form>
 								                    
 									                <form action="adminAction.do" method="post" style="display: inline;">
 									                    <input type="hidden" name="action" value="deleteEmp">
 									                    <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 									                    <button type="submit" class="btn-action btn-delete" 
-									                            onclick="return confirm('해당 사원을 퇴사 처리하시겠습니까?');">퇴사</button>
+									                            onclick="return confirm('該当の社員を退職処理しますか？');">退職</button>
 									                </form>
 								                
 								                <% } else { %>
@@ -339,7 +339,7 @@
 								                <% } %>
 								                
 								            <% } else { %>
-								                <span style="color: #dc3545; font-size: 12px; font-weight: bold;">수정 불가(대표)</span>
+								                <span style="color: #dc3545; font-size: 12px; font-weight: bold;">修正不可（代表）</span>
 								            <% } %>
 								            
 								        </div>
@@ -347,9 +347,9 @@
 								</td>
 								<td>
 								    <% if (isRetired) { %>
-								        <span style="color: #dc3545; font-weight: bold; font-size: 13px;">퇴사 처리됨</span>
+								        <span style="color: #dc3545; font-weight: bold; font-size: 13px;">退職処理済み</span>
 								    <% } else { %>
-								        <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 사원의 부서를 수정하시겠습니까?');">
+								        <form action="adminAction.do" method="post" style="margin: 0; display: flex; justify-content: center; gap: 5px; align-items: center;" onsubmit="return confirm('<%= emp.getEmpName() %> 社員の部署を修正しますか？');">
 								            <input type="hidden" name="action" value="updateDept">
 								            <input type="hidden" name="empNo" value="<%= emp.getEmpNo() %>">
 								            
@@ -357,13 +357,13 @@
 								                <% 
 								                    String currentDept = emp.getDept(); 
 								                %>
-								                <option value="경영지원팀" <%= "경영지원팀".equals(currentDept) ? "selected" : "" %>>경영지원팀</option>
-												<option value="기획팀"     <%= "기획팀".equals(currentDept) ? "selected" : "" %>>기획팀</option>
-												<option value="재무팀"     <%= "재무팀".equals(currentDept) ? "selected" : "" %>>재무팀</option>
-												<option value="영업팀"     <%= "영업팀".equals(currentDept) ? "selected" : "" %>>영업팀</option>
-												<option value="개발팀"     <%= "개발팀".equals(currentDept) ? "selected" : "" %>>개발팀</option>
+								                <option value="経営支援チーム" <%= "経営支援チーム".equals(currentDept) ? "selected" : "" %>>経営支援チーム</option>
+												<option value="企画チーム"     <%= "企画チーム".equals(currentDept) ? "selected" : "" %>>企画チーム</option>
+												<option value="財務チーム"     <%= "財務チーム".equals(currentDept) ? "selected" : "" %>>財務チーム</option>
+												<option value="営業チーム"     <%= "営業チーム".equals(currentDept) ? "selected" : "" %>>営業チーム</option>
+												<option value="開発チーム"     <%= "開発チーム".equals(currentDept) ? "selected" : "" %>>開発チーム</option>
 								            </select>
-								            <button type="submit" class="btn-action btn-update">수정</button>
+								            <button type="submit" class="btn-action btn-update">修正</button>
 								        </form>
 								    <% } %>
 								</td>
@@ -373,7 +373,7 @@
 					        } else { 
 					%>
 					        <tr>
-					            <td colspan="6" style="text-align: center; padding: 20px;">등록된 사원이 없습니다.</td>
+					            <td colspan="6" style="text-align: center; padding: 20px;">登録された社員がいません。</td>
 					        </tr>
 					<% } %>
 					
@@ -403,43 +403,43 @@
 		<br>
 		<div class="insert-box"
 			style="background-color: #ffffff; padding: 25px; border-radius: 6px; margin-bottom: 30px; border: 1px solid #e9ecef; border-left: 4px solid #343a40;">
-			<h3 style="margin-top: 0;">신규 사원 사전 등록 (초기 세팅)</h3>
+			<h3 style="margin-top: 0;">新入社員の事前登録（初期設定）</h3>
 			<form action="insertEmp.do" method="post"
 				style="display: flex; gap: 10px; align-items: center;">
 
-				<input type="number" name="empNo" placeholder="사번 (숫자)" required
+				<input type="number" name="empNo" placeholder="社員番号（数字" required
 					style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px; width: 120px;">
 
-				<input type="text" name="empName" placeholder="사원 성명" required
+				<input type="text" name="empName" placeholder="社員の氏名" required
 					style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px; flex: 1;">
 
 				<select name="empLevel" required
 					style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
-					<option value="1">1단계 (일반 사원)</option>
-					<option value="2">2단계 (대리)</option>
-					<option value="3">3단계 (과장)</option>
-					<option value="4">4단계 (차장)</option>
-					<option value="5">5단계 (대표/임원)</option>
+					<option value="1">1段階（一般社員）</option>
+					<option value="2">2段階（代理）</option>
+					<option value="3">3段階（課長）</option>
+					<option value="4">4段階（次長）</option>
+					<option value="5">5段階（代表・役員</option>
 				</select>
 
 				<select name="manager" required
 					style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
-					<option value="N">일반 권한 (N)</option>
-					<option value="Y">관리자 권한 (Y)</option>
+					<option value="N">一般権限 (N)</option>
+					<option value="Y">管理者権限 (Y)</option>
 				</select>
 
 				<select name="dept" style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
-		                <option value="경영지원팀">경영지원팀</option>
-						<option value="기획팀">기획팀</option>
-						<option value="재무팀">재무팀</option>
-						<option value="영업팀">영업팀</option>
-						<option value="개발팀">개발팀</option>
+		                <option value="経営支援チーム">経営支援チーム</option>
+						<option value="企画チーム">企画チーム</option>
+						<option value="財務チーム">財務チーム</option>
+						<option value="営業チーム">営業チーム</option>
+						<option value="開発チーム">開発チーム</option>
 		        </select> 
 
 				<button type="submit"
-					style="padding: 10px 20px; background-color: #343a40; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">사원 등록</button>
+					style="padding: 10px 20px; background-color: #343a40; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">社員登録</button>
 			</form>
-			<p style="margin: 10px 0 0 0; font-size: 12px; color: #6c757d;">* 등록 후 해당 사원이 직접 회원가입 메뉴에서 사번을 인증하고 비밀번호를 세팅해야 합니다.</p>
+			<p style="margin: 10px 0 0 0; font-size: 12px; color: #6c757d;">登録後、該当の社員が直接会員登録メニューから社員番号を認証し、パスワードを設定する必要があります。</p>
 		</div>
 
 	</div>

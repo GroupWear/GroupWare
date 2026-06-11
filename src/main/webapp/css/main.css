@@ -47,7 +47,7 @@ a.data-link:link, a.data-link:visited, a.data-link:hover, a.data-link:active {
 }
 
 body {
-    min-width: 1200px; /* 브라우저 창을 줄여도 레이아웃이 찌그러지지 않도록 최소 너비 방어 */
+    min-width: 1100px; /* 브라우저 창을 줄여도 레이아웃이 찌그러지지 않도록 최소 너비 방어 */
     background-color: #f4f7fa;
     font-family: 'Pretendard', sans-serif;
     color: #334155;

@@ -161,6 +161,7 @@ public class EquipmentDAO {
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setInt(1, eqNo);
 
+
 				int count = pstmt.executeUpdate();
 				if (count > 0)
 					result = true;
@@ -213,11 +214,33 @@ public class EquipmentDAO {
 	 * */
 	public int getCheckEquipment(int eqNo) {
         int count = 0;
-        String sql = "SELECT COUNT(*)  FROM RENTAL_HISTORY A WHERE 1=1 AND A.EQ_NO = ? AND A.STATUS = '반납완료' AND NOT EXISTS ( SELECT 1  FROM RENTAL_HISTORY B WHERE B.EQ_NO = A.EQ_NO AND B.STATUS IN ('승인대기', '대여중', '반려됨'))";
+        String sql = "SELECT COUNT(*) "
+        		+ "FROM EQUIPMENT E "
+        		+ "WHERE E.EQ_NO = ?"
+        		+ "  AND ( "
+        		+ "      NOT EXISTS ( "
+        		+ "          SELECT 1 FROM RENTAL_HISTORY WHERE EQ_NO = ? "
+        		+ "      ) "
+        		+ "      OR "
+        		+ "      ( "
+        		+ "          SELECT STATUS "
+        		+ "          FROM ( "
+        		+ "              SELECT STATUS "
+        		+ "              FROM RENTAL_HISTORY "
+        		+ "              WHERE EQ_NO = ? "
+        		+ "              ORDER BY RENTAL_NO DESC "
+        		+ "          ) "
+        		+ "          WHERE ROWNUM = 1 "
+        		+ "      ) NOT IN ('승인대기', '대여중', '반려됨') "
+        		+ "  ) ";
+
         try {
+        	System.out.println(sql);
         	Connection conn = DBConnection.getConnection();
         	PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, eqNo);
+			pstmt.setInt(2, eqNo);
+			pstmt.setInt(3, eqNo);
         		
             ResultSet rs = pstmt.executeQuery(); 
             if (rs.next()) count = rs.getInt(1);
