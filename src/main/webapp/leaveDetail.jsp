@@ -49,7 +49,7 @@
             </tr>
         </table>
 
-        <div style="background: #fff3cd; border: 1px solid #ffeeba; padding: 15px; margin-bottom: 20px; text-align: center;">
+      <%--   <div style="background: #fff3cd; border: 1px solid #ffeeba; padding: 15px; margin-bottom: 20px; text-align: center;">
             <strong>[디버깅 정보]</strong><br>
             현재 문서 상태: ${leave.status}<br>
             현재 결재 단계(approvalStep): <strong>${leave.approvalStep}</strong><br>
@@ -57,7 +57,7 @@
             결과: <span style="color: ${loginEmp.empLevel == leave.approvalStep ? 'green' : 'red'}">
                   ${loginEmp.empLevel == leave.approvalStep ? '레벨 일치 (버튼 출력 가능)' : '레벨 불일치 (버튼 출력 불가)'}
                   </span>
-        </div>
+        </div> --%>
 
         <div class="btn-group">
             <button type="button" class="btn-list" onclick="location.href='documentList.do?tab=leave'">목록으로 돌아가기</button>
