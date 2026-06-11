@@ -1,5 +1,5 @@
 package com.groupware.dao;
-
+import java.sql.Date;
 import java.sql.*;
 import java.util.*;
 import java.time.*;
@@ -50,68 +50,63 @@ public class LeaveDAO {
 		}
 		return workingDays;
 	}
-//06 10 수정 
+	// 06 10 수정: 신청 시 서명 정보가 포함되도록 수정된 insertLeave
 	public boolean insertLeave(LeaveHistoryDTO dto) {
-		boolean result = false;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		PreparedStatement pstmtUpdateEmp = null;
+	    boolean result = false;
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    PreparedStatement pstmtUpdate = null; // 연차 차감용 추가
 
-		// 기안자의 레벨을 받아 시작 단계로 설정 (컨트롤러에서 dto.setEmpLevel() 호출 필수)
-		int startStep = dto.getEmpLevel();
+	    String sql = "INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, "
+	               + "SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE) "
+	               + "VALUES (SEQ_LEAVE.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		String sql = "INSERT INTO LEAVE_HISTORY (LEAVE_NO, EMP_NO, START_DATE, END_DATE, USE_DAYS, REASON, STATUS, APPROVAL_STEP, "
-				+ "SIGN1, SIGN1_DATE, SIGN2, SIGN2_DATE, SIGN3, SIGN3_DATE, SIGN4, SIGN4_DATE, SIGN5, SIGN5_DATE) "
-				+ "VALUES (SEQ_LEAVE.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	    try {
+	        conn = DBConnection.getConnection();
+	        conn.setAutoCommit(false);
+	        pstmt = conn.prepareStatement(sql);
 
-		try {
-			conn = DBConnection.getConnection();
-			conn.setAutoCommit(false);
+	        pstmt.setInt(1, dto.getEmpNo());
+	        pstmt.setDate(2, dto.getStartDate());
+	        pstmt.setDate(3, dto.getEndDate());
+	        pstmt.setInt(4, dto.getUseDays());
+	        pstmt.setString(5, dto.getReason());
+	        pstmt.setString(6, dto.getStatus());
+	        pstmt.setInt(7, dto.getApprovalStep());
 
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, dto.getEmpNo());
-			pstmt.setDate(2, dto.getStartDate());
-			pstmt.setDate(3, dto.getEndDate());
-			pstmt.setInt(4, dto.getUseDays());
-			pstmt.setString(5, dto.getReason());
-			pstmt.setString(6, dto.getStatus());
-			pstmt.setInt(7, startStep); // 기안자 레벨을 단계로 저장
+	        String[] signs = {dto.getSign1(), dto.getSign2(), dto.getSign3(), dto.getSign4(), dto.getSign5()};
+	        Date[] dates = {dto.getSign1Date(), dto.getSign2Date(), dto.getSign3Date(), dto.getSign4Date(), dto.getSign5Date()};
 
-			pstmt.setString(8, dto.getSign1());
-			pstmt.setDate(9, dto.getSign1Date());
-			pstmt.setString(10, dto.getSign2());
-			pstmt.setDate(11, dto.getSign2Date());
-			pstmt.setString(12, dto.getSign3());
-			pstmt.setDate(13, dto.getSign3Date());
-			pstmt.setString(14, dto.getSign4());
-			pstmt.setDate(15, dto.getSign4Date());
-			pstmt.setString(16, dto.getSign5());
-			pstmt.setDate(17, dto.getSign5Date());
+	        for (int i = 0; i < 5; i++) {
+	            if (signs[i] != null) pstmt.setString(8 + (i * 2), signs[i]);
+	            else pstmt.setNull(8 + (i * 2), java.sql.Types.VARCHAR);
 
-			int count = pstmt.executeUpdate();
+	            if (dates[i] != null) pstmt.setDate(9 + (i * 2), dates[i]);
+	            else pstmt.setNull(9 + (i * 2), java.sql.Types.DATE);
+	        }
 
-			if (count > 0) {
-				if ("승인완료".equals(dto.getStatus())) {
-					String updateSql = "UPDATE EMPLOYEE SET CUR_LEAVE = CUR_LEAVE - ? WHERE EMP_NO = ?";
-					pstmtUpdateEmp = conn.prepareStatement(updateSql);
-					pstmtUpdateEmp.setInt(1, dto.getUseDays());
-					pstmtUpdateEmp.setInt(2, dto.getEmpNo());
-					pstmtUpdateEmp.executeUpdate();
-				}
-				conn.commit();
-				result = true;
-			}
-		} catch (Exception e) {
-			try { if (conn != null) conn.rollback(); } catch (Exception ex) {}
-			e.printStackTrace();
-		} finally {
-			// PreparedStatement가 2개이므로 closeResource를 호출하지 않고 직접 닫거나 
-            // 별도의 오버로딩된 closeResource를 사용해야 합니다.
-			try { if (pstmtUpdateEmp != null) pstmtUpdateEmp.close(); } catch (Exception e) {}
-			try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
-			try { if (conn != null) conn.close(); } catch (Exception e) {}
-		}
-		return result;
+	        if (pstmt.executeUpdate() > 0) {
+	            // [추가] 대표(레벨 5)인 경우 신청과 동시에 즉시 연차 차감
+	            if (dto.getEmpLevel() == 5) {
+	                String updateSql = "UPDATE EMPLOYEE SET CUR_LEAVE = CUR_LEAVE - ? WHERE EMP_NO = ?";
+	                pstmtUpdate = conn.prepareStatement(updateSql);
+	                pstmtUpdate.setInt(1, dto.getUseDays());
+	                pstmtUpdate.setInt(2, dto.getEmpNo());
+	                pstmtUpdate.executeUpdate();
+	            }
+	            
+	            conn.commit();
+	            result = true;
+	        }
+	    } catch (Exception e) {
+	        try { if (conn != null) conn.rollback(); } catch (Exception ex) {}
+	        e.printStackTrace();
+	    } finally {
+	        // 추가된 자원 해제
+	        if (pstmtUpdate != null) try { pstmtUpdate.close(); } catch (Exception e) {}
+	        closeResource(conn, pstmt, null);
+	    }
+	    return result;
 	}
 
 	public boolean processLeaveApproval(int leaveNo, int step, String managerName, boolean isApprove) {
@@ -333,63 +328,80 @@ public class LeaveDAO {
 		return list;
 	}
 
-	// 상세 화면용 승인 (POST 방식 대응)
 	public boolean processApproval(int leaveNo, int step, String managerName, boolean isApprove) {
-		boolean result = false;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		PreparedStatement pstmtUpdateEmp = null;
+	    boolean result = false;
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    PreparedStatement pstmtUpdateEmp = null;
 
-		String signCol = "SIGN" + step;
-		String dateCol = "SIGN" + step + "_DATE";
-		String status = isApprove ? "승인대기" : "반려됨";
-		int nextStep = isApprove ? step + 1 : step;
+	    String signCol = "SIGN" + step;
+	    String dateCol = "SIGN" + step + "_DATE";
+	    
+	    // 승인 여부에 따른 상태값 결정
+	    String status = isApprove ? "승인대기" : "반려됨";
+	    int nextStep = isApprove ? step + 1 : step;
 
-		if (isApprove && step == 5)
-			status = "승인완료";
+	    // 마지막 5단계 승인 시 '승인완료'로 상태 변경
+	    if (isApprove && step == 5) {
+	        status = "승인완료";
+	    }
 
-		String sql = "UPDATE LEAVE_HISTORY SET " + signCol + " = ?, " + dateCol
-				+ " = SYSDATE, STATUS = ?, APPROVAL_STEP = ? WHERE LEAVE_NO = ?";
+	    String sql = "UPDATE LEAVE_HISTORY SET " + signCol + " = ?, " + dateCol
+	               + " = SYSDATE, STATUS = ?, APPROVAL_STEP = ? WHERE LEAVE_NO = ?";
 
-		try {
-			conn = DBConnection.getConnection();
-			conn.setAutoCommit(false);
+	    try {
+	        conn = DBConnection.getConnection();
+	        conn.setAutoCommit(false); // 트랜잭션 시작
 
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, managerName);
-			pstmt.setString(2, status);
-			pstmt.setInt(3, nextStep);
-			pstmt.setInt(4, leaveNo);
-			int count = pstmt.executeUpdate();
-
-			if (count > 0 && isApprove && step == 5) {
-				String updateSql = "UPDATE EMPLOYEE SET CUR_LEAVE = CUR_LEAVE - (SELECT USE_DAYS FROM LEAVE_HISTORY WHERE LEAVE_NO = ?) WHERE EMP_NO = (SELECT EMP_NO FROM LEAVE_HISTORY WHERE LEAVE_NO = ?)";
-				pstmtUpdateEmp = conn.prepareStatement(updateSql);
-				pstmtUpdateEmp.setInt(1, leaveNo);
-				pstmtUpdateEmp.setInt(2, leaveNo);
-				if (pstmtUpdateEmp.executeUpdate() > 0) {
-					conn.commit();
-					result = true;
-				} else {
-					conn.rollback();
-				}
-			} else if (count > 0) {
-				conn.commit();
-				result = true;
-			}
-		} catch (Exception e) {
-			try {
-				if (conn != null)
-					conn.rollback();
-			} catch (Exception ex) {
-			}
-			e.printStackTrace();
-		} finally {
-			closeResource(conn, pstmt, null);
-		}
-		return result;
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setString(1, managerName);
+	        pstmt.setString(2, status);
+	        pstmt.setInt(3, nextStep);
+	        pstmt.setInt(4, leaveNo);
+	        
+	        int count = pstmt.executeUpdate();
+	        
+	        // [수정된 로직] 상태가 '승인완료'가 되는 시점에 연차 차감 수행
+	        if (count > 0 && isApprove && "승인완료".equals(status)) {
+	            String updateSql = "UPDATE EMPLOYEE SET CUR_LEAVE = CUR_LEAVE - "
+	                             + "(SELECT USE_DAYS FROM LEAVE_HISTORY WHERE LEAVE_NO = ?) "
+	                             + "WHERE EMP_NO = (SELECT EMP_NO FROM LEAVE_HISTORY WHERE LEAVE_NO = ?)";
+	            
+	            pstmtUpdateEmp = conn.prepareStatement(updateSql);
+	            pstmtUpdateEmp.setInt(1, leaveNo);
+	            pstmtUpdateEmp.setInt(2, leaveNo);
+	            
+	            int updateCount = pstmtUpdateEmp.executeUpdate();
+	            
+	            System.out.println("연차 차감 결과(업데이트된 행 수): " + updateCount);
+	            
+	            if (updateCount > 0) {
+	                conn.commit();
+	                result = true;
+	            } else {
+	                conn.rollback(); // 연차 차감 대상이 없으면 롤백
+	                System.out.println("연차 차감 실패: 업데이트 대상 없음");
+	            }
+	        } else if (count > 0) {
+	            conn.commit(); // 일반 결재 단계 승인/반려 시 커밋
+	            result = true;
+	        }
+	    } catch (Exception e) {
+	        try {
+	            if (conn != null) conn.rollback();
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        // 자원 해제
+	        if (pstmtUpdateEmp != null) try { pstmtUpdateEmp.close(); } catch (Exception e) {}
+	        closeResource(conn, pstmt, null);
+	    }
+	    return result;
 	}
-
+	
+	
 	// 퀵 승인용 (GET 방식 대응)
 	public boolean processStepApproval(int leaveNo, int currentStep, String managerName, String action) {
 		boolean isApprove = "approve".equals(action);

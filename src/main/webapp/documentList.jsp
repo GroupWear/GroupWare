@@ -112,17 +112,26 @@
 				            </td>
 				            
 				            <%-- 한국어 데이터 매핑을 고려하여 화면 노출만 일본어로 변경 --%>
-				            <td>
-				                <span class="status-badge <%= statusClass %>">
-				                    <% 
-				                        String lStatus = leave.getStatus();
-				                        if("승인대기".equals(lStatus)) out.print("承認待ち");
-				                        else if("승인완료".equals(lStatus)) out.print("承認完了");
-				                        else if("반려됨".equals(lStatus)) out.print("差し戻し");
-				                        else out.print(lStatus);
-				                    %>
-				                </span>
-				            </td>
+				          <td>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 42px;">
+        <span class="status-badge <%= statusClass %>" style="display: inline-block; margin: 0;">
+            <% 
+                String lStatus = leave.getStatus();
+                if("승인대기".equals(lStatus)) out.print("承認待ち");
+                else if("승인완료".equals(lStatus)) out.print("承認完了");
+                else if("반려됨".equals(lStatus)) out.print("差し戻し");
+                else out.print(lStatus);
+            %>
+        </span>
+
+        <%-- [추가] 휴가 신청 결재 차례일 때 문구 노출 --%>
+        <% if ("승인대기".equals(leave.getStatus()) && (loginEmp.getEmpLevel() == leave.getApprovalStep())) { %>
+            <div class="approval-blink" style="margin: 0 !important; display: inline-block !important;">
+                決裁をお願いします
+            </div>
+        <% } %>
+    </div>
+</td>
 				        </tr>
 				    <% 
 				            } 
