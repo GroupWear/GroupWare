@@ -167,24 +167,24 @@
 	        <h3>備品の新規登録</h3>
 	        <!-- <h3>신규 비품 등록</h3> -->
 	        <form action="insertEq.do" method="post" class="insert-form-flex">
-	            <input type="text" name="eqName" class="search-input" placeholder="びひんめいにゅうりょく" required>
-	            <input type="number" name="totalCount" class="search-input" style="max-width: 200px;" placeholder="しょきすうりょう" required>
-	            <button type="submit" class="btn-register">とうろく</button>
+	            <input type="text" name="eqName" class="search-input" placeholder="備品名入力" required>
+	            <input type="number" name="totalCount" class="search-input" style="max-width: 200px;" placeholder="初期数量を入力" required>
+	            <button type="submit" class="btn-register">登録</button>
 	        </form>
 	    </div>
 	    
 	    <div class="search-bar-container">
 		    <div class="search-form">
 		        <select id="searchType" class="search-select">
-		            <option value="all">ぜんたいけんさく</option>
-		            <option value="eqName">びひんめい</option>
+		            <option value="all">全体検索</option>
+		            <option value="eqName">備品名</option>
 		            <option value="eqNo">備品コード</option>
 <!-- 		            <option value="all">전체 검색</option>
 		            <option value="eqName">비품 명칭</option>
 		            <option value="eqNo">비품 번호</option> -->
 		        </select>
-		        <input type="text" id="searchKeyword" class="search-input" placeholder="しようする びひんめい または こーどを にゅうりょく..." autocomplete="off" onkeyup="if(event.key === 'Enter') searchAndScroll()">
-		        <button type="button" class="btn-search" onclick="searchAndScroll()">けんさく および いどう</button>
+		        <input type="text" id="searchKeyword" class="search-input" placeholder="使用する備品名またはコードを入力..." autocomplete="off" onkeyup="if(event.key === 'Enter') searchAndScroll()">
+		        <button type="button" class="btn-search" onclick="searchAndScroll()">検索および移動</button>
 		    </div>
 		</div>
 	

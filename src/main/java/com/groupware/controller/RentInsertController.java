@@ -275,7 +275,7 @@ public class RentInsertController extends HttpServlet {
                 // 7. 成功時にリストへ復帰 (?tab=equipment でフロントタブ制御を連動)
                 out.println("<script>alert('備品貸出申請が完了しました。');location.href='documentList.do?tab=equipment';</script>");
             } else {
-                throw new Exception("RENTAL_HISTORY テーブルのデータ挿입トランザクションエラー");
+                throw new Exception("RENTAL_HISTORY テーブルのデータ挿入トランザクションエラー");
             }
             
         } catch (Exception e) {
