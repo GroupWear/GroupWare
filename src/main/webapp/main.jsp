@@ -517,7 +517,13 @@
                             <td style="color: #6c757d;"><%=leave.getLeaveNo()%></td>
                             <td><%=leave.getStartDate()%> ~ <%=leave.getEndDate()%></td>
                             <td><b><%=leave.getUseDays()%><fmt:message key="table.leave.days.unit" /></b></td>
-                            <td><span class="title-link" title="<%=leave.getReason()%>"><%=leave.getReason()%></span></td>
+                            <td>
+                            <a href="leaveDetail.do?leaveNo=<%=leave.getLeaveNo()%>" style="text-decoration: none; display: block;">
+                        		<span class="title-link" style="color: #6366f1; font-weight: 600;" title="<%=leave.getReason()%>">
+                            		<%=leave.getReason() != null ? leave.getReason() : "사유 없음"%>
+                        		</span>
+                    		</a>
+                		</td>
                             <td><span class="status-badge <%=badgeClass%>"><fmt:message key="<%= StatusUtil.getStatusKey(leave.getStatus()) %>" /></span></td>
                         </tr>
                     <%     } 

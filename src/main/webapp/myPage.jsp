@@ -469,28 +469,31 @@
                 </thead>
                 <tbody>
                     <% if (leaveList == null || leaveList.isEmpty()) { %>
-                        <%-- ★ [수정] 테이블 열 개수인 5개에 맞춰 colspan="5"로 정상 정정 (기존 7 오타 수정) --%>
-                        <tr><td colspan="5" style="padding: 105px 0; color: #6c757d; border-bottom: none;"><fmt:message key="table.leave.empty" /></td></tr>
+                        <tr><td colspan="5" style="padding: 105px 0; color: #6c757d; border-bottom: none; text-align: center;"><fmt:message key="table.leave.empty" /></td></tr>
                     <% } else { 
-                           for (LeaveHistoryDTO leave : leaveList) {
-                               String statusKey = StatusUtil.getStatusKey(leave.getStatus());
-                               
-                               String badgeClass = "bg-warning";
-                               if ("status.leave.complete".equals(statusKey)) { badgeClass = "bg-success"; }
-                               else if ("status.leave.rejected".equals(statusKey)) { badgeClass = "bg-danger"; }
+                               for (LeaveHistoryDTO leave : leaveList) {
+                                   String badgeClass = "bg-warning";
+                                   if ("승인완료".equals(leave.getStatus())) badgeClass = "bg-success";
+                                   else if ("반려됨".equals(leave.getStatus())) badgeClass = "bg-danger";
                     %>
                         <tr>
                             <td style="color: #6c757d;"><%=leave.getLeaveNo()%></td>
                             <td><%=leave.getStartDate()%> ~ <%=leave.getEndDate()%></td>
                             <td><b><%=leave.getUseDays()%><fmt:message key="table.leave.days.unit" /></b></td>
-                            <td><%=leave.getReason()%></td>
-                            <td><span class="status-badge <%=badgeClass%>"><fmt:message key="<%=statusKey%>" /></span></td>
+                            <td>
+                            <a href="leaveDetail.do?leaveNo=<%=leave.getLeaveNo()%>" style="text-decoration: none; display: block;">
+                        		<span class="title-link" style="color: #6366f1; font-weight: 600;" title="<%=leave.getReason()%>">
+                            		<%=leave.getReason() != null ? leave.getReason() : "사유 없음"%>
+                        		</span>
+                    		</a>
+                		</td>
+                            <td><span class="status-badge <%=badgeClass%>"><fmt:message key="<%= StatusUtil.getStatusKey(leave.getStatus()) %>" /></span></td>
                         </tr>
                     <%     } 
                        } %>
                     </tbody>
-            </table>
-        </div> 
+                </table>
+            </div> 
         
         <div class="pagination-container">
                 <% if (leaveStartPage > 1) { %>
