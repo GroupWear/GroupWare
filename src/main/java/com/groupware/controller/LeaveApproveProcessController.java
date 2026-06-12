@@ -57,9 +57,9 @@ public class LeaveApproveProcessController extends HttpServlet {
 
             // 3. ⭐ 5레벨이 신청하여 다음 단계가 6이 된 경우 최종 승인 처리
             if (nextStep >= 6) {
-                leave.setStatus("승인완료"); // 5레벨 신청시 바로 완료!
+                leave.setStatus("承認完了"); // 5레벨 신청시 바로 완료!
             } else {
-                leave.setStatus("승인대기"); // 그 외엔 다음 레벨 결재자 대기
+                leave.setStatus("承認待ち"); // 그 외엔 다음 레벨 결재자 대기
             }
             // ---------------------------------------------------------------
             

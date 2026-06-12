@@ -15,46 +15,46 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>휴가 신청</title>
+    <title>休暇申請書</title>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/css/leaveForm.css">
 </head>
 <body>
     <div class="container">
         <div class="title-area">
-            <h3>🏖️ 휴가 신청서</h3>
+            <h3>🏖️ 休暇申請書</h3>
         </div>
 
         <div class="info-card">
-            <p>신청인:<b> <%=loginEmp.getEmpName()%></b> (<%=loginEmp.getDept()%> / <%=loginEmp.getEmpLevel()%>단계)</p>
-            <p>잔여 연차: <span class="<%=leaveColor%>"><b><%=curLeave%></b></span> / <%=loginEmp.getMaxLeave()%>일</p>
+            <p>申請者:<b> <%=loginEmp.getEmpName()%></b> (<%=loginEmp.getDept()%> / <%=loginEmp.getEmpLevel()%>단계)</p>
+            <p>有給残日数: <span class="<%=leaveColor%>"><b><%=curLeave%></b></span> / <%=loginEmp.getMaxLeave()%>일</p>
         </div>
 
        <form action="leaveForm.do" method="post" onsubmit="return validate();">
             <div class="form-group">
-                <label>시작 기간</label>
+                <label>開始日</label>
                 <input type="date" id="startDate" name="startDate" required onchange="updateEndDateMin()">
             </div>
             
             <div class="form-group spacing">
-                <label>종료 기간</label>
+                <label>終了日</label>
                 <input type="date" id="endDate" name="endDate" required>
             </div>
             
             <div class="form-group">
-   				<label>사유 선택</label>
+   				<label>事由選択</label>
     					<select id="reasonCategory" name="reasonCategory" onchange="toggleReason(this.value)">
-        					<option value="연차">연차</option>
-        					<option value="병가">병가</option>
-        					<option value="경조사">경조사</option>
+        					<option value="연차">年次有給休暇</option>
+        					<option value="병가">傷病休暇</option>
+        					<option value="경조사">慶弔休暇</option>
         
     					</select>
     
-    			<input type="text" id="customReason" name="reason" style="margin-top:10px; width:100%; box-sizing:border-box;" placeholder="사유를 상세히 입력해주세요.">
+    			<!-- <input type="text" id="customReason" name="reason" style="margin-top:10px; width:100%; box-sizing:border-box;" placeholder="事由をご記入ください"> -->
 			</div>
 
             <div class="btn-group">
-                <button type="submit" class="btn-submit">신청서 제출</button>
-                <button type="button" class="btn-cancel" onclick="location.href='main.do'">취소</button>
+                <button type="submit" class="btn-submit">申請する</button>
+                <button type="button" class="btn-cancel" onclick="location.href='main.do'">キャンセル</button>
             </div>
         </form>
     </div>
@@ -95,11 +95,11 @@
 
             // 주말만 선택하여 평일이 0일인 경우 전송 차단
             if (weekdayCount === 0) {
-                alert('휴가는 주말을 제외한 평일 기준으로 선택해야 합니다.');
+                alert('土日祝日を除いた平日のみを選択してください。.');
                 return false;
             }
 
-            return confirm('휴가를 신청하시겠습니까? (주말 제외 평일 ' + weekdayCount + '일 차감)');
+            return confirm('申請内容を提出しますか？ (土日 除く 平日 ' + weekdayCount + '日消化)');
         }
     </script>
 </body>

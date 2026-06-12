@@ -4,13 +4,13 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>휴가 신청서 상세</title>
+    <title>休暇申請書詳細</title>
     <link rel="stylesheet" href="css/leaveDetail.css"> 
 </head>
 <body>
     <div class="detail-container">
         <div class="header-area">
-            <h2>🏖️ 휴가 신청서 상세</h2>
+            <h2>🏖️ 休暇申請書詳細</h2>
             <span class="status-badge status-blue">${leave.status}</span>
         </div>
         
@@ -23,8 +23,8 @@
         <div class="stamp-box">
             <div class="stamp-step">
                 <c:choose>
-                    <c:when test="${i == 5}">최종결재</c:when>
-                    <c:otherwise>${i}단계</c:otherwise>
+                    <c:when test="${i == 5}">最終承認</c:when>
+                    <c:otherwise>${i}段階承認</c:otherwise>
                 </c:choose>
             </div>
             <%-- 서명 값이 있으면 이름 출력, 없으면 공백 --%>
@@ -36,15 +36,16 @@
 
         <table class="info-table">
             <tr>
-                <th>문서 번호</th><td>${leave.leaveNo}</td>
-                <th>기안자 정보</th><td>${leave.empName} (Lv.${leave.empLevel})</td>
+                <th>文書番号</th><td>${leave.leaveNo}</td>
+                <th>起案者情報</th><td>${leave.empName} (Lv.${leave.empLevel})</td>
             </tr>
             <tr>
-                <th>휴가 기간</th><td>${leave.startDate} ~ ${leave.endDate}</td>
-                <th>사용 일수</th><td>${leave.useDays} 일</td>
+                <th>休暇期間</th><td>${leave.startDate} ~ ${leave.endDate}</td>
+                <th>使用日数</th><td>${leave.useDays} 日	</td>
             </tr>
+            
             <tr>
-                <th>휴가 사유</th>
+                <th>休暇理由</th>
                 <td colspan="3" class="reason-cell">${leave.reason}</td>
             </tr>
         </table>
@@ -60,16 +61,16 @@
         </div> --%>
 
         <div class="btn-group">
-            <button type="button" class="btn-list" onclick="location.href='documentList.do?tab=leave'">목록으로 돌아가기</button>
+            <button type="button" class="btn-list" onclick="location.href='documentList.do?tab=leave'">一覧に戻る</button>
     
             <%-- 승인 대기 중이고, 로그인한 사용자의 직급이 현재 결재 단계와 같으면 버튼 노출 --%>
-            <c:if test="${leave.status == '승인대기'}">
+            <c:if test="${leave.status == '承認待ち'}">
                 <c:if test="${loginEmp.empLevel == leave.approvalStep}">
                     <form action="leaveApproveProcess.do" method="post" style="display:inline;">
                         <input type="hidden" name="leaveNo" value="${leave.leaveNo}">
                         <input type="hidden" name="step" value="${leave.approvalStep}">
                         <input type="hidden" name="action" value="approve">
-                        <button type="submit" class="btn-approve">결재 승인</button>
+                        <button type="submit" class="btn-approve">決裁承認</button>
                         
                     </form>
                     
@@ -77,7 +78,7 @@
                         <input type="hidden" name="leaveNo" value="${leave.leaveNo}">
                         <input type="hidden" name="step" value="${leave.approvalStep}">
                         <input type="hidden" name="action" value="reject">
-                        <button type="submit" class="btn-reject">결재 반려</button>
+                        <button type="submit" class="btn-reject">決裁差戻</button>
                         
                     </form>
                 </c:if>
