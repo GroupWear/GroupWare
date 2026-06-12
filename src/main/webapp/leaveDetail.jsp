@@ -11,7 +11,13 @@
     <div class="detail-container">
         <div class="header-area">
             <h2>🏖️ 休暇申請書詳細</h2>
-            <span class="status-badge status-blue">${leave.status}</span>
+       <span class="status-badge status-blue">
+    				<c:choose>
+        				<c:when test="${leave.status == '승인대기'}">承認待ち</c:when>
+        				<c:when test="${leave.status == '승인완료'}">承認完了</c:when>
+       				 <c:otherwise>${leave.status}</c:otherwise>
+   					 </c:choose>
+		</span>
         </div>
         
        <div class="approval-table">
@@ -44,10 +50,18 @@
                 <th>使用日数</th><td>${leave.useDays} 日	</td>
             </tr>
             
-            <tr>
-                <th>休暇理由</th>
-                <td colspan="3" class="reason-cell">${leave.reason}</td>
-            </tr>
+        	<tr>
+    			<th>休暇理由</th>
+    			<%-- colspan은 td 태그 안에 위치해야 합니다 --%>
+    				<td colspan="3" class="reason-cell">
+       				 	<c:choose>
+           					 <c:when test="${leave.reason == '연차'}">年次有給休暇</c:when>
+            					<c:when test="${leave.reason == '병가'}">傷病休暇</c:when>
+           						<c:when test="${leave.reason == '경조사'}">慶弔休暇</c:when>
+            					<c:otherwise>${leave.reason}</c:otherwise>
+        				</c:choose>
+    				</td>
+			</tr>
         </table>
 
       <%--   <div style="background: #fff3cd; border: 1px solid #ffeeba; padding: 15px; margin-bottom: 20px; text-align: center;">
@@ -64,7 +78,7 @@
             <button type="button" class="btn-list" onclick="location.href='documentList.do?tab=leave'">一覧に戻る</button>
     
             <%-- 승인 대기 중이고, 로그인한 사용자의 직급이 현재 결재 단계와 같으면 버튼 노출 --%>
-            <c:if test="${leave.status == '承認待ち'}">
+            <c:if test="${leave.status == '승인대기'}">
                 <c:if test="${loginEmp.empLevel == leave.approvalStep}">
                     <form action="leaveApproveProcess.do" method="post" style="display:inline;">
                         <input type="hidden" name="leaveNo" value="${leave.leaveNo}">

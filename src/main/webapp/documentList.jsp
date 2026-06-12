@@ -101,15 +101,21 @@
 				            <td><b><%= leave.getUseDays() %>日</b></td>
 				            
 				            <td style="text-align: left; padding: 14px 20px; white-space: normal; word-break: break-all;">
-				                <a href="javascript:void(0);" 
-				                   onclick="goToDetail('leave', '<%= leave.getLeaveNo() %>')"
-				                   class="title-link" 
-				                   style="color: #6366f1; font-weight: 600; text-decoration: none; cursor: pointer; display: block; width: 100%;"
-				                   onmouseover="this.style.textDecoration='underline'; this.style.color='#0284c7';"
-				                   onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';">
-				                    <%= leave.getReason() != null ? leave.getReason() : "理由なし" %>
-				                </a>
-				            </td>
+    							<a href="javascript:void(0);" 
+      							   onclick="goToDetail('leave', '<%= leave.getLeaveNo() %>')"
+       							   class="title-link" 
+                                   style="color: #6366f1; font-weight: 600; text-decoration: none; cursor: pointer; display: block; width: 100%;"
+                                   onmouseover="this.style.textDecoration='underline'; this.style.color='#0284c7';"
+                                    onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';">
+        <%
+            String reason = leave.getReason();
+            if ("연차".equals(reason)) out.print("年次有給休暇");
+            else if ("병가".equals(reason)) out.print("傷病休暇");
+            else if ("경조사".equals(reason)) out.print("慶弔休暇");
+            else out.print(reason != null ? reason : "理由なし");
+        %>
+    </a>
+</td>
 				            
 				            <%-- 한국어 데이터 매핑을 고려하여 화면 노출만 일본어로 변경 --%>
 				          <td>

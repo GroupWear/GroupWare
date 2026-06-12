@@ -47,7 +47,7 @@ body {
     padding: 18px 0 !important; font-size: 14px !important; font-weight: 800 !important; 
     color: #0f172a !important; min-height: 22px !important; text-align: center !important; 
 }
-.stamp-name::after { content: '(인)'; font-size: 11px; color: #ef4444; margin-left: 3px; }
+.stamp-name::after { content: '(印)'; font-size: 11px; color: #ef4444; margin-left: 3px; }
 .stamp-date { font-size: 11px; color: #666; margin-top: 2px; display: block; padding-bottom: 5px; }
 
 /* ==========================================
