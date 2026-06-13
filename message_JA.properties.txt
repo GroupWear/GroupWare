@@ -84,6 +84,7 @@ status.rental.notreturned=未返却
 status.rental.wait=承認待ち
 status.leave.complete=承認完了
 status.leave.rejected=却下
+status.room=号室
 default.status=ステータスなし
 
 # =========================================================================
