@@ -25,8 +25,8 @@
         </div>
 
         <div class="info-card">
-            <p>申請者:<b> <%=loginEmp.getEmpName()%></b> (<%=loginEmp.getDept()%> / <%=loginEmp.getEmpLevel()%>단계)</p>
-            <p>有給残日数: <span class="<%=leaveColor%>"><b><%=curLeave%></b></span> / <%=loginEmp.getMaxLeave()%>일</p>
+            <p>申請者:<b> <%=loginEmp.getEmpName()%></b> (<%=loginEmp.getDept()%> / <%=loginEmp.getEmpLevel()%>段階)</p>
+            <p>有給残日数: <span class="<%=leaveColor%>"><b><%=curLeave%></b></span> / <%=loginEmp.getMaxLeave()%>日</p>
         </div>
 
        <form action="leaveForm.do" method="post" onsubmit="return validate();">
