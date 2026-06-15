@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="<%=request.getContextPath()%>/css/leaveForm.css">
 </head>
 <body>
+<jsp:include page="header.jsp" />
     <div class="container">
         <div class="title-area">
             <h3>🏖️ 休暇申請書</h3>
