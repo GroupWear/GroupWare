@@ -20,7 +20,8 @@ public class MainController extends HttpServlet {
             throws ServletException, IOException {
         
     	// --- [로그인 더미 데이터 세팅 시작] ---
-        HttpSession session = request.getSession();
+        HttpSession session 
+        = request.getSession();
         if (session.getAttribute("loginEmp") == null) {
             EmployeeDTO dummyEmp = new EmployeeDTO();
             //1번 5등급 김대표

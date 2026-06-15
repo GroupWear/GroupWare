@@ -167,7 +167,7 @@
             <tr>
                 <th>文書番号</th>
                 <td><%= detail.getRentalNo() %></td>
-                <th>起案자情報</th>
+                <th>起案社情報</th>
                 <td>
                     <%
                         if (detail.getEmpLevel() == 0) { 

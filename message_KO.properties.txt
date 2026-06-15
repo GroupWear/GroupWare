@@ -85,7 +85,7 @@ status.rental.wait=승인대기
 status.leave.complete=승인완료
 status.leave.rejected=반려됨
 status.room=호
-default.status=상태없음
+default.status=반납완료
 
 # =========================================================================
 # 네비게이션 및 헤더 (header.jsp)

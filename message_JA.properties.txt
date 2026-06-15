@@ -85,7 +85,7 @@ status.rental.wait=承認待ち
 status.leave.complete=承認完了
 status.leave.rejected=却下
 status.room=号室
-default.status=ステータスなし
+default.status=返却完了
 
 # =========================================================================
 # ナビゲーションおよびヘッダー (header.jsp)
