@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="<%=request.getContextPath()%>/css/rentForm.css">
 </head>
 <body>
+<jsp:include page="header.jsp" />
 
 <div class="form-container">
     <h2>📋 備品貸出申請書</h2>
