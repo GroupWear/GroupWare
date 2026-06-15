@@ -27,25 +27,37 @@ public class ResetPwController extends HttpServlet {
         String newPw = request.getParameter("newPw").trim();
         String newPwConfirm = request.getParameter("newPwConfirm").trim();
 
+        // 1. 입력 폼 검증 (비밀번호 불일치 방지)
         if (empNoParam == null || !newPw.equals(newPwConfirm)) {
-            out.println("<script>alert('비밀번호가 일치하지 않습니다.'); history.back();</script>");
+            out.println("<script>alert('パスワードが一致しません。'); history.back();</script>");
             return;
         }
 
         try {
             int empNo = Integer.parseInt(empNoParam);
             EmployeeDAO empDAO = new EmployeeDAO();
-            //암호화
-            String encryptedPassword = CryptoUtil.encrypt(newPw);
+            
+            // 사용자가 새로 입력한 비밀번호 암호화 가공
+            String encryptedNewPassword = CryptoUtil.encrypt(newPw);
 
-            if (empDAO.updatePassword(empNo, encryptedPassword)) {
-                out.println("<script>alert('비밀번호가 변경되었습니다. 다시 로그인해주세요.'); location.href='index.jsp';</script>");
+            // ★ 2. 기존 비밀번호 중복 검증 알고리즘 실행 ★
+            if (empDAO.updatePasswordWithVerify(empNo, encryptedNewPassword, encryptedNewPassword)) {
+                // [수정] "현재 비밀번호와 동일한 비밀번호는 사용하실 수 없습니다."
+                out.println("<script>alert('現在のパスワードと同じパスワードはご利用いただけません。'); location.href='resetPw.do';</script>");
+                return; 
+            }
+
+            // 3. 중복이 아니라 진짜 새로운 비밀번호라면 정석대로 업데이트 수행
+            if (empDAO.updatePassword(empNo, encryptedNewPassword)) {
+                out.println("<script>alert('パスワードが変更されました。もう一度ログインしてください。'); location.href='index.jsp';</script>");
             } else {
-                out.println("<script>alert('변경 실패.'); history.back();</script>");
+                // [수정] "변경에 실패했습니다."
+                out.println("<script>alert('変更に失敗しました。'); history.back();</script>");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            out.println("<script>alert('서버 오류.'); history.back();</script>");
+            // [수정] "サーバーエラーが発生しました。"
+            out.println("<script>alert('サーバーエラーが発生しました。'); history.back();</script>");
         } finally {
             out.close();
         }

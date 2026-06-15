@@ -49,6 +49,19 @@ password.change.btn.cancel=취소하고 마이페이지로 돌아가기
 # 변경 실패 시 컨트롤러에서 꺼내서 던져줄 에러 텍스트 예시
 password.change.error.wrong=현재 비밀번호가 일치하지 않습니다.
 password.change.error.mismatch=새 비밀번호와 확인 비밀번호가 일치하지 않습니다.
+
+
+pw.reset.title=비밀번호 재설정
+pw.reset.header=새 비밀번호 설정
+pw.reset.description=새로운 비밀번호를 입력해주세요.
+pw.reset.newLabel=새 비밀번호
+pw.reset.newPlaceholder=새 비밀번호를 입력하세요
+pw.reset.confirmLabel=새 비밀번호 확인
+pw.reset.confirmPlaceholder=비밀번호를 다시 한번 입력하세요
+pw.reset.btnSubmit=비밀번호 변경
+pw.reset.btnCancel=취소하고 로그인으로
+
+
 # =========================================================================
 # 계정 등록 페이지 구성요소
 # =========================================================================

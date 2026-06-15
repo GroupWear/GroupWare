@@ -68,13 +68,13 @@ public class JoinController extends HttpServlet {
         if (isSuccess) {
             // 가입 성공 시 로그인 페이지로 안내
             response.getWriter().println("<script>");
-            response.getWriter().println("alert('반갑습니다! 계정 등록이 완료되었습니다. 로그인 해주세요.');");
+            response.getWriter().println("alert('はじめまして！アカウント登録が完了いたしました。 ログインしてください。');");
             response.getWriter().println("location.href='index.jsp';");
             response.getWriter().println("</script>");
         } else {
             // 가입 실패 시 이전 화면으로 이동
             response.getWriter().println("<script>");
-            response.getWriter().println("alert('등록 실패: 관리자에게 문의하거나 사번을 다시 확인하세요.');");
+            response.getWriter().println("alert('登録失敗：管理者にお問い合わせいただくか、社員番号を再確認してください。');");
             response.getWriter().println("history.back();");
             response.getWriter().println("</script>");
         }

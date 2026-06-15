@@ -55,13 +55,13 @@ public class FindPwController extends HttpServlet {
                 // 퇴사자 계정 잠금 처리 정책 연동 ('RETIRED' 문자열 검증)
                 if ("RETIRED".equals(foundPassword)) {
                     out.println("<script>");
-                    out.println("alert('퇴사 처리된 사원 계정입니다. 관리자에게 문의하세요.');");
+                    out.println("alert('退職処理された社員アカウントです。 管理者にお問い合わせください。');");
                     out.println("history.back();");
                     out.println("</script>");
                 } else {
                 	// [성공] 비밀번호 변경 페이지로 이동
                 	out.println("<script>");
-                	out.println("alert('본인 확인이 완료되었습니다. 비밀번호를 새로 설정해주세요.');");
+                	out.println("alert('本人確認が完了いたしました。 パスワードを新たに設定してください。');");
                 	// empNo를 파라미터로 넘겨서 changePw.jsp가 누구의 비번을 바꿀지 알게 합니다.
                 	out.println("location.href='resetPw.jsp?empNo=" + empNo + "';"); 
                 	out.println("</script>");
@@ -69,7 +69,7 @@ public class FindPwController extends HttpServlet {
             } else {
                 // [실패] 일치하는 사원 없음
                 out.println("<script>");
-                out.println("alert('일치하는 사원 정보가 존재하지 않습니다. 다시 확인해주세요.');");
+                out.println("alert('一致する寺院情報は存在しません。 もう一度確認をお願いします。');");
                 out.println("history.back();");
                 out.println("</script>");
             }
@@ -77,7 +77,7 @@ public class FindPwController extends HttpServlet {
         } catch (NumberFormatException e) {
             // 사번 입력칸에 문자가 들어와 형변환 에러가 날 경우 방어 코드
             out.println("<script>");
-            out.println("alert('사원번호는 숫자만 입력 가능합니다.');");
+            out.println("alert('社員番号は数字のみ入力可能です。');");
             out.println("history.back();");
             out.println("</script>");
         } finally {

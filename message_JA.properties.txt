@@ -30,7 +30,7 @@ login.error.locked=パスワードの入力誤りが5回に達したため、ア
 # パスワード再設定ページ構成要素
 findPw.page.title=パスワードの再設定
 findPw.page.subtitle=アカウントセキュリティのため、本人確認が必要です。<br>登録されている社員番号と氏名を入力してください。
-findPw.placeholder.name=氏명を入力してください
+findPw.placeholder.name=氏名を入力してください
 
 # マイページ拡張要素
 mypage.btn.changePw=パスワード変更
@@ -49,6 +49,16 @@ password.change.btn.cancel=キャンセルしてマイページへ戻る
 # パスワード変更失敗時にコントロールラーから投げるエラーテキスト例
 password.change.error.wrong=現在のパスワードが一致しません。
 password.change.error.mismatch=新しいパスワードと確認用パスワードが一致しません。
+
+pw.reset.title=パスワード再設定
+pw.reset.header=新しいパスワードの設定
+pw.reset.description=新しいパスワードを入力してください。
+pw.reset.newLabel=新しいパスワード
+pw.reset.newPlaceholder=新しいパスワードを入力してください
+pw.reset.confirmLabel=新しいパスワードの確認
+pw.reset.confirmPlaceholder=パスワードをもう一度入力してください
+pw.reset.btnSubmit=パスワード変更
+pw.reset.btnCancel=キャンセルしてログインへ
 # =========================================================================
 # アカウント登録ページ構成要素 (계정 등록 페이지 구성요소)
 # =========================================================================
