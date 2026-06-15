@@ -11,13 +11,14 @@
     <div class="detail-container">
         <div class="header-area">
             <h2>🏖️ 休暇申請書詳細</h2>
-       <span class="status-badge status-blue">
-    				<c:choose>
-        				<c:when test="${leave.status == '승인대기'}">承認待ち</c:when>
-        				<c:when test="${leave.status == '승인완료'}">承認完了</c:when>
-       				 <c:otherwise>${leave.status}</c:otherwise>
-   					 </c:choose>
-		</span>
+     <span class="status-badge ${leave.status == '반려됨' ? 'status-red' : 'status-blue'}">
+    <c:choose>
+        <c:when test="${leave.status == '승인대기'}">承認待ち</c:when>
+        <c:when test="${leave.status == '승인완료'}">承認完了</c:when>
+        <c:when test="${leave.status == '반려됨'}">差し戻し</c:when>
+        <c:otherwise>${leave.status}</c:otherwise>
+    </c:choose>
+</span>
         </div>
         
        <div class="approval-table">
