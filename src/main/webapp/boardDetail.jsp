@@ -97,7 +97,7 @@
                             <div class="comment-actions">
                                 <% if (loginEmp != null) { %>
                                     <a href="javascript:void(0);"
-                                       onclick="toggleReplyForm(<%= comment.getCommentNo() %>)">返신</a>
+                                       onclick="toggleReplyForm(<%= comment.getCommentNo() %>)">返信</a>
                                     <% if (comment.getEmpNo() == loginEmp.getEmpNo() || "Y".equals(loginEmp.getManager())) { %>
                                         <a href="javascript:void(0);"
                                            onclick="toggleEditForm(<%= comment.getCommentNo() %>)">修正</a>
