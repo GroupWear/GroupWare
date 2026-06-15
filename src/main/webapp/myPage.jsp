@@ -261,43 +261,53 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
                 height: 'auto',
                 dayMaxEvents: 2, 
                 events: [
-                    <%if (filteredRentalList != null) {
+                	<%if (filteredRentalList != null) {
 	for (RentalHistoryDTO rDto : filteredRentalList) {
-		String itemTitle = rDto.getTitle() != null ? rDto.getTitle() : "제목 없음";%>
-                    {
-                        title: '[<fmt:message key="calendar.prefix.rental" />] <%=itemTitle%>',
-                        start: '<%=rDto.getRentalDate()%>',
-                        backgroundColor: '#1cc88a', 
-                        borderColor: '#1cc88a',
-                        extendedProps: { 
-                                url: 'rentalDetail.do?rentalNo=<%=rDto.getRentalNo()%>' 
-                            }
-                    },
-                    <%}
+		String itemTitle = rDto.getTitle() != null ? rDto.getTitle() : "제목 없음";
+
+		// FullCalendar 종료일 배타적(Exclusive) 적용에 대응하기 위한 반납일 +1일 연산 추가
+		String rentalEndDateStr = "";
+		if (rDto.getReturnDate() != null) {
+			rentalEndDateStr = java.time.LocalDate.parse(rDto.getReturnDate().toString()).plusDays(1).toString();
+		}%>
+                	                    {
+                	 
+                	                        title: '[<fmt:message key="calendar.prefix.rental" />] <%=itemTitle%>',
+                	                        start: '<%=rDto.getRentalDate()%>',
+                	                        end: '<%=rentalEndDateStr%>',
+                	                        backgroundColor: '#1cc88a', 
+                	                      
+                	                        borderColor: '#1cc88a',
+                	                        extendedProps: { 
+                	                                url: 'rentalDetail.do?rentalNo=<%=rDto.getRentalNo()%>' 
+                	                            }
+                	         
+                	            },
+                	                    <%}
 }%>
 
 <%if (leaveList != null) {
-	for (LeaveHistoryDTO lDto : leaveList) {
-		String rawReasonCal = lDto.getReason();
-		String displayReasonCal = "사유 없음"; 
+						for (LeaveHistoryDTO lDto : leaveList) {
+							String rawReasonCal = lDto.getReason();
+							String displayReasonCal = "사유 없음";
 
-		if (rawReasonCal != null) {
-			if (rawReasonCal.equals("연차"))
-				displayReasonCal = "年次有給休暇";
-			else if (rawReasonCal.equals("병가"))
-				displayReasonCal = "傷病休暇";
-			else if (rawReasonCal.equals("경조사")) 
-				displayReasonCal = "慶弔休暇";
-			else
-				displayReasonCal = rawReasonCal;
-		}
-		
-		// FullCalendar 종료일 배타적(Exclusive) 적용에 대응하기 위한 +1일 연산 추가
-		String calEndDateStr = "";
-		if (lDto.getEndDate() != null) {
-			calEndDateStr = java.time.LocalDate.parse(lDto.getEndDate().toString()).plusDays(1).toString();
-		}
-%>
+							if (rawReasonCal != null) {
+								if (rawReasonCal.equals("연차"))
+									displayReasonCal = "年次有給休暇";
+								else if (rawReasonCal.equals("병가"))
+									displayReasonCal = "傷病休暇";
+								else if (rawReasonCal.equals("경조사"))
+									displayReasonCal = "慶弔休暇";
+								else
+									displayReasonCal = rawReasonCal;
+							}
+
+							// FullCalendar 종료일 배타적(Exclusive) 적용에 대응하기 위한 +1일 연산 추가
+							String calEndDateStr = "";
+							if (lDto.getEndDate() != null) {
+								calEndDateStr = java.time.LocalDate.parse(lDto.getEndDate().toString()).plusDays(1)
+										.toString();
+							}%>
 {
     title: '[<fmt:message key="nav.leave.apply" />] <%=displayReasonCal%>',
     start: '<%=lDto.getStartDate()%>',
