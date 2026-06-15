@@ -214,33 +214,24 @@ public class EquipmentDAO {
 	 * */
 	public int getCheckEquipment(int eqNo) {
         int count = 0;
-        String sql = "SELECT COUNT(*) "
-        		+ "FROM EQUIPMENT E "
-        		+ "WHERE E.EQ_NO = ?"
-        		+ "  AND ( "
-        		+ "      NOT EXISTS ( "
-        		+ "          SELECT 1 FROM RENTAL_HISTORY WHERE EQ_NO = ? "
-        		+ "      ) "
-        		+ "      OR "
-        		+ "      ( "
-        		+ "          SELECT STATUS "
-        		+ "          FROM ( "
-        		+ "              SELECT STATUS "
-        		+ "              FROM RENTAL_HISTORY "
-        		+ "              WHERE EQ_NO = ? "
-        		+ "              ORDER BY RENTAL_NO DESC "
-        		+ "          ) "
-        		+ "          WHERE ROWNUM = 1 "
-        		+ "      ) NOT IN ('승인대기', '대여중', '반려됨') "
-        		+ "  ) ";
-
+        String sql = "SELECT CASE WHEN TOTAL_COUNT = REAMIN_COUNT THEN '1' ELSE '0' END 'COUNT' FROM EQUIPMENT WHERE 1=1 AND EQ_NO = ?";
+		/*
+		 * String sql = "SELECT COUNT(*) " + "FROM EQUIPMENT E " + "WHERE E.EQ_NO = ?" +
+		 * "  AND ( " + "      NOT EXISTS ( " +
+		 * "          SELECT 1 FROM RENTAL_HISTORY WHERE EQ_NO = ? " + "      ) " +
+		 * "      OR " + "      ( " + "          SELECT STATUS " + "          FROM ( " +
+		 * "              SELECT STATUS " + "              FROM RENTAL_HISTORY " +
+		 * "              WHERE EQ_NO = ? " + "              ORDER BY RENTAL_NO DESC " +
+		 * "          ) " + "          WHERE ROWNUM = 1 " +
+		 * "      ) NOT IN ('승인대기', '대여중', '반려됨') " + "  ) ";
+		 */
         try {
         	System.out.println(sql);
         	Connection conn = DBConnection.getConnection();
         	PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, eqNo);
-			pstmt.setInt(2, eqNo);
-			pstmt.setInt(3, eqNo);
+			//pstmt.setInt(2, eqNo);
+			//pstmt.setInt(3, eqNo);
         		
             ResultSet rs = pstmt.executeQuery(); 
             if (rs.next()) count = rs.getInt(1);
