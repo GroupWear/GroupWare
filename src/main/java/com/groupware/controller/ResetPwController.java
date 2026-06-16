@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import com.groupware.dao.EmployeeDAO;
 import com.groupware.util.CryptoUtil;
 
@@ -15,6 +16,10 @@ public class ResetPwController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String empNoParam = request.getParameter("empNo");
+        if (empNoParam != null && !empNoParam.trim().isEmpty() && !empNoParam.equals("null")) {
+            request.getSession().setAttribute("resetEmpNo", Integer.parseInt(empNoParam.trim()));
+        }
         request.getRequestDispatcher("resetPw.jsp").forward(request, response);
     }
 
@@ -23,40 +28,50 @@ public class ResetPwController extends HttpServlet {
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
 
+        HttpSession session = request.getSession();
+        Object sessionEmpNo = session.getAttribute("resetEmpNo");
         String empNoParam = request.getParameter("empNo");
+        
         String newPw = request.getParameter("newPw").trim();
         String newPwConfirm = request.getParameter("newPwConfirm").trim();
 
-        // 1. 입력 폼 검증 (비밀번호 불일치 방지)
-        if (empNoParam == null || !newPw.equals(newPwConfirm)) {
+        if (!newPw.equals(newPwConfirm)) {
             out.println("<script>alert('パスワードが一致しません。'); history.back();</script>");
             return;
         }
 
         try {
-            int empNo = Integer.parseInt(empNoParam);
-            EmployeeDAO empDAO = new EmployeeDAO();
-            
-            // 사용자가 새로 입력한 비밀번호 암호화 가공
-            String encryptedNewPassword = CryptoUtil.encrypt(newPw);
+            int empNo = 0;
+            if (empNoParam != null && !empNoParam.trim().isEmpty() && !empNoParam.equals("null")) {
+                empNo = Integer.parseInt(empNoParam.trim());
+            } else if (sessionEmpNo != null) {
+                empNo = (Integer) sessionEmpNo;
+            }
 
-            // ★ 2. 기존 비밀번호 중복 검증 알고리즘 실행 ★
-            if (empDAO.updatePasswordWithVerify(empNo, encryptedNewPassword, encryptedNewPassword)) {
-                // [수정] "현재 비밀번호와 동일한 비밀번호는 사용하실 수 없습니다."
-                out.println("<script>alert('現在のパスワードと同じパスワードはご利用いただけません。'); location.href='resetPw.do';</script>");
+            if (empNo == 0) {
+                out.println("<script>alert('ユーザー情報が見つかりません。最初からやり直してください。'); location.href='index.jsp';</script>");
+                return;
+            }
+
+            EmployeeDAO empDAO = new EmployeeDAO();
+            String encryptedPassword = CryptoUtil.encrypt(newPw);
+            
+            // 기존 비밀번호 중복 검증
+            if (empDAO.updatePasswordWithVerify(empNo, encryptedPassword, encryptedPassword)) {
+                out.println("<script>alert('現在のパスワードと同じパスワードはご利用いただけません。'); location.href='resetPw.do?empNo=" + empNo + "';</script>");
                 return; 
             }
-
-            // 3. 중복이 아니라 진짜 새로운 비밀번호라면 정석대로 업데이트 수행
-            if (empDAO.updatePassword(empNo, encryptedNewPassword)) {
+            
+            // 비밀번호 업데이트 실행
+            if (empDAO.updatePassword(empNo, encryptedPassword)) {
+                session.removeAttribute("resetEmpNo"); // 성공 시 세션 파기
                 out.println("<script>alert('パスワードが変更されました。もう一度ログインしてください。'); location.href='index.jsp';</script>");
             } else {
-                // [수정] "변경에 실패했습니다."
                 out.println("<script>alert('変更に失敗しました。'); history.back();</script>");
             }
+            
         } catch (Exception e) {
-            e.printStackTrace();
-            // [수정] "サーバーエラーが発生しました。"
+            e.printStackTrace(); 
             out.println("<script>alert('サーバーエラーが発生しました。'); history.back();</script>");
         } finally {
             out.close();

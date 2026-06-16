@@ -21,7 +21,8 @@
 <body class="auth-body">
     <div class="auth-container">
         <div class="auth-logo">
-            <span class="bold"><fmt:message key="login.brand.bold" /></span><span class="thin"><fmt:message key="login.brand.thin" /></span>
+            <span class="bold"><fmt:message key="login.brand.bold" /></span>
+            <span class="thin"><fmt:message key="login.brand.thin" /></span>
         </div>
         <h2 class="auth-title"><fmt:message key="findPw.page.title" /></h2>
         <p class="auth-subtitle"><fmt:message key="findPw.page.subtitle" /></p>

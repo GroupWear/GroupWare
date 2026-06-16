@@ -7,20 +7,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.http.HttpSession;
 import com.groupware.dao.EmployeeDAO;
 
 @WebServlet("/findPw.do")
 public class FindPwController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // 비밀번호 찾기 페이지 폼 열기 (GET)
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         request.getRequestDispatcher("findPw.jsp").forward(request, response);
     }
 
-    // 폼 데이터 전송 받아 처리하기 (POST)
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
@@ -32,54 +30,44 @@ public class FindPwController extends HttpServlet {
         
         PrintWriter out = response.getWriter();
         
-        // 1차 공백 및 누락 검증
         if (empNoParam == null || empNoParam.trim().isEmpty() || empName == null || empName.trim().isEmpty()) {
-            out.println("<script>");
-            out.println("alert('사원번호와 이름을 모두 입력해주세요.');");
-            out.println("history.back();");
-            out.println("</script>");
+            out.println("<script>alert('사원번호와 이름을 모두 입력해주세요.'); history.back();</script>");
             return;
         }
 
         try {
-            // 1. 기존 DAO 메서드 스펙(int)에 맞춰 타입 변환
             int empNo = Integer.parseInt(empNoParam.trim());
             String empNameTrimmed = empName.trim();
 
             EmployeeDAO empDAO = new EmployeeDAO();
-            
-            // 2. 건드리지 않은 순수 원본 findPassword(int, String) 메서드 호출
             String foundPassword = empDAO.findPassword(empNo, empNameTrimmed);
             
             if (foundPassword != null) {
-                // 퇴사자 계정 잠금 처리 정책 연동 ('RETIRED' 문자열 검증)
                 if ("RETIRED".equals(foundPassword)) {
                     out.println("<script>");
                     out.println("alert('退職処理された社員アカウントです。 管理者にお問い合わせください。');");
                     out.println("history.back();");
                     out.println("</script>");
                 } else {
-                	// [성공] 비밀번호 변경 페이지로 이동
-                	out.println("<script>");
-                	out.println("alert('本人確認が完了いたしました。 パスワードを新たに設定してください。');");
-                	// empNo를 파라미터로 넘겨서 changePw.jsp가 누구의 비번을 바꿀지 알게 합니다.
-                	out.println("location.href='resetPw.jsp?empNo=" + empNo + "';"); 
-                	out.println("</script>");
+                    // [핵심] 세션에 사번 저장하여 다음 단계로 토스
+                    HttpSession session = request.getSession();
+                    session.setAttribute("resetEmpNo", empNo);
+
+                    out.println("<script>");
+                    out.println("alert('本人確認が完了いたしました。 パスワードを新たに設定してください。');");
+                    // .jsp가 아니라 .do 서블릿으로 안전하게 이동
+                    out.println("location.href='resetPw.do?empNo=" + empNo + "';"); 
+                    out.println("</script>");
                 }
             } else {
-                // [실패] 일치하는 사원 없음
                 out.println("<script>");
-                out.println("alert('一致する寺院情報は存在しません。 もう一度確認をお願いします。');");
+                out.println("alert('一致하는 社員情報は存在しません。 もう一度確認をお願いします。');");
                 out.println("history.back();");
                 out.println("</script>");
             }
 
         } catch (NumberFormatException e) {
-            // 사번 입력칸에 문자가 들어와 형변환 에러가 날 경우 방어 코드
-            out.println("<script>");
-            out.println("alert('社員番号は数字のみ入力可能です。');");
-            out.println("history.back();");
-            out.println("</script>");
+            out.println("<script>alert('社員番号は数字のみ入力可能です。'); history.back();</script>");
         } finally {
             out.close();
         }
