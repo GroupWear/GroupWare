@@ -412,16 +412,13 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
 						</tr>
 					</thead>
 					<tbody>
-						<%
-						if (resSubList == null || resSubList.isEmpty()) {
-						%>
+						<% if (resSubList == null || resSubList.isEmpty()) { %>
 						<tr>
 							<td colspan="7"
 								style="padding: 105px 0; color: #6c757d; border-bottom: none; text-align: center;"><fmt:message
 									key="table.res.empty" /></td>
 						</tr>
-						<%
-						} else {
+						<% } else {
 						for (Map<String, Object> resMap : resSubList) {
 							String statusKey = (String) resMap.get("statusKey");
 							String statusClass = "bg-primary";
@@ -434,8 +431,7 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
 						%>
 						<tr>
 							<td style="color: #6c757d;"><%=resMap.get("resNo")%></td>
-							<td style="font-weight: 600; color: #343a40;"><%=resMap.get("roomId")%><fmt:message
-									key="status.room" /></td>
+							<td style="font-weight: 600; color: #343a40;"><%=resMap.get("roomId")%><fmt:message	key="status.room" /></td>
 							<td><%=resMap.get("resDate")%></td>
 							<td><%=resMap.get("startTime")%> ~ <%=resMap.get("endTime")%></td>
 							<td><span class="title-link"
@@ -444,57 +440,38 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
 							<td><span class="status-badge <%=statusClass%>"><fmt:message
 										key="<%=statusKey%>" /></span></td>
 							<td>
-								<%
-								if ("status.res.complete".equals(statusKey)) {
-								%>
+								<% if ("status.res.complete".equals(statusKey)) { %>
 								<button class="btn-action"
 									onclick="cancelReserve(<%=resMap.get("resNo")%>)">
 									<fmt:message key="table.res.btn.cancel" />
-								</button> <%
- } else {
- %> <span style="color: #ced4da;">-</span> <%
- }
- %>
+								</button>
+								<% } else { %> 
+							<span style="color: #ced4da;">-</span> 
+						<% } %>
 							</td>
 						</tr>
-						<%
-						}
-						}
-						%>
+						<% } } %>
 					</tbody>
 				</table>
 			</div>
 
 			<div class="pagination-container">
-				<%
-				if (resStartPage > 1) {
-				%>
-				<button type="button" class="pagination-btn"
-					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resStartPage - 1%>&rentalPage=<%=rentalPage%>&leavePage=<%=leavePage%>')">
+				<%if (resStartPage > 1) {%>
+				<button type="button" class="pagination-btn" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resStartPage - 1%>&rentalPage=<%=rentalPage%>&leavePage=<%=leavePage%>')">
 					<fmt:message key="dashboard.btn.prev" />
 				</button>
-				<%
-				}
-				%>
-				<%
-				for (int i = resStartPage; i <= resEndPage; i++) {
-				%>
+				<% }	%>
+				<%for (int i = resStartPage; i <= resEndPage; i++) {%>
 				<button type="button"
 					class="pagination-btn <%=(i == resPage) ? "active" : ""%>"
 					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=i%>&rentalPage=<%=rentalPage%>&leavePage=<%=leavePage%>')"><%=i%></button>
-				<%
-				}
-				%>
-				<%
-				if (resEndPage < resTotalPages) {
-				%>
+				<% }	%>
+				<%if (resEndPage < resTotalPages) {	%>
 				<button type="button" class="pagination-btn"
 					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resEndPage + 1%>&rentalPage=<%=rentalPage%>&leavePage=<%=leavePage%>')">
 					<fmt:message key="dashboard.btn.next" />
 				</button>
-				<%
-				}
-				%>
+				<% } %>
 			</div>
 
 
@@ -508,14 +485,10 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
 					<thead>
 						<tr>
 							<th style="width: 10%;"><fmt:message key="table.rental.no" /></th>
-							<%
-							if (isManagerMode) {
-							%>
+							<% if (isManagerMode) { %>
 							<th style="width: 15%;"><fmt:message
 									key="table.rental.writer" /></th>
-							<%
-							}
-							%>
+							<% } %>
 							<th><fmt:message key="table.rental.title" /></th>
 							<th style="width: 25%;"><fmt:message key="table.rental.date" /></th>
 							<th style="width: 12%;"><fmt:message
@@ -524,16 +497,13 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
 						</tr>
 					</thead>
 					<tbody>
-						<%
-						if (rentalList == null || rentalList.isEmpty()) {
-						%>
+						<% if (rentalList == null || rentalList.isEmpty()) { %>
 						<tr>
 							<td colspan="<%=isManagerMode ? 6 : 5%>"
 								style="padding: 105px 0; color: #6c757d; border-bottom: none; text-align: center;"><fmt:message
 									key="table.rental.empty" /></td>
 						</tr>
-						<%
-						} else {
+						<% } else {
 						for (RentalHistoryDTO item : rentalList) {
 							String displayStatus = item.getStatus();
 							boolean isRetiredCreator = (item.getEmpLevel() == 0);
@@ -548,16 +518,12 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
 						%>
 						<tr>
 							<td><%=item.getRentalNo()%></td>
-							<%
-							if (isManagerMode) {
-							%>
+							<% if (isManagerMode) { %>
 							<td style="font-weight: 600; color: #64748b;"><%=item.getEmpName()%>
 								<fmt:message
 									key="<%=isRetiredCreator ?\"table.rental.retired\" :\"table.rental.myself\"%>"
 									var="empType" /> <br>(${empType})</td>
-							<%
-							}
-							%>
+							<% } %>
 							<td><a
 								href="rentalDetail.do?rentalNo=<%=item.getRentalNo()%>"
 								style="text-decoration: none; display: block;"> <span
@@ -569,63 +535,47 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
 							<td><span class="status-badge <%=badgeClass%>"><fmt:message
 										key="<%=StatusUtil.getStatusKey(displayStatus)%>" /></span></td>
 							<td>
-								<%
-								if ("대여중".equals(displayStatus) || "미반납".equals(displayStatus)) {
-								%>
+								<% if ("대여중".equals(displayStatus) || "미반납".equals(displayStatus)) { %>
 								<button class="btn-action"
 									onclick="returnProcess('<%=item.getRentalNo()%>')">
 									<fmt:message key="table.rental.btn.return" />
-								</button> <%
- } else {
- %> <span style="color: #ced4da;">-</span> <%
- }
- %>
+								</button> 
+								<% } else {%>
+								<span style="color: #ced4da;">-</span> 
+							<% } %>
 							</td>
 						</tr>
-						<%
-						}
-						}
-						%>
+						<% } } %>
 					</tbody>
 				</table>
 			</div>
 
 			<div class="pagination-container">
-				<%
-				if (rentalStartPage > 1) {
-				%>
+				<% if (rentalStartPage > 1) { %>
 				<button type="button" class="pagination-btn"
 					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalStartPage - 1%>&leavePage=<%=leavePage%>')">
 					<fmt:message key="dashboard.btn.prev" />
 				</button>
-				<%
-				}
-				%>
-				<%
-				for (int i = rentalStartPage; i <= rentalEndPage; i++) {
-				%>
+				<% } %>
+				<% for (int i = rentalStartPage; i <= rentalEndPage; i++) { %>
 				<button type="button"
 					class="pagination-btn <%=(i == rentalPage) ? "active" : ""%>"
 					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=i%>&leavePage=<%=leavePage%>')"><%=i%></button>
-				<%
-				}
-				%>
-				<%
-				if (rentalEndPage < rentalTotalPages) {
-				%>
+				<% } %>
+				<% if (rentalEndPage < rentalTotalPages) { %>
 				<button type="button" class="pagination-btn"
 					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalEndPage + 1%>&leavePage=<%=leavePage%>')">
 					<fmt:message key="dashboard.btn.next" />
 				</button>
-				<%
-				}
-				%>
+				<% } %>
 			</div>
 
 
+
 			<div class="section-title">
-				<a href="myLeave.jsp" class="data-link"><fmt:message
-						key="table.leave.title" /></a>
+				<a href="myLeave.jsp" class="data-link">
+					<fmt:message key="table.leave.title" />
+				</a>
 			</div>
 			<div class="table-wrapper">
 				<table class="table-leave">
@@ -635,21 +585,19 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
 							<th style="width: 30%;"><fmt:message key="table.leave.date" /></th>
 							<th style="width: 15%;"><fmt:message key="table.leave.days" /></th>
 							<th><fmt:message key="table.leave.reason" /></th>
-							<th style="width: 15%;"><fmt:message
-									key="table.leave.status" /></th>
+							<th style="width: 15%;">
+								<fmt:message key="table.leave.status" />
+							</th>
 						</tr>
 					</thead>
 					<tbody>
-						<%
-						if (leaveList == null || leaveList.isEmpty()) {
-						%>
+						<% if (leaveList == null || leaveList.isEmpty()) { %>
 						<tr>
 							<td colspan="5"
 								style="padding: 105px 0; color: #6c757d; border-bottom: none; text-align: center;"><fmt:message
 									key="table.leave.empty" /></td>
 						</tr>
-						<%
-						} else {
+						<% } else {
 						for (LeaveHistoryDTO leave : leaveList) {
 							String badgeClass = "bg-warning";
 							if ("승인완료".equals(leave.getStatus()))
@@ -688,44 +636,29 @@ List<LeaveHistoryDTO> leaveList = (fullLeaveList != null && leaveStartIdx < leav
 							<td><span class="status-badge <%=badgeClass%>"><fmt:message
 										key="<%=StatusUtil.getStatusKey(leave.getStatus())%>" /></span></td>
 						</tr>
-						<%
-						}
-						}
-						%>
+						<% } } %>
 					</tbody>
 				</table>
 			</div>
 
 			<div class="pagination-container">
-				<%
-				if (leaveStartPage > 1) {
-				%>
+				<% if (leaveStartPage > 1) { %>
 				<button type="button" class="pagination-btn"
 					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalPage%>&leavePage=<%=leaveStartPage - 1%>')">
 					<fmt:message key="dashboard.btn.prev" />
 				</button>
-				<%
-				}
-				%>
-				<%
-				for (int i = leaveStartPage; i <= leaveEndPage; i++) {
-				%>
+				<% } %>
+				<% for (int i = leaveStartPage; i <= leaveEndPage; i++) { %>
 				<button type="button"
 					class="pagination-btn <%=(i == leavePage) ? "active" : ""%>"
 					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalPage%>&leavePage=<%=i%>')"><%=i%></button>
-				<%
-				}
-				%>
-				<%
-				if (leaveEndPage < leaveTotalPages) {
-				%>
+				<% } %>
+				<% if (leaveEndPage < leaveTotalPages) { %>
 				<button type="button" class="pagination-btn"
 					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalPage%>&leavePage=<%=leaveEndPage + 1%>')">
 					<fmt:message key="dashboard.btn.next" />
 				</button>
-				<%
-				}
-				%>
+				<% } %>
 			</div>
 
 		</div>

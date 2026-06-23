@@ -189,7 +189,7 @@
                         %>
                         <tr>
                             <td style="color: #6c757d;"><%=resMap.get("resNo")%></td>
-                            <td style="font-weight: 600; color: #343a40;"><%=resMap.get("roomId")%>호</td>
+                            <td style="font-weight: 600; color: #343a40;"><%=resMap.get("roomId")%><fmt:message	key="status.room" /></td>
                             <td><%=resMap.get("resDate")%></td>
                             <td><%=resMap.get("startTime")%> ~ <%=resMap.get("endTime")%></td>
                             <td>
@@ -212,7 +212,9 @@
             
             <div class="pagination-container">
                 <% if (resStartPage > 1) { %>
-                    <button type="button" class="pagination-btn" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resStartPage-1%>&rentalPage=<%=rentalPage%>&leavePage=<%=leavePage%>')"><fmt:message key="dashboard.btn.prev" /></button>
+                    <button type="button" class="pagination-btn" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resStartPage-1%>&rentalPage=<%=rentalPage%>&leavePage=<%=leavePage%>')">
+                    	<fmt:message key="dashboard.btn.prev" />
+                    </button>
                 <% } %>
                 <% for (int i = resStartPage; i <= resEndPage; i++) { %>
                     <button type="button" class="pagination-btn <%= (i == resPage) ? "active" : "" %>" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=i%>&rentalPage=<%=rentalPage%>&leavePage=<%=leavePage%>')"><%=i%></button>

@@ -133,51 +133,94 @@
 <body>
 <jsp:include page="header.jsp" />
 <div class="container">
-<div class="section-title"><a href="myLeave.jsp" class="data-link"><fmt:message key="table.leave.title" /></a></div>
-            <div class="table-wrapper">
-                <table class="table-leave">
-                    <thead>
-                        <tr>
-                            <th style="width: 10%;"><fmt:message key="table.leave.no" /></th>
-                            <th style="width: 30%;"><fmt:message key="table.leave.date" /></th>
-                            <th style="width: 15%;"><fmt:message key="table.leave.days" /></th>
-                            <th><fmt:message key="table.leave.reason" /></th>
-                            <th style="width: 15%;"><fmt:message key="table.leave.status" /></th>
-                        </tr>
-                    </thead>
-                     <tbody>
-                    <% if (leaveList == null || leaveList.isEmpty()) { %>
-                        <tr><td colspan="5" style="padding: 105px 0; color: #6c757d; border-bottom: none; text-align: center;"><fmt:message key="table.leave.empty" /></td></tr>
-                    <% } else { 
-                               for (LeaveHistoryDTO leave : leaveList) {
-                                   String badgeClass = "bg-warning";
-                                   if ("승인완료".equals(leave.getStatus())) badgeClass = "bg-success";
-                                   else if ("반려됨".equals(leave.getStatus())) badgeClass = "bg-danger";
-                    %>
-                        <tr>
-                            <td style="color: #6c757d;"><%=leave.getLeaveNo()%></td>
-                            <td><%=leave.getStartDate()%> ~ <%=leave.getEndDate()%></td>
-                            <td><b><%=leave.getUseDays()%><fmt:message key="table.leave.days.unit" /></b></td>
-                            <td><span class="title-link" title="<%=leave.getReason()%>"><%=leave.getReason()%></span></td>
-                            <td><span class="status-badge <%=badgeClass%>"><fmt:message key="<%= StatusUtil.getStatusKey(leave.getStatus()) %>" /></span></td>
-                        </tr>
-                    <%     } 
-                       } %>
-                    </tbody>
-                </table>
-            </div> 
-            
-            <div class="pagination-container">
-                <% if (leaveStartPage > 1) { %>
-                    <button type="button" class="pagination-btn" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalPage%>&leavePage=<%=leaveStartPage-1%>')"><fmt:message key="dashboard.btn.prev" /></button>
-                <% } %>
-                <% for (int i = leaveStartPage; i <= leaveEndPage; i++) { %>
-                    <button type="button" class="pagination-btn <%= (i == leavePage) ? "active" : "" %>" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalPage%>&leavePage=<%=i%>')"><%=i%></button>
-                <% } %>
-                <% if (leaveEndPage < leaveTotalPages) { %>
-                    <button type="button" class="pagination-btn" onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalPage%>&leavePage=<%=leaveEndPage+1%>')"><fmt:message key="dashboard.btn.next" /></button>
-                <% } %>
-            </div>
+<div class="section-title">
+				<a href="myLeave.jsp" class="data-link">
+					<fmt:message key="table.leave.title" />
+				</a>
+			</div>
+			<div class="table-wrapper">
+				<table class="table-leave">
+					<thead>
+						<tr>
+							<th style="width: 10%;"><fmt:message key="table.leave.no" /></th>
+							<th style="width: 30%;"><fmt:message key="table.leave.date" /></th>
+							<th style="width: 15%;"><fmt:message key="table.leave.days" /></th>
+							<th><fmt:message key="table.leave.reason" /></th>
+							<th style="width: 15%;">
+								<fmt:message key="table.leave.status" />
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% if (leaveList == null || leaveList.isEmpty()) { %>
+						<tr>
+							<td colspan="5"
+								style="padding: 105px 0; color: #6c757d; border-bottom: none; text-align: center;"><fmt:message
+									key="table.leave.empty" /></td>
+						</tr>
+						<% } else {
+						for (LeaveHistoryDTO leave : leaveList) {
+							String badgeClass = "bg-warning";
+							if ("승인완료".equals(leave.getStatus()))
+								badgeClass = "bg-success";
+							else if ("반려됨".equals(leave.getStatus()))
+								badgeClass = "bg-danger";
+
+							// 사유 변환 로직 추가
+							String rawReason = leave.getReason();
+							String displayReason = "사유 없음";
+
+							if (rawReason != null) {
+								if (rawReason.equals("연차")) {
+							displayReason = "年次有給休暇";
+								} else if (rawReason.equals("병가")) {
+							displayReason = "傷病休暇";
+								} else if (rawReason.equals("경조사")) {
+							displayReason = "慶弔休暇";
+								} else {
+							// 더미 데이터(기존 일어) 및 직접 입력 데이터 보존
+							displayReason = rawReason;
+								}
+							}
+						%>
+						<tr>
+							<td style="color: #6c757d;"><%=leave.getLeaveNo()%></td>
+							<td><%=leave.getStartDate()%> ~ <%=leave.getEndDate()%></td>
+							<td><b><%=leave.getUseDays()%><fmt:message
+										key="table.leave.days.unit" /></b></td>
+							<td><a href="leaveDetail.do?leaveNo=<%=leave.getLeaveNo()%>"
+								style="text-decoration: none; display: block;"> <span
+									class="title-link" style="color: #6366f1; font-weight: 600;"
+									title="<%=displayReason%>"> <%=displayReason%>
+								</span>
+							</a></td>
+							<td><span class="status-badge <%=badgeClass%>"><fmt:message
+										key="<%=StatusUtil.getStatusKey(leave.getStatus())%>" /></span></td>
+						</tr>
+						<% } } %>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="pagination-container">
+				<% if (leaveStartPage > 1) { %>
+				<button type="button" class="pagination-btn"
+					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalPage%>&leavePage=<%=leaveStartPage - 1%>')">
+					<fmt:message key="dashboard.btn.prev" />
+				</button>
+				<% } %>
+				<% for (int i = leaveStartPage; i <= leaveEndPage; i++) { %>
+				<button type="button"
+					class="pagination-btn <%=(i == leavePage) ? "active" : ""%>"
+					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalPage%>&leavePage=<%=i%>')"><%=i%></button>
+				<% } %>
+				<% if (leaveEndPage < leaveTotalPages) { %>
+				<button type="button" class="pagination-btn"
+					onclick="navigateWithScroll('<%=currentMapping%>?resPage=<%=resPage%>&rentalPage=<%=rentalPage%>&leavePage=<%=leaveEndPage + 1%>')">
+					<fmt:message key="dashboard.btn.next" />
+				</button>
+				<% } %>
+			</div>
 	</div>
 </body>
 </html>
