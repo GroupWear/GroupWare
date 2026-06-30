@@ -31,7 +31,7 @@ public class FindPwController extends HttpServlet {
         PrintWriter out = response.getWriter();
         
         if (empNoParam == null || empNoParam.trim().isEmpty() || empName == null || empName.trim().isEmpty()) {
-            out.println("<script>alert('사원번호와 이름을 모두 입력해주세요.'); history.back();</script>");
+            out.println("<script>alert('社員番号と名前をすべて入力してください。'); history.back();</script>");
             return;
         }
 
@@ -61,7 +61,7 @@ public class FindPwController extends HttpServlet {
                 }
             } else {
                 out.println("<script>");
-                out.println("alert('一致하는 社員情報は存在しません。 もう一度確認をお願いします。');");
+                out.println("alert('一致する 社員情報は存在しません。 もう一度確認をお願いします。');");
                 out.println("history.back();");
                 out.println("</script>");
             }
