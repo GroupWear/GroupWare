@@ -42,7 +42,4 @@
 5. `http://localhost:8080/OfficeReserveERP/index.jsp` 로 접속하여 시스템을 시작합니다.
 
 
-## ⚙️ 포토폴리오 
-
-https://onedrive.live.com/:x:/g/personal/31e90b1ea10136e1/IQBt-1cZ0iGLQJX5PkCq3LnMASkadXA-A-dvEHZ6OmZnn74?rtime=ZMR_Dvza3kg&redeem=aHR0cHM6Ly8xZHJ2Lm1zL3gvYy8zMWU5MGIxZWExMDEzNmUxL0lRQnQtMWNaMGlHTFFKWDVQa0NxM0xuTUFTa2FkWEEtQS1kdkVIWjZPbVpubjc0P2U9cVVpSWcz
 
